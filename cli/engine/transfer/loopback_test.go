@@ -37,7 +37,7 @@ func newConnectedPair(t *testing.T) (sender *webrtc.DataChannel, recvCh <-chan *
 		dc.OnOpen(func() { got <- dc })
 	})
 
-	dc, err := pcSender.CreateDataChannel("floe", nil)
+	dc, err := pcSender.CreateDataChannel("rilldrop", nil)
 	if err != nil {
 		t.Fatalf("create data channel: %v", err)
 	}
@@ -219,7 +219,7 @@ func TestLoopbackSmallJSONFile(t *testing.T) {
 
 	srcDir := t.TempDir()
 	srcPath := filepath.Join(srcDir, "config.json")
-	data := []byte(`{"name":"floe","type":"settings","values":[1,2,3],"nested":{"k":"v"}}`)
+	data := []byte(`{"name":"rilldrop","type":"settings","values":[1,2,3],"nested":{"k":"v"}}`)
 	if err := os.WriteFile(srcPath, data, 0644); err != nil {
 		t.Fatalf("write source: %v", err)
 	}

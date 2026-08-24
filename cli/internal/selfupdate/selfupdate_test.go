@@ -18,7 +18,7 @@ func TestCompareVersions(t *testing.T) {
 		{"v2.0.0", "v1.9.9", 1},
 		{"v1.0.1", "v1.0.0", 1},
 		{"v0.9.0", "v1.0.0", -1},
-		{"1.2.0", "v1.2.0", 0},  // no "v" prefix
+		{"1.2.0", "v1.2.0", 0},   // no "v" prefix
 		{"v10.0.0", "v9.9.9", 1}, // double-digit major
 	}
 	for _, tt := range tests {
@@ -34,14 +34,14 @@ func TestAssetName(t *testing.T) {
 		wantName              string
 		wantFmt               string
 	}{
-		{"linux", "amd64", "v1.2.0", "floe_1.2.0_linux_amd64.tar.gz", "tar.gz"},
-		{"linux", "arm64", "v1.2.0", "floe_1.2.0_linux_arm64.tar.gz", "tar.gz"},
-		{"darwin", "amd64", "v1.2.0", "floe_1.2.0_darwin_amd64.tar.gz", "tar.gz"},
-		{"darwin", "arm64", "v1.2.0", "floe_1.2.0_darwin_arm64.tar.gz", "tar.gz"},
-		{"windows", "amd64", "v1.2.0", "floe_1.2.0_windows_amd64.zip", "zip"},
-		{"windows", "arm64", "v1.2.0", "floe_1.2.0_windows_arm64.zip", "zip"},
+		{"linux", "amd64", "v1.2.0", "rilldrop_1.2.0_linux_amd64.tar.gz", "tar.gz"},
+		{"linux", "arm64", "v1.2.0", "rilldrop_1.2.0_linux_arm64.tar.gz", "tar.gz"},
+		{"darwin", "amd64", "v1.2.0", "rilldrop_1.2.0_darwin_amd64.tar.gz", "tar.gz"},
+		{"darwin", "arm64", "v1.2.0", "rilldrop_1.2.0_darwin_arm64.tar.gz", "tar.gz"},
+		{"windows", "amd64", "v1.2.0", "rilldrop_1.2.0_windows_amd64.zip", "zip"},
+		{"windows", "arm64", "v1.2.0", "rilldrop_1.2.0_windows_arm64.zip", "zip"},
 		// A bare version (no leading "v") must produce the same asset name.
-		{"linux", "amd64", "1.2.0", "floe_1.2.0_linux_amd64.tar.gz", "tar.gz"},
+		{"linux", "amd64", "1.2.0", "rilldrop_1.2.0_linux_amd64.tar.gz", "tar.gz"},
 	}
 	for _, tt := range tests {
 		gotName, gotFmt := AssetName(tt.version, tt.goos, tt.goarch)
@@ -59,15 +59,15 @@ func TestDetectPM(t *testing.T) {
 		path string
 		want string
 	}{
-		{"/opt/homebrew/Cellar/floe/1.0.0/bin/floe", "homebrew"},
-		{"/usr/local/Cellar/floe/1.0.0/bin/floe", "homebrew"},
-		{"/home/linuxbrew/.linuxbrew/bin/floe", "homebrew"},
-		{"C:/Users/user/scoop/apps/floe/current/floe.exe", "scoop"},
-		{"C:/Users/user/AppData/Local/Microsoft/WinGet/Packages/jannskiee.floe/floe.exe", "winget"},
-		{"/usr/local/bin/floe", ""},
-		{"/home/user/.local/bin/floe", ""},
-		{"/home/user/bin/floe", ""},
-		{"C:/Users/user/AppData/Local/Programs/floe/floe.exe", ""},
+		{"/opt/homebrew/Cellar/rilldrop/1.0.0/bin/rilldrop", "homebrew"},
+		{"/usr/local/Cellar/rilldrop/1.0.0/bin/rilldrop", "homebrew"},
+		{"/home/linuxbrew/.linuxbrew/bin/rilldrop", "homebrew"},
+		{"C:/Users/user/scoop/apps/rilldrop/current/rilldrop.exe", "scoop"},
+		{"C:/Users/user/AppData/Local/Microsoft/WinGet/Packages/Arnavsharma2.rilldrop/rilldrop.exe", "winget"},
+		{"/usr/local/bin/rilldrop", ""},
+		{"/home/user/.local/bin/rilldrop", ""},
+		{"/home/user/bin/rilldrop", ""},
+		{"C:/Users/user/AppData/Local/Programs/rilldrop/rilldrop.exe", ""},
 	}
 	for _, tt := range tests {
 		if got := DetectPM(tt.path); got != tt.want {
@@ -81,9 +81,9 @@ func TestPMHint(t *testing.T) {
 		pm   string
 		want string
 	}{
-		{"homebrew", "brew upgrade floe"},
-		{"scoop", "scoop update floe"},
-		{"winget", "winget upgrade jannskiee.floe"},
+		{"homebrew", "brew upgrade rilldrop"},
+		{"scoop", "scoop update rilldrop"},
+		{"winget", "winget upgrade Arnavsharma2.rilldrop"},
 		{"", ""},
 		{"unknown", ""},
 	}
@@ -96,7 +96,7 @@ func TestPMHint(t *testing.T) {
 
 func TestInstallBinaryReplacesInPlace(t *testing.T) {
 	dir := t.TempDir()
-	exe := filepath.Join(dir, "floe")
+	exe := filepath.Join(dir, "rilldrop")
 	if runtime.GOOS == "windows" {
 		exe += ".exe"
 	}
@@ -105,7 +105,7 @@ func TestInstallBinaryReplacesInPlace(t *testing.T) {
 	}
 
 	// The new binary is staged in the OS temp dir, exactly like Apply does.
-	newBin := filepath.Join(t.TempDir(), "floe-update")
+	newBin := filepath.Join(t.TempDir(), "rilldrop-update")
 	if err := os.WriteFile(newBin, []byte("NEW BINARY"), 0o644); err != nil {
 		t.Fatal(err)
 	}

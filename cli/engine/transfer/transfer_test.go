@@ -278,7 +278,7 @@ func TestLooksLikeJSONObject(t *testing.T) {
 	}{
 		{`{"type":"end"}`, true},
 		{"  \r\n\t{\"a\":1}", true}, // leading whitespace tolerated
-		{`[1,2,3]`, false},         // array, not object
+		{`[1,2,3]`, false},          // array, not object
 		{`"a string"`, false},
 		{`123`, false},
 		{"", false},
@@ -367,10 +367,10 @@ func TestCheckCompat(t *testing.T) {
 
 // TestCompatErrorMessage verifies the user-facing error strings.
 func TestCompatErrorMessage(t *testing.T) {
-	// Local too old: should suggest running floe update locally
+	// Local too old: should suggest running rilldrop update locally
 	msg := CompatErrorMessage(true, "v1.5.5", "v2.0.0", 1, 1, 2, 2)
-	if !strings.Contains(msg, "floe update") {
-		t.Errorf("local-too-old message should mention 'floe update', got: %s", msg)
+	if !strings.Contains(msg, "rilldrop update") {
+		t.Errorf("local-too-old message should mention 'rilldrop update', got: %s", msg)
 	}
 	if !strings.Contains(msg, "v1.5.5") || !strings.Contains(msg, "v2.0.0") {
 		t.Errorf("message should contain both version strings, got: %s", msg)
@@ -389,16 +389,16 @@ func TestCompatErrorMessage(t *testing.T) {
 	}
 
 	// GUI callers can replace the CLI-only local remedy.
-	const appHint = "Update Floe from your app store or floe.one/download."
+	const appHint = "Update Rilldrop from your app store or localhost:3000/download."
 	msg4 := compatErrorMessage(true, "v1.5.5", "v2.0.0", 1, 1, 2, 2, appHint)
-	if !strings.Contains(msg4, appHint) || strings.Contains(msg4, "floe update") {
+	if !strings.Contains(msg4, appHint) || strings.Contains(msg4, "rilldrop update") {
 		t.Errorf("custom local update hint not applied, got: %s", msg4)
 	}
 
 	// The local app cannot know which surface the peer uses, so the remote
 	// remedy stays surface-neutral when a custom local hint is configured.
 	msg5 := compatErrorMessage(false, "v2.0.0", "v1.5.5", 2, 2, 1, 1, appHint)
-	if !strings.Contains(msg5, "Ask the other side to update Floe.") || strings.Contains(msg5, "app store") {
+	if !strings.Contains(msg5, "Ask the other side to update Rilldrop.") || strings.Contains(msg5, "app store") {
 		t.Errorf("custom peer update hint should be surface-neutral, got: %s", msg5)
 	}
 
@@ -423,18 +423,18 @@ func TestCompatErrorMessage(t *testing.T) {
 	// When this receiver is newer, the sender-facing fallback must say that the
 	// sender itself is old and must not leak this receiver's app-store hint.
 	peerMsg := peerCompatErrorMessage(false, "v2.0.0", "v1.5.5", 2, 2, 1, 1)
-	if !strings.Contains(peerMsg, "your floe is too old") ||
+	if !strings.Contains(peerMsg, "your rilldrop is too old") ||
 		!strings.Contains(peerMsg, "You: protocol 1 (v1.5.5)  Peer: protocol 2 (v2.0.0)") ||
-		!strings.Contains(peerMsg, "Update Floe to continue.") {
+		!strings.Contains(peerMsg, "Update Rilldrop to continue.") {
 		t.Errorf("newer receiver produced wrong sender-facing message: %s", peerMsg)
 	}
 
 	// When this receiver is older, the newer sender should be told neutrally
 	// that the peer needs an update.
 	peerMsg2 := peerCompatErrorMessage(true, "v1.5.5", "v2.0.0", 1, 1, 2, 2)
-	if !strings.Contains(peerMsg2, "peer's floe is too old") ||
+	if !strings.Contains(peerMsg2, "peer's rilldrop is too old") ||
 		!strings.Contains(peerMsg2, "You: protocol 2 (v2.0.0)  Peer: protocol 1 (v1.5.5)") ||
-		!strings.Contains(peerMsg2, "Ask the other side to update Floe.") {
+		!strings.Contains(peerMsg2, "Ask the other side to update Rilldrop.") {
 		t.Errorf("older receiver produced wrong sender-facing message: %s", peerMsg2)
 	}
 }

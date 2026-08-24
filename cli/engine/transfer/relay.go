@@ -1,6 +1,6 @@
 // Relay transfer policy: relayed (TURN) connections are capped, direct
 // connections are not. Mirrors the browser client's relay gate
-// (client/lib/relay.ts) so every Floe app enforces the same rule.
+// (client/lib/relay.ts) so every Rilldrop app enforces the same rule.
 //
 // The cap exists because every relayed byte crosses the TURN server and costs
 // real bandwidth, while direct transfers cost nothing. The check is

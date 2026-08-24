@@ -1,4 +1,4 @@
-// Package code handles the Floe short-code API.
+// Package code handles the Rilldrop short-code API.
 // The server maps a 3-word code like "olive-tiger-castle" to a UUID room ID.
 // This lets CLI users type a short phrase instead of a full URL.
 package code
@@ -37,8 +37,8 @@ func Register(serverURL, roomId string) (string, error) {
 
 // Resolve converts a code phrase or URL to a room UUID.
 //   - "olive-tiger-castle"              → calls GET /api/code/olive-tiger-castle
-//   - "https://floe.one/#room=uuid"     → extracts the room from the URL fragment
-//   - "https://floe.one/?room=uuid"     → extracts the room query parameter
+//   - "http://localhost:3000/#room=uuid"     → extracts the room from the URL fragment
+//   - "http://localhost:3000/?room=uuid"     → extracts the room query parameter
 func Resolve(serverURL, input string) (string, error) {
 	input = strings.TrimSpace(input)
 

@@ -53,7 +53,7 @@ func newPumpedPair(t *testing.T) (sender *webrtc.DataChannel, recvCh <-chan *web
 		dc.OnOpen(func() { got <- dc })
 	})
 
-	dc, err := pcSender.CreateDataChannel("floe", nil)
+	dc, err := pcSender.CreateDataChannel("rilldrop", nil)
 	if err != nil {
 		t.Fatalf("create data channel: %v", err)
 	}

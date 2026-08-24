@@ -4,19 +4,19 @@ import "testing"
 
 // Resolve must accept both the new fragment links (#room=) and the older query
 // links (?room=) so that a link from either the browser or the CLI works in
-// `floe receive`. The URL branch parses locally and never touches the network.
+// `rilldrop receive`. The URL branch parses locally and never touches the network.
 func TestResolveURL(t *testing.T) {
 	cases := []struct {
 		name  string
 		input string
 		want  string
 	}{
-		{"fragment", "https://floe.one/#room=abc-123", "abc-123"},
-		{"query", "https://floe.one/?room=abc-123", "abc-123"},
-		{"query without slash", "https://floe.one?room=abc-123", "abc-123"},
+		{"fragment", "http://localhost:3000/#room=abc-123", "abc-123"},
+		{"query", "http://localhost:3000/?room=abc-123", "abc-123"},
+		{"query without slash", "http://localhost:3000?room=abc-123", "abc-123"},
 		// The browser and the desktop app pair the fragment with a meaningless
 		// ?s= cache-buster; the query lookup must miss it and fall through.
-		{"fragment with nonce", "https://floe.one/?s=deadbeef#room=abc-123", "abc-123"},
+		{"fragment with nonce", "http://localhost:3000/?s=deadbeef#room=abc-123", "abc-123"},
 		{"local fragment", "http://localhost:3000/#room=xyz", "xyz"},
 	}
 	for _, tc := range cases {
@@ -33,7 +33,7 @@ func TestResolveURL(t *testing.T) {
 }
 
 func TestResolveURLWithoutRoom(t *testing.T) {
-	if _, err := Resolve("", "https://floe.one/about"); err == nil {
+	if _, err := Resolve("", "http://localhost:3000/about"); err == nil {
 		t.Fatal("expected an error for a URL with no room id, got nil")
 	}
 }

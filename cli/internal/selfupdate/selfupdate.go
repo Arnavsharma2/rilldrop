@@ -1,5 +1,5 @@
 // Package selfupdate provides version-check and binary self-replacement for the
-// floe CLI. All operations use only the Go standard library.
+// rilldrop CLI. All operations use only the Go standard library.
 package selfupdate
 
 import (
@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	apiURL   = "https://api.github.com/repos/jannskiee/floe/releases/latest"
-	baseURL  = "https://github.com/jannskiee/floe/releases/download"
+	apiURL   = "https://api.github.com/repos/Arnavsharma2/rilldrop/releases/latest"
+	baseURL  = "https://github.com/Arnavsharma2/rilldrop/releases/download"
 	cacheTTL = 24 * time.Hour
 )
 
@@ -62,10 +62,10 @@ func LatestVersion() (string, error) {
 
 // CheckAvailable returns the latest version tag if it is newer than current,
 // or "" if current is already up-to-date or the check could not complete.
-// Results are cached in ~/.config/floe/update-check.json for 24 hours.
-// Always returns "" when current == "dev" or FLOE_NO_UPDATE_CHECK=1.
+// Results are cached in ~/.config/rilldrop/update-check.json for 24 hours.
+// Always returns "" when current == "dev" or RILLDROP_NO_UPDATE_CHECK=1.
 func CheckAvailable(current string) string {
-	if current == "dev" || os.Getenv("FLOE_NO_UPDATE_CHECK") == "1" {
+	if current == "dev" || os.Getenv("RILLDROP_NO_UPDATE_CHECK") == "1" {
 		return ""
 	}
 
@@ -149,11 +149,11 @@ func PMPath() string {
 func PMHint(pm string) string {
 	switch pm {
 	case "homebrew":
-		return "brew upgrade floe"
+		return "brew upgrade rilldrop"
 	case "scoop":
-		return "scoop update floe"
+		return "scoop update rilldrop"
 	case "winget":
-		return "winget upgrade jannskiee.floe"
+		return "winget upgrade Arnavsharma2.rilldrop"
 	}
 	return ""
 }
@@ -162,12 +162,12 @@ func PMHint(pm string) string {
 // Exported for testing; callers within this package use assetName().
 func AssetName(version, goos, goarch string) (string, string) {
 	// Release tags carry a leading "v" (e.g. v1.2.0), but GoReleaser strips it
-	// from the archive name (floe_1.2.0_...). Match the published asset name.
+	// from the archive name (rilldrop_1.2.0_...). Match the published asset name.
 	v := strings.TrimPrefix(version, "v")
 	if goos == "windows" {
-		return fmt.Sprintf("floe_%s_%s_%s.zip", v, goos, goarch), "zip"
+		return fmt.Sprintf("rilldrop_%s_%s_%s.zip", v, goos, goarch), "zip"
 	}
-	return fmt.Sprintf("floe_%s_%s_%s.tar.gz", v, goos, goarch), "tar.gz"
+	return fmt.Sprintf("rilldrop_%s_%s_%s.tar.gz", v, goos, goarch), "tar.gz"
 }
 
 func assetName(version string) (string, string) {
@@ -210,7 +210,7 @@ func Apply(version string) error {
 	// Extract the new binary into the OS temp dir, which is always writable.
 	// The install dir itself may be root-owned (e.g. /usr/local/bin), so staging
 	// there directly would fail with "permission denied".
-	binaryTmp, err := os.CreateTemp("", "floe-update-*")
+	binaryTmp, err := os.CreateTemp("", "rilldrop-update-*")
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}
@@ -237,7 +237,7 @@ func cacheFilePath() string {
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(dir, "floe", "update-check.json")
+	return filepath.Join(dir, "rilldrop", "update-check.json")
 }
 
 func fromCache() (string, bool) {
@@ -296,7 +296,7 @@ func downloadTemp(url string) (string, error) {
 		return "", fmt.Errorf("HTTP %d fetching %s", resp.StatusCode, url)
 	}
 
-	f, err := os.CreateTemp("", "floe-update-*")
+	f, err := os.CreateTemp("", "rilldrop-update-*")
 	if err != nil {
 		return "", err
 	}
@@ -337,9 +337,9 @@ func verifySHA256(filePath, assetFilename, checksums string) error {
 // --- extraction ---
 
 func extractBinary(archivePath, format, destPath string) error {
-	binaryName := "floe"
+	binaryName := "rilldrop"
 	if runtime.GOOS == "windows" {
-		binaryName = "floe.exe"
+		binaryName = "rilldrop.exe"
 	}
 
 	switch format {
@@ -454,7 +454,7 @@ func installBinary(exe, newBinary string) error {
 // one filesystem. Returns an fs.ErrPermission error when the install dir is not
 // writable, which the caller uses to decide whether to elevate.
 func unixInstall(exe, newBinary string) error {
-	staged, err := os.CreateTemp(filepath.Dir(exe), ".floe-update-*")
+	staged, err := os.CreateTemp(filepath.Dir(exe), ".rilldrop-update-*")
 	if err != nil {
 		return err
 	}

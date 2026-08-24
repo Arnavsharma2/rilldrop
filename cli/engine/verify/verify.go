@@ -8,7 +8,7 @@
 // band (over the phone, in person, over an existing trusted channel) closes that
 // gap: if a fingerprint was altered, the two peers compute different codes, so a
 // mismatch reveals the tampering. This is the ZRTP / Signal "safety number"
-// model applied to Floe.
+// model applied to Rilldrop.
 package verify
 
 import (

@@ -1,4 +1,4 @@
-module github.com/jannskiee/floe/cli
+module github.com/Arnavsharma2/rilldrop/cli
 
 go 1.25.0
 

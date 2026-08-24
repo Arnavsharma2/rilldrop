@@ -1,15 +1,15 @@
-// floe — P2P file transfer CLI for the Floe platform.
+// rilldrop — P2P file transfer CLI for the Rilldrop platform.
 //
 // Usage:
-//   floe send <file(s) or folder>
-//   floe receive <code or link>
+//   rilldrop send <file(s) or folder>
+//   rilldrop receive <code or link>
 //
-// By default, the Floe production server is used. For local testing:
-//   floe send photo.jpg --server http://localhost:3001
-//   floe receive olive-tiger-castle --server http://localhost:3001
+// By default, the local Rilldrop signaling server is used:
+//   rilldrop send photo.jpg --server http://localhost:3001
+//   rilldrop receive olive-tiger-castle --server http://localhost:3001
 //
-// Set FLOE_SERVER to point every command at a self-hosted server without
-// repeating --server (and FLOE_WEB when its web app is on another host).
+// Set RILLDROP_SERVER to point every command at a self-hosted server without
+// repeating --server (and RILLDROP_WEB when its web app is on another host).
 package main
 
 import (
@@ -20,13 +20,13 @@ import (
 	"syscall"
 
 	"github.com/google/uuid"
-	"github.com/jannskiee/floe/cli/engine/code"
-	"github.com/jannskiee/floe/cli/engine/ice"
-	"github.com/jannskiee/floe/cli/engine/peer"
-	"github.com/jannskiee/floe/cli/engine/serverurl"
-	"github.com/jannskiee/floe/cli/engine/signaling"
-	"github.com/jannskiee/floe/cli/engine/transfer"
-	"github.com/jannskiee/floe/cli/internal/selfupdate"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/code"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/ice"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/peer"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/serverurl"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/signaling"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/transfer"
+	"github.com/Arnavsharma2/rilldrop/cli/internal/selfupdate"
 	"github.com/spf13/cobra"
 )
 
@@ -45,12 +45,12 @@ var (
 // ── Root command ─────────────────────────────────────────────────────────────
 
 var rootCmd = &cobra.Command{
-	Use:   "floe",
-	Short: "Floe — secure P2P file transfer",
-	Long: `Floe transfers files directly between devices using WebRTC.
+	Use:   "rilldrop",
+	Short: "Rilldrop — secure P2P file transfer",
+	Long: `Rilldrop transfers files directly between devices using WebRTC.
 Files are encrypted end-to-end. Nothing is stored on any server.
 
-Documentation: https://www.floe.one/docs`,
+Documentation: https://github.com/Arnavsharma2/rilldrop/tree/main/docs`,
 	// Runtime failures (network, blocked transfers, spent codes) are not usage
 	// mistakes: print the error alone instead of dumping the flag reference.
 	SilenceUsage: true,
@@ -67,16 +67,16 @@ Documentation: https://www.floe.one/docs`,
 		// compiled default. Changed() is load-bearing rather than a string
 		// compare against the default, because --server HAS a non-empty default
 		// and so a compare cannot tell "typed the default" from "typed nothing".
-		// It is also what keeps a stray FLOE_SERVER in a developer or CI shell
+		// It is also what keeps a stray RILLDROP_SERVER in a developer or CI shell
 		// from retargeting the e2e suite, whose spawned CLI children inherit the
 		// parent environment.
 		if !cmd.Flags().Changed("server") {
-			if v := os.Getenv("FLOE_SERVER"); v != "" {
+			if v := os.Getenv("RILLDROP_SERVER"); v != "" {
 				flagServer = v
 			}
 		}
 		if !cmd.Flags().Changed("web") {
-			if v := os.Getenv("FLOE_WEB"); v != "" {
+			if v := os.Getenv("RILLDROP_WEB"); v != "" {
 				flagWebURL = v
 			}
 		}
@@ -88,12 +88,12 @@ Documentation: https://www.floe.one/docs`,
 
 func init() {
 	// Persistent flags are available on all subcommands
-	rootCmd.PersistentFlags().StringVar(&flagServer, "server", "https://api.floe.one",
-		"signaling server URL (use http://localhost:3001 for local testing) [env: FLOE_SERVER]")
+	rootCmd.PersistentFlags().StringVar(&flagServer, "server", "http://localhost:3001",
+		"signaling server URL [env: RILLDROP_SERVER]")
 	rootCmd.PersistentFlags().BoolVar(&flagNoRelay, "no-relay", false,
 		"disable TURN relay (direct connections only)")
 	rootCmd.PersistentFlags().StringVar(&flagWebURL, "web", "",
-		"web app URL shown in the browser link (auto-detected if not set) [env: FLOE_WEB]")
+		"web app URL shown in the browser link (auto-detected if not set) [env: RILLDROP_WEB]")
 	rootCmd.PersistentFlags().StringSliceVar(&flagIface, "iface", nil,
 		"restrict WebRTC to network interfaces matching these names (repeatable, e.g. --iface Ethernet); use when a VPN/VM adapter slows connection setup")
 
@@ -102,12 +102,12 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(updateCmd)
 
-	// Enable `floe --version` (and -v) in addition to the `version` subcommand.
+	// Enable `rilldrop --version` (and -v) in addition to the `version` subcommand.
 	rootCmd.Version = version
-	rootCmd.SetVersionTemplate("floe {{.Version}}\n")
+	rootCmd.SetVersionTemplate("rilldrop {{.Version}}\n")
 }
 
-// ── floe send ────────────────────────────────────────────────────────────────
+// ── rilldrop send ────────────────────────────────────────────────────────────────
 
 var sendCmd = &cobra.Command{
 	Use:   "send <file|folder> [file|folder...]",
@@ -243,7 +243,7 @@ func runSend(cmd *cobra.Command, args []string) error {
 	})
 }
 
-// ── floe receive ─────────────────────────────────────────────────────────────
+// ── rilldrop receive ─────────────────────────────────────────────────────────────
 
 var (
 	flagOutput     string
@@ -257,9 +257,9 @@ var receiveCmd = &cobra.Command{
 	Long: `Receive files from a peer using a code or link.
 
 After a successful transfer the receiver posts only the total byte count to
-Floe's signaling server to power the public global-transfer counter. No file
+Rilldrop's signaling server to power the public global-transfer counter. No file
 names, contents, or identities are included. To opt out of this report, use
---no-report or set FLOE_NO_STATS=1 in your environment.`,
+--no-report or set RILLDROP_NO_STATS=1 in your environment.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runReceive,
 }
@@ -270,7 +270,7 @@ func init() {
 	receiveCmd.Flags().BoolVarP(&flagAutoAccept, "yes", "y", false,
 		"auto-accept incoming files without confirmation")
 	receiveCmd.Flags().BoolVar(&flagNoReport, "no-report", false,
-		"do not report transferred bytes to Floe's public global counter")
+		"do not report transferred bytes to Rilldrop's public global counter")
 }
 
 func runReceive(cmd *cobra.Command, args []string) error {
@@ -354,7 +354,7 @@ func runReceive(cmd *cobra.Command, args []string) error {
 
 	// 7. Receive files
 	statsURL := flagServer
-	if flagNoReport || os.Getenv("FLOE_NO_STATS") == "1" {
+	if flagNoReport || os.Getenv("RILLDROP_NO_STATS") == "1" {
 		statsURL = "" // reportBytesToServer no-ops on empty URL
 	}
 	// The pump comes from the connection, not from ReceiveFiles: see peer.Early.
@@ -366,33 +366,33 @@ func runReceive(cmd *cobra.Command, args []string) error {
 	})
 }
 
-// ── floe version ─────────────────────────────────────────────────────────────
+// ── rilldrop version ─────────────────────────────────────────────────────────────
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the floe version",
+	Short: "Print the rilldrop version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("floe %s\n", version)
-		fmt.Println("Docs: https://www.floe.one/docs")
+		fmt.Printf("rilldrop %s\n", version)
+		fmt.Println("Docs: https://github.com/Arnavsharma2/rilldrop/tree/main/docs")
 		if latest := selfupdate.CheckAvailable(version); latest != "" {
-			fmt.Printf("Update available: %s  run `floe update` to upgrade\n", latest)
+			fmt.Printf("Update available: %s  run `rilldrop update` to upgrade\n", latest)
 		}
 	},
 }
 
-// ── floe update ───────────────────────────────────────────────────────────────
+// ── rilldrop update ───────────────────────────────────────────────────────────────
 
 var flagUpdateCheck bool
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update floe to the latest release",
-	Long: `Downloads, verifies, and installs the latest floe release.
+	Short: "Update rilldrop to the latest release",
+	Long: `Downloads, verifies, and installs the latest rilldrop release.
 
-If floe was installed via Homebrew, Scoop, or Winget, use your package manager
-to update instead (e.g. brew upgrade floe).
+If rilldrop was installed via Homebrew, Scoop, or Winget, use your package manager
+to update instead (e.g. brew upgrade rilldrop).
 
-Set FLOE_NO_UPDATE_CHECK=1 to suppress the update hint in 'floe version'.`,
+Set RILLDROP_NO_UPDATE_CHECK=1 to suppress the update hint in 'rilldrop version'.`,
 	RunE: runUpdate,
 }
 
@@ -428,7 +428,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Update available: %s -> %s\n", version, latest)
 
 	if flagUpdateCheck {
-		fmt.Printf("Run `floe update` to install.\n")
+		fmt.Printf("Run `rilldrop update` to install.\n")
 		return nil
 	}
 

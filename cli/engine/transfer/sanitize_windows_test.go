@@ -35,7 +35,7 @@ import (
 // none of these names can exist on a Windows filesystem to be sent in the first
 // place.
 func TestSanitizedNamesLandOnRealFiles(t *testing.T) {
-	payload := []byte("floe-regression-payload")
+	payload := []byte("rilldrop-regression-payload")
 
 	cases := []struct {
 		name     string

@@ -1,4 +1,4 @@
-// Package ice fetches STUN/TURN ICE server credentials from the Floe signaling server.
+// Package ice fetches STUN/TURN ICE server credentials from the Rilldrop signaling server.
 package ice
 
 import (

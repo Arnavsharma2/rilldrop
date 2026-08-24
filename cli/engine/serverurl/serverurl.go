@@ -1,4 +1,4 @@
-// Package serverurl normalizes a Floe signaling-server origin and derives the
+// Package serverurl normalizes a Rilldrop signaling-server origin and derives the
 // matching web-app origin.
 //
 // Both the CLI and the desktop app print a share link after a send, and a link
@@ -10,11 +10,6 @@ package serverurl
 import "strings"
 
 const (
-	// prodServer and prodWeb are Floe's own deployment, where the signaling API
-	// and the browser app live on separate hosts.
-	prodServer = "https://api.floe.one"
-	prodWeb    = "https://floe.one"
-
 	// devServer and devWeb are the local development pair that docker-compose
 	// and the e2e suite bring up.
 	devServer = "http://localhost:3001"
@@ -36,8 +31,8 @@ func Normalize(s string) string {
 
 // Web returns the web-app origin for share links, given a signaling origin.
 //
-// Floe's own deployment and the local dev stack both split the API and the web
-// app across two origins, so each is special-cased. Anything else is assumed to
+// The local dev stack splits the API and web app across two origins, so it is
+// special-cased. Anything else is assumed to
 // be a self-hosted instance served from a single origin, which is the layout the
 // reverse-proxy guide recommends. Split self-hosted deployments override this.
 //
@@ -46,8 +41,6 @@ func Normalize(s string) string {
 func Web(server string) string {
 	s := Normalize(server)
 	switch s {
-	case prodServer:
-		return prodWeb
 	case devServer:
 		return devWeb
 	default:

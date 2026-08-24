@@ -1,4 +1,4 @@
-// Package signaling manages the WebSocket connection to the Floe signaling server.
+// Package signaling manages the WebSocket connection to the Rilldrop signaling server.
 // The CLI communicates with the server over a plain WebSocket (not Socket.IO).
 // The server routes WebRTC signals between peers regardless of whether they
 // are browsers (Socket.IO) or CLI clients (WebSocket).
@@ -189,11 +189,9 @@ func (c *Client) readLoop() {
 }
 
 // originFromServer derives a browser-style Origin header from the signaling
-// server URL so self-hosted deployments aren't misrepresented as floe.one.
+// server URL so self-hosted deployments aren't misrepresented as localhost:3000.
 func originFromServer(serverURL string) string {
 	switch serverURL {
-	case "https://api.floe.one":
-		return "https://floe.one"
 	case "http://localhost:3001":
 		return "http://localhost:3000"
 	}

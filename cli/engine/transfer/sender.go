@@ -1,13 +1,13 @@
-// Package transfer implements the Floe data channel protocol for sending files.
+// Package transfer implements the Rilldrop data channel protocol for sending files.
 //
 // Protocol (same as the web app — must stay compatible for CLI↔Browser):
-//   1. Sender → Receiver: metadata JSON  (file name, size, index, total, pv, pvMin, ver)
-//   2. Receiver → Sender: ack JSON       (confirms ready, offset for resume, pv, pvMin, ver)
-//      OR:       incompatible JSON       (sent instead of ack when protocol ranges do not overlap)
-//   3. Sender → Receiver: binary chunks  (raw file bytes; chunk size adapts to
-//      the negotiated SCTP max-message-size, capped at 256 KB — see chunkSizeFor)
-//   4. Sender → Receiver: end JSON       (signals end of this file)
-//   Repeat for each file.
+//  1. Sender → Receiver: metadata JSON  (file name, size, index, total, pv, pvMin, ver)
+//  2. Receiver → Sender: ack JSON       (confirms ready, offset for resume, pv, pvMin, ver)
+//     OR:       incompatible JSON       (sent instead of ack when protocol ranges do not overlap)
+//  3. Sender → Receiver: binary chunks  (raw file bytes; chunk size adapts to
+//     the negotiated SCTP max-message-size, capped at 256 KB — see chunkSizeFor)
+//  4. Sender → Receiver: end JSON       (signals end of this file)
+//     Repeat for each file.
 //
 // pv/pvMin are the protocol version range (see protocol.go). ver is the human
 // release string (e.g. "v1.5.5") used only for the optional informational note;

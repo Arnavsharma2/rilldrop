@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jannskiee/floe/cli/engine/signaling"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/signaling"
 	"github.com/pion/webrtc/v4"
 )
 
@@ -276,13 +276,13 @@ func New(iceServers []webrtc.ICEServer, sc *signaling.Client, opts ...Option) (*
 	return conn, nil
 }
 
-// SetupAsSender is called by `floe send`.
+// SetupAsSender is called by `rilldrop send`.
 // It creates a data channel, sends an SDP offer, waits for the answer,
 // and returns the open data channel ready for file transfer.
 func (conn *Connection) SetupAsSender() (*webrtc.DataChannel, error) {
 	// The sender (initiator) creates the data channel BEFORE the offer.
-	// The data channel label "floe" identifies it to the remote peer.
-	dc, err := conn.pc.CreateDataChannel("floe", nil)
+	// The data channel label "rilldrop" identifies it to the remote peer.
+	dc, err := conn.pc.CreateDataChannel("rilldrop", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create data channel: %w", err)
 	}
@@ -348,7 +348,7 @@ func (conn *Connection) SetupAsSender() (*webrtc.DataChannel, error) {
 	}
 }
 
-// SetupAsReceiver is called by `floe receive`.
+// SetupAsReceiver is called by `rilldrop receive`.
 // It waits for the sender's SDP offer, sends an answer,
 // and returns the open data channel ready for file transfer.
 func (conn *Connection) SetupAsReceiver() (*webrtc.DataChannel, error) {

@@ -8,7 +8,7 @@ import "fmt"
 // Bump policy: increment ProtocolVersion on any breaking wire change (e.g. a
 // mandatory new field old receivers cannot ignore, or a removed field they
 // require). Raise MinProtocolVersion only when deliberately dropping support
-// for an old wire format. Never tie either constant to the floe release version
+// for an old wire format. Never tie either constant to the rilldrop release version
 // (1.x.y) - they are independent.
 const (
 	ProtocolVersion    = 1
@@ -80,21 +80,21 @@ func compatErrorMessage(localTooOld bool, localVer, remoteVer string, localMin, 
 	}
 	if localTooOld {
 		if updateHint == "" {
-			updateHint = "Run `floe update` to upgrade."
+			updateHint = "Run `rilldrop update` to upgrade."
 		}
 		return fmt.Sprintf(
-			"Cannot transfer: your floe is too old for this peer.\n  You: %s  Peer: %s\n  %s",
+			"Cannot transfer: your rilldrop is too old for this peer.\n  You: %s  Peer: %s\n  %s",
 			localRange, remoteRange, updateHint,
 		)
 	}
 	if updateHint != "" {
 		return fmt.Sprintf(
-			"Cannot transfer: peer's floe is too old.\n  You: %s  Peer: %s\n  Ask the other side to update Floe.",
+			"Cannot transfer: peer's rilldrop is too old.\n  You: %s  Peer: %s\n  Ask the other side to update Rilldrop.",
 			localRange, remoteRange,
 		)
 	}
 	return fmt.Sprintf(
-		"Cannot transfer: peer's floe is too old.\n  You: %s  Peer: %s\n  Ask the other side to run `floe update`.",
+		"Cannot transfer: peer's rilldrop is too old.\n  You: %s  Peer: %s\n  Ask the other side to run `rilldrop update`.",
 		localRange, remoteRange,
 	)
 }
@@ -104,7 +104,7 @@ func compatErrorMessage(localTooOld bool, localVer, remoteVer string, localMin, 
 // that display Reason verbatim instead of rebuilding it from pv/pvMin.
 func peerCompatErrorMessage(localTooOld bool, localVer, remoteVer string, localMin, localMax, remoteMin, remoteMax int) string {
 	return compatErrorMessage(!localTooOld, remoteVer, localVer,
-		remoteMin, remoteMax, localMin, localMax, "Update Floe to continue.")
+		remoteMin, remoteMax, localMin, localMax, "Update Rilldrop to continue.")
 }
 
 // compatErrorFromIncompatible rebuilds current peers' error messages from the

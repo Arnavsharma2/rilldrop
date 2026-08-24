@@ -1,4 +1,4 @@
-// Package transfer implements the Floe data channel protocol for receiving files.
+// Package transfer implements the Rilldrop data channel protocol for receiving files.
 // See sender.go for the full protocol description.
 package transfer
 
@@ -87,7 +87,7 @@ type ReceiveOptions struct {
 	Closed   <-chan struct{}
 }
 
-// ReceiveFiles handles the full receiving side of the Floe protocol.
+// ReceiveFiles handles the full receiving side of the Rilldrop protocol.
 // It blocks until all files are received. Files are written to outputDir.
 // If autoAccept is false, the user is prompted before receiving begins.
 // localVer is the human release string (e.g. "v1.5.5") embedded in the ack
@@ -254,7 +254,7 @@ func ReceiveFilesWithOptions(dc *webrtc.DataChannel, outputDir string, autoAccep
 				default:
 				}
 				// Phase-aware stall errors. Deliberately no protocol or
-				// version phrasing: the "floe update" hint belongs to the
+				// version phrasing: the "rilldrop update" hint belongs to the
 				// incompatible path only.
 				switch {
 				case waitingForFirst:
@@ -269,7 +269,7 @@ func ReceiveFilesWithOptions(dc *webrtc.DataChannel, outputDir string, autoAccep
 			}
 		}
 
-		// Decide whether this is a Floe control message (metadata/end) or file
+		// Decide whether this is a Rilldrop control message (metadata/end) or file
 		// data. Only recognized control types are consumed as control — a small
 		// binary chunk that merely happens to be a JSON object is file data and
 		// must be written, never dropped.
@@ -581,7 +581,7 @@ func ReceiveFilesWithOptions(dc *webrtc.DataChannel, outputDir string, autoAccep
 	}
 }
 
-// classifyControl reports whether a data channel message is a Floe control
+// classifyControl reports whether a data channel message is a Rilldrop control
 // message and, if so, its type.
 //
 // Control messages are JSON objects. The browser (SimplePeer) sends them as
