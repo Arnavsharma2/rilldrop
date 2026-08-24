@@ -3,14 +3,13 @@ sent, rather than sent and ignored.
 
 - **Browser:** uncheck **Contribute to global stats** on the receiver view before the first file
   lands. The choice is saved in that browser and applies to every later transfer from it.
-- **Floe Desktop:** turn off **Contribute to global stats** in
+- **Rilldrop Desktop:** turn off **Contribute to global stats** in
   [Settings](/desktop/settings#contribute-to-global-stats). It is saved with your other settings.
-- **CLI:** pass `--no-report` to `floe receive` for one transfer, or set `FLOE_NO_STATS=1` in your
+- **CLI:** pass `--no-report` to `rilldrop receive` for one transfer, or set `RILLDROP_NO_STATS=1` in your
   environment to opt out for good.
 
 The sender never reports on any surface, so this only ever concerns transfers you receive.
 
-This switch covers the public counter and nothing else. On floe.one the site's own anonymous
-analytics record a transfer's outcome separately, and are described under
-[Error monitoring and analytics](/security-privacy#error-monitoring-and-analytics). The CLI, the
-desktop app, and any self-hosted instance without an analytics key send neither.
+This switch covers the public counter and nothing else. A deployment operator can separately enable
+anonymous web analytics, described under [Error monitoring and analytics](/security-privacy#error-monitoring-and-analytics).
+The CLI, desktop app, and any web instance without an analytics key send no analytics.

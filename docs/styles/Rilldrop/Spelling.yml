@@ -1,4 +1,4 @@
-# Floe writes American English. This rule exists because nothing else pinned a
+# Rilldrop writes American English. This rule exists because nothing else pinned a
 # locale, so the weekly docs style automation kept proposing conversions in both
 # directions (PR #157 was closed, PR #293 was merged).
 #
@@ -10,7 +10,7 @@
 # a rule whose level is below that minimum entirely, so a warning-level rule here
 # would never run at all.
 extends: substitution
-message: "Floe uses American spelling: '%s' rather than '%s'."
+message: "Rilldrop uses American spelling: '%s' rather than '%s'."
 level: error
 ignorecase: true
 capitalize: true

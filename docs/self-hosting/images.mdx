@@ -1,16 +1,16 @@
 ---
 title: "Container Images"
 sidebarTitle: "Container images"
-description: "The prebuilt Floe container images on ghcr.io: names, tags, how to pin a version or a digest, and which architectures are supported."
+description: "The prebuilt Rilldrop container images on ghcr.io: names, tags, how to pin a version or a digest, and which architectures are supported."
 keywords: ["ghcr", "container image", "docker tag", "pin a version"]
 ---
 
-Floe publishes two images to GitHub Container Registry. `docker-compose.yml` pulls both, so self-hosting needs no clone, no Node, and no build.
+Rilldrop publishes two images to GitHub Container Registry. `docker-compose.yml` pulls both, so self-hosting needs no clone, no Node, and no build.
 
 | Image | Contains |
 |-------|----------|
-| `ghcr.io/jannskiee/floe-server` | The signaling server. Brokers the WebRTC handshake and issues TURN credentials. Never sees file data. |
-| `ghcr.io/jannskiee/floe-client` | The web app, as a self-contained Next.js server. |
+| `ghcr.io/Arnavsharma2/rilldrop-server` | The signaling server. Brokers the WebRTC handshake and issues TURN credentials. Never sees file data. |
+| `ghcr.io/Arnavsharma2/rilldrop-client` | The web app, as a self-contained Next.js server. |
 
 Both are public, so `docker pull` needs no login.
 
@@ -19,25 +19,25 @@ Both are public, so `docker pull` needs no login.
 | Tag | Points at | Use it when |
 |-----|-----------|-------------|
 | `latest` | The newest release | **The default.** What you get if you change nothing. |
-| `1.10.4` | One exact release | You want to control when you move between versions. |
+| `0.1.0` | One exact release | You want to control when you move between versions. |
 | `1.10` | The newest patch of a minor line | You want patches automatically but not minor bumps. |
 | `main` | The newest build of `client/` or `server/` on `main` | You want changes before they are released. `main` only advances by merged pull request, and every image is smoke-tested on real hardware before the tag moves. A docs-only merge leaves this tag where it is, since it starts no build. |
 | `sha-<short>` | One exact commit, for example `sha-fed7ebb` | You want a build that can never move under you. |
 
-Pin a tag with `FLOE_IMAGE_TAG`:
+Pin a tag with `RILLDROP_IMAGE_TAG`:
 
 ```dotenv .env
-FLOE_IMAGE_TAG=1.10.4
+RILLDROP_IMAGE_TAG=0.1.0
 ```
 
-The variable is `FLOE_IMAGE_TAG`, not `FLOE_VERSION`. `FLOE_VERSION` belongs to the [CLI installer](/cli/installation) and is written with a leading `v`, as in `v1.10.4`. Image tags carry no `v`, so reusing that name would resolve to a tag that does not exist.
+The variable is `RILLDROP_IMAGE_TAG`, not `RILLDROP_VERSION`. `RILLDROP_VERSION` belongs to the [CLI installer](/cli/installation) and is written with a leading `v`, as in `v0.1.0`. Image tags carry no `v`, so reusing that name would resolve to a tag that does not exist.
 
 ## Pinning a digest
 
 A tag can be repointed. A digest cannot, so it is the strongest pin:
 
 ```bash Terminal
-docker buildx imagetools inspect ghcr.io/jannskiee/floe-server:latest
+docker buildx imagetools inspect ghcr.io/Arnavsharma2/rilldrop-server:latest
 ```
 
 Take the digest it prints and pin that instead of the tag:
@@ -45,7 +45,7 @@ Take the digest it prints and pin that instead of the tag:
 ```yaml docker-compose.yml
 services:
   server:
-    image: ghcr.io/jannskiee/floe-server@sha256:f7d9ff66...
+    image: ghcr.io/Arnavsharma2/rilldrop-server@sha256:f7d9ff66...
 ```
 
 The digests a tag is built from are validated before it moves, and every tag is checked again afterwards, so a tag and its digest always refer to an image that was actually started and exercised. The second pass is detection rather than prevention: it runs after the tag moved, and its job is to make a bad publish loud instead of silent.
@@ -55,7 +55,7 @@ The digests a tag is built from are validated before it moves, and every tag is 
 Both images are published for **`linux/amd64`** and **`linux/arm64`**. Docker picks the right one automatically, so Raspberry Pi, Oracle Ampere, AWS Graviton, and Apple silicon all work with the same commands as anywhere else.
 
 ```bash Terminal
-docker buildx imagetools inspect ghcr.io/jannskiee/floe-client:latest
+docker buildx imagetools inspect ghcr.io/Arnavsharma2/rilldrop-client:latest
 ```
 
 It lists one entry per platform, so you can confirm your architecture is covered.
@@ -76,7 +76,7 @@ docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 
 This path needs the repository checked out, since the overlay builds from `./client` and `./server`. The compose file alone is not enough.
 
-The overlay tags its output `floe-server:dev` and `floe-client:dev`, so a local build never replaces a pulled image under the same name.
+The overlay tags its output `rilldrop-server:dev` and `rilldrop-client:dev`, so a local build never replaces a pulled image under the same name.
 
 ## Share previews and canonical links
 

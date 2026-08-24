@@ -1,12 +1,12 @@
 ---
 title: "Send files from your browser"
 sidebarTitle: "Sending files"
-description: "Pick files at floe.one, create a share link or QR code, and stream them straight to the other person's device. No account, no install, no upload."
+description: "Pick files at localhost:3000, create a share link or QR code, and stream them straight to the other person's device. No account, no install, no upload."
 keywords: ["send a file", "share a file", "browser", "share link", "qr code", "no account"]
 boost: 2
 ---
 
-Open [floe.one](https://floe.one) in any modern browser, pick your files, and send someone the
+Open [localhost:3000](http://localhost:3000) in any modern browser, pick your files, and send someone the
 link. There is nothing to install and no account to make. Your files go straight to the other
 device; they never sit on a server.
 
@@ -15,12 +15,9 @@ device; they never sit on a server.
 Drop files onto the dashed area inside the card, or click it to open the file picker. You can add
 one file or many, of any type.
 
-<Frame caption="Three files staged, with the relay checkbox and the send button below them">
-  <img src="/images/web/01-send-staged.png" style={{ width: "100%", maxWidth: "520px", borderRadius: "12px" }} alt="The Floe send card with report.pdf, photo.jpg and notes.txt staged, a Network relay fallback checkbox, and a Create secure link (3 files) button" />
-</Frame>
 
 Drop them on the card itself. Dropping a file anywhere else on the page makes your browser open
-that file and navigate away from Floe.
+that file and navigate away from Rilldrop.
 
 Once something is queued, the large drop area shrinks to an **Add more files** strip above the
 list, and each row gets an X to remove it. Both disappear the moment you create the link, so
@@ -32,7 +29,7 @@ There is no size limit on a direct connection. See
 **Folders are the one thing the browser cannot do.** There is no folder picker. Dropping a folder
 does not send its contents either, and depending on the browser it may add an empty entry that
 fails when the transfer starts, so do not rely on it. Zip the folder first, or send it from
-[Floe Desktop](/desktop/sending) or the [CLI](/cli/send), both of which walk the folder for you and
+[Rilldrop Desktop](/desktop/sending) or the [CLI](/cli/send), both of which walk the folder for you and
 rebuild it on the other side.
 
 ## Decide whether the relay is allowed
@@ -42,7 +39,7 @@ button. Leave it on unless you have a specific reason not to.
 
 | Setting | What happens |
 |---------|--------------|
-| On (default) | Floe tries a direct connection first, and falls back to the encrypted relay only if that fails. |
+| On (default) | Rilldrop tries a direct connection first, and falls back to the encrypted relay only if that fails. |
 | Off | Only direct connections are attempted. If no direct path exists, the transfer fails. |
 
 Unchecking it shows an amber warning: "Relay fallback is disabled. Transfers may fail if either
@@ -61,9 +58,6 @@ to this page only. It is not saved, so it is back on after a reload.
 Click **Create secure link**. The button carries the count, so it reads "Create secure link
 (3 files)".
 
-<Frame caption="The share panel, waiting for the other person to open the link">
-  <img src="/images/web/02-send-share-panel.png" style={{ width: "100%", maxWidth: "520px", borderRadius: "12px" }} alt="The Floe share panel showing a floe.one link containing a room id, Copy and Show QR buttons, and the status line Waiting for peer" />
-</Frame>
 
 Your browser makes the room id itself and joins that room on the signaling server. The panel
 appears once the server confirms the join, with three ways to hand the transfer over:
@@ -74,10 +68,10 @@ appears once the server confirms the join, with three ways to hand the transfer 
 - **Share** opens your device's own share sheet. It appears only on browsers that have one,
   which in practice means mobile.
 
-The link looks like `https://www.floe.one/?s=8262e1b4#room=<uuid>`. The room id sits after the
+The link looks like `http://localhost:3000/?s=8262e1b4#room=<uuid>`. The room id sits after the
 `#`, which browsers never send to a server, so the part that actually guards your transfer stays
 on your two devices. The `?s=` value is eight random hex characters that carry no information;
-they exist only so each link is a distinct page, which stops a phone that already has Floe open
+they exist only so each link is a distinct page, which stops a phone that already has Rilldrop open
 from reusing a stale tab.
 
 **One link, one recipient.** The room holds exactly two people. Once someone joins, anyone else
@@ -87,16 +81,13 @@ opening the same link gets a "Link Invalid" card. Create a fresh link for each p
 
 The top of the card shows a dot, a label, and, on the sending side only, a live ping.
 
-<Frame caption="The badge after the route resolved, with the explanation Floe shows when you tap the info icon">
-  <img src="/images/web/03-connection-indicator.png" style={{ width: "100%", maxWidth: "520px", borderRadius: "12px" }} alt="The Floe send card with a green Direct badge and an open panel reading Direct Connection: your files go directly to the other device, even across different networks like mobile data" />
-</Frame>
 
 Read the label, not just the dot. Two of the four states are green.
 
 | Label | What it means |
 |-------|---------------|
-| **Offline** (red) | Your browser is not connected to Floe's signaling server. Normal for a moment after page load. Floe reconnects on its own. |
-| **Ready** (green) | Connected to the signaling server. It stays here while you wait, and for a few seconds after the other person arrives, until Floe works out the route. |
+| **Offline** (red) | Your browser is not connected to Rilldrop's signaling server. Normal for a moment after page load. Rilldrop reconnects on its own. |
+| **Ready** (green) | Connected to the signaling server. It stays here while you wait, and for a few seconds after the other person arrives, until Rilldrop works out the route. |
 | **Direct** (green) | Connected device to device. No server carries your files, and there is no size limit. |
 | **Relay** (amber) | Connected through the encrypted relay. The 2 GB cap applies. |
 
@@ -113,7 +104,7 @@ The transfer begins on its own, about two seconds after the two devices actually
 fast network that is a moment after they open the link; on a slow or relayed one the connection
 itself takes longer, and the two seconds start after it. There is nothing to click.
 
-Floe checks the route before sending a single byte, so two things can stop it there:
+Rilldrop checks the route before sending a single byte, so two things can stop it there:
 
 - **You turned relay fallback off and the only path is relayed.** The card reads
   `Connection failed. Enable "Network Relay" to connect across restrictive networks.` and the
@@ -125,7 +116,7 @@ Floe checks the route before sending a single byte, so two things can stop it th
   connection.
 
 Once it is running, two more things are worth knowing. If a file you queued is moved, renamed, or
-lives on a drive that goes away, Floe stops and names the file rather than sending a short one.
+lives on a drive that goes away, Rilldrop stops and names the file rather than sending a short one.
 And if the other side never answers, the transfer gives up after two minutes with
 `Transfer timed out waiting for receiver. Please try again.`
 
@@ -135,12 +126,12 @@ throttled, which slows the transfer down.
 
 ## Short codes are not a browser feature
 
-`floe send` and Floe Desktop both register a three-word code, and both `floe receive` and the
+`rilldrop send` and Rilldrop Desktop both register a three-word code, and both `rilldrop receive` and the
 desktop **Receive** tab accept one. The web app does neither: it never mints a code, and it has
 no field to type one into. A browser recipient always needs the full link or the QR code.
 
 If you want a code, send from the [terminal](/cli/send) or from
-[Floe Desktop](/desktop/sending) instead.
+[Rilldrop Desktop](/desktop/sending) instead.
 
 ## If it does not connect
 

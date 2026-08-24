@@ -1,12 +1,12 @@
 ---
-title: "What Floe does not protect against"
+title: "What Rilldrop does not protect against"
 sidebarTitle: "Known limitations"
-description: "An honest list of what Floe does not protect against: what the signaling server could do, what the relay sees, and why there is no verification code yet."
+description: "An honest list of what Rilldrop does not protect against: what the signaling server could do, what the relay sees, and why there is no verification code yet."
 keywords: ["threat model", "security limits", "mitm", "privacy limits", "caveats"]
 ---
 
-Floe encrypts every transfer end to end and never puts your files on a server. Both of those
-are true and neither is the whole story. This page is the other half: the things Floe does not
+Rilldrop encrypts every transfer end to end and never puts your files on a server. Both of those
+are true and neither is the whole story. This page is the other half: the things Rilldrop does not
 do, written plainly, so you can decide whether it fits what you are sending.
 
 Nothing here is a bug report. Each item is a design consequence, and each one says what you can
@@ -19,11 +19,11 @@ fingerprints travel through the signaling server during setup. The server cannot
 and never sees one. But a server that wanted to could hand each side a fingerprint it controls
 instead of the other peer's, sit in the middle, and decrypt everything.
 
-This is true of every WebRTC application, not just Floe. It is the reason the next item matters.
+This is true of every WebRTC application, not just Rilldrop. It is the reason the next item matters.
 
 **What you can do:** [run your own instance](/self-hosting/overview). A server you operate is a
-server you do not have to trust in this sense. On `api.floe.one` you are trusting the same
-operator who publishes the client, which is the ordinary situation for any hosted service.
+server you do not have to trust in this sense. On any hosted instance you trust its operator to
+publish the client and introduce peers honestly.
 
 ## There is no verification code to compare
 
@@ -31,10 +31,10 @@ The usual defense against the previous item is a short code, derived from both c
 fingerprints, that the two people read to each other over a channel an attacker does not
 control. If the codes match, nobody is in the middle.
 
-Floe computes that code internally. **No client displays it today.** It has been added and
-removed more than once, and it is not in the web app, Floe Desktop, or the CLI as it ships now.
+Rilldrop computes that code internally. **No client displays it today.** It has been added and
+removed more than once, and it is not in the web app, Rilldrop Desktop, or the CLI as it ships now.
 Until one of them shows it, there is no way to detect the attack described above from inside
-Floe.
+Rilldrop.
 
 **What you can do:** for anything where that attack is part of your threat model, self-host, or
 encrypt the file yourself before you send it.
@@ -45,7 +45,7 @@ A direct connection is two devices talking to each other, which means each one k
 other is. That is not a leak, it is how any peer-to-peer connection works, and a video call
 does the same thing.
 
-**What you can do:** Floe Desktop has a [Hide my IP address](/desktop/settings#hide-my-ip-address)
+**What you can do:** Rilldrop Desktop has a [Hide my IP address](/desktop/settings#hide-my-ip-address)
 switch that forces every transfer through the relay, so the other side sees the relay's address
 instead of yours. The web app and the CLI have no equivalent. The trade is speed and the 2 GB
 session cap.
@@ -56,9 +56,8 @@ When a direct path is impossible, traffic goes through a TURN relay. The relay c
 anything: the data is encrypted before it arrives and decrypted only on the recipient's device.
 
 But the relay is an endpoint that both peers connect to, so it observes both IP addresses and
-the timing and size of what it forwards. On `floe.one` that relay is Cloudflare's Realtime TURN
-network, which is infrastructure Floe does not own, and your provider may log that metadata for
-its own security purposes.
+the timing and size of what it forwards. The operator may use Cloudflare Realtime TURN or a
+self-hosted coturn server, and that provider may log metadata for its own security purposes.
 
 **What you can do:** stay on a direct connection where you can, or self-host with
 [your own coturn relay](/self-hosting/turn-relay).
@@ -71,19 +70,19 @@ arrives sooner than you would like.
 
 Zipping compounds it: **Download ZIP** holds every file at once before it writes the archive.
 
-**What you can do:** receive multi-gigabyte transfers with [Floe Desktop](/desktop/receiving) or
+**What you can do:** receive multi-gigabyte transfers with [Rilldrop Desktop](/desktop/receiving) or
 the [CLI](/cli/receive), which write straight to disk and have no such ceiling. In the browser,
 save files one at a time rather than zipping when the total is large.
 
-## Floe does not hash your files
+## Rilldrop does not hash your files
 
 A completed file is checked against the size the sender announced, and a mismatch in either
 direction discards it. That catches a truncated or over-run transfer, which is what actually
 happens when a connection dies partway.
 
-It is not a content checksum. Floe computes no hash of file contents anywhere, so the docs never
+It is not a content checksum. Rilldrop computes no hash of file contents anywhere, so the docs never
 claim one. In practice the transport already authenticates every packet, so silent corruption in
-flight is not the gap; the gap is that Floe cannot tell you the file on disk is byte-identical to
+flight is not the gap; the gap is that Rilldrop cannot tell you the file on disk is byte-identical to
 the one that left.
 
 **What you can do:** compare hashes yourself when that guarantee matters. `sha256sum` on Linux,
@@ -103,7 +102,7 @@ avoids. It carries no file names, no per-transfer records, and no link to anyone
 ## A self-hosted server runs as a single process
 
 Rooms, room codes, and the rate limiters all live in one process's memory. Running two replicas
-behind a load balancer does not scale Floe out; it silently breaks pairing, because the two
+behind a load balancer does not scale Rilldrop out; it silently breaks pairing, because the two
 peers can land on different replicas and never see each other.
 
 **What you can do:** run one instance. A single small server handles a lot, since file data
@@ -112,7 +111,7 @@ set, and accept that in-flight transfers do not survive the switch.
 
 ## Reporting something that is not on this list
 
-If you find a security issue in Floe, report it privately through
-[GitHub Security Advisories](https://github.com/jannskiee/floe/security/advisories/new) or the
-contact in [SECURITY.md](https://github.com/jannskiee/floe/blob/main/SECURITY.md). Please do not
+If you find a security issue in Rilldrop, report it privately through
+[GitHub Security Advisories](https://github.com/Arnavsharma2/rilldrop/security/advisories/new) or the
+contact in [SECURITY.md](https://github.com/Arnavsharma2/rilldrop/blob/main/SECURITY.md). Please do not
 open a public issue before there is a fix.

@@ -1,7 +1,7 @@
 ---
-title: "Add a TURN Relay to Self-Hosted Floe"
+title: "Add a TURN Relay to Self-Hosted Rilldrop"
 sidebarTitle: "TURN relay"
-description: "Add a coturn TURN relay to a self-hosted Floe instance so peers behind strict NAT, CGNAT, or corporate firewalls can still complete file transfers."
+description: "Add a coturn TURN relay to a self-hosted Rilldrop instance so peers behind strict NAT, CGNAT, or corporate firewalls can still complete file transfers."
 keywords: ["coturn", "turn server", "cloudflare turn", "cgnat"]
 ---
 
@@ -49,7 +49,7 @@ The coturn service uses host networking (`network_mode: host`). This only works 
   <Step title="Create the coturn config">
     ```bash Terminal
     curl -fsSL --create-dirs -o coturn/turnserver.conf \
-      https://raw.githubusercontent.com/jannskiee/floe/main/coturn/turnserver.conf.example
+      https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/coturn/turnserver.conf.example
     ```
 
     This file holds your shared secret, so it is never shipped and you always create it yourself.
@@ -132,6 +132,6 @@ Credentials are minted from Cloudflare once and then **cached in memory for 12 h
 
 ## How credentials work
 
-The signaling server generates time-limited credentials using HMAC-SHA1. The username is `{expiry_unix_timestamp}:floeuser` and the password is `base64(HMAC-SHA1(TURN_SECRET, username))`. coturn validates these against the shared secret without needing a database of user accounts.
+The signaling server generates time-limited credentials using HMAC-SHA1. The username is `{expiry_unix_timestamp}:rilldropuser` and the password is `base64(HMAC-SHA1(TURN_SECRET, username))`. coturn validates these against the shared secret without needing a database of user accounts.
 
 Relayed transfers stay capped at 2 GB per session even on a relay you run yourself. The cap is compiled into the browser client, the CLI, and the desktop app, not read from your server, so raising it means building all three from modified source. Direct connections are unaffected and have no size limit. See [The 2 GB Relay Limit](/how-it-works/2gb-limit).

@@ -1,11 +1,11 @@
 ---
-title: "Which Floe should I use?"
-sidebarTitle: "Which Floe to use"
-description: "Compare the Floe web app, Floe Desktop for Windows, and the floe CLI: what each one can send, where files land, and which features only one of them has."
+title: "Which Rilldrop should I use?"
+sidebarTitle: "Which Rilldrop to use"
+description: "Compare the Rilldrop web app, Rilldrop Desktop for Windows, and the rilldrop CLI: what each one can send, where files land, and which features only one of them has."
 keywords: ["web vs desktop", "web vs cli", "compare", "which version", "difference"]
 ---
 
-There are three Floes and they all talk to each other, so the one you pick is about
+There are three Rilldrops and they all talk to each other, so the one you pick is about
 convenience rather than compatibility. Any of them can send to any other, in any direction,
 across different networks.
 
@@ -17,7 +17,7 @@ a script.**
     Nothing to install. Best for a one-off, and the only one your recipient definitely already
     has.
   </Card>
-  <Card title="Floe Desktop" icon="monitor" href="/desktop/installation">
+  <Card title="Rilldrop Desktop" icon="monitor" href="/desktop/installation">
     Windows only, in beta. Best for folders, large files, and sending the same way every day.
   </Card>
   <Card title="CLI" icon="terminal" href="/cli/installation">
@@ -27,31 +27,31 @@ a script.**
 
 ## Pick by what you are doing
 
-**Sending one file to someone who has never heard of Floe.** Use the browser. You send them a
+**Sending one file to someone who has never heard of Rilldrop.** Use the browser. You send them a
 link, they open it, and the transfer starts on its own. They install nothing and no part of the
 exchange needs explaining.
 
-**Sending a folder.** Use Floe Desktop or the CLI. The browser has no folder picker, and
+**Sending a folder.** Use Rilldrop Desktop or the CLI. The browser has no folder picker, and
 dropping a folder onto the page adds nothing. Both of the others walk the folder for you and
 rebuild the same structure on the other side.
 
-**Receiving something very large.** Use Floe Desktop or the CLI. A browser receiver keeps each
+**Receiving something very large.** Use Rilldrop Desktop or the CLI. A browser receiver keeps each
 file in memory until that file is complete, so a multi-gigabyte file can exhaust a phone or a
 laptop tab. The other two write straight to disk as bytes arrive and have no such ceiling.
 
 **Transferring from a machine with no screen.** Use the CLI. It is one self-contained binary
 with no runtime dependencies, and it runs anywhere Go runs.
 
-**Sending regularly from Windows.** Use Floe Desktop. It keeps a local history of the last 50
-transfers, remembers where you save things, and can put **Send with Floe** in the File Explorer
+**Sending regularly from Windows.** Use Rilldrop Desktop. It keeps a local history of the last 50
+transfers, remembers where you save things, and can put **Send with Rilldrop** in the File Explorer
 right-click menu.
 
 ## Feature by feature
 
-| | Web app | Floe Desktop | CLI |
+| | Web app | Rilldrop Desktop | CLI |
 |---|---|---|---|
 | Platforms | Any modern browser | Windows 10 or later, x64, beta | macOS, Windows, Linux, on Intel and ARM |
-| Install | None | Microsoft Store or a download | Package manager, one-line script, or `go install` |
+| Install | None after deployment | GitHub release or source build | Install script or source build |
 | Send files | Yes | Yes | Yes |
 | Send a folder | No | Yes | Yes |
 | Send a typed note | No | Yes, as `message.txt` | No |
@@ -68,7 +68,7 @@ right-click menu.
 | Force the relay to hide your IP | No | Yes, **Hide my IP address** | No |
 | Transfer history | No | The last 50, stored on your device | No |
 | File Explorer right-click entry | No | Yes, on the build from GitHub | No |
-| Point at a self-hosted server | Automatic, it is served by that instance | **Settings**, then **Server address** | `--server` or `FLOE_SERVER` |
+| Point at a self-hosted server | Automatic, it is served by that instance | **Settings**, then **Server address** | `--server` or `RILLDROP_SERVER` |
 
 ## What is the same everywhere
 

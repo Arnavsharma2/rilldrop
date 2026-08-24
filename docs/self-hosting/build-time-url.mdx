@@ -1,7 +1,7 @@
 ---
 title: "How the Client Finds the Signaling Server"
 sidebarTitle: "Server discovery"
-description: "How a self-hosted Floe web client resolves its signaling server address at runtime with SOCKET_URL, and when a rebuild is still required."
+description: "How a self-hosted Rilldrop web client resolves its signaling server address at runtime with SOCKET_URL, and when a rebuild is still required."
 keywords: ["SOCKET_URL", "NEXT_PUBLIC_SOCKET_URL", "api/config", "server discovery"]
 ---
 
@@ -25,7 +25,7 @@ The first match wins.
   or step 3 always returns 404 and any `SOCKET_URL` you set is silently
   discarded in favor of step 4. With an empty `SOCKET_URL` step 4 is the answer
   you wanted anyway, so the mistake stays invisible until the day you set one.
-  See [Run Floe Behind One Domain](/self-hosting/reverse-proxy) for the
+  See [Run Rilldrop Behind One Domain](/self-hosting/reverse-proxy) for the
   exact-path rule that keeps `/api/config` on the client.
 </Warning>
 
@@ -57,7 +57,7 @@ Graph tags, and the sitemap, which are rendered into the page rather than fetche
 
 That is the one value a shared image cannot carry, because it would have to know
 which domain it will be served from before anyone downloads it. So the published
-image **omits** those tags rather than pointing them at floe.one, which would mean
+image **omits** those tags rather than pointing them at localhost:3000, which would mean
 every self-hosted instance advertising somebody else's site as its canonical.
 
 To put your own domain in them, build the client yourself:

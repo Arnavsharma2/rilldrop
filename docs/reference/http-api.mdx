@@ -1,20 +1,20 @@
 ---
-title: "Floe signaling server HTTP API"
+title: "Rilldrop signaling server HTTP API"
 sidebarTitle: "HTTP API"
-description: "Every HTTP endpoint the Floe signaling server exposes: health checks, room codes, TURN credentials, and the public byte counter, with request and response shapes."
+description: "Every HTTP endpoint the Rilldrop signaling server exposes: health checks, room codes, TURN credentials, and the public byte counter, with request and response shapes."
 keywords: ["api", "endpoints", "rest", "health check", "turn credentials", "room code"]
 ---
 
-The signaling server exposes seven HTTP endpoints. They exist so the three Floe clients can find
+The signaling server exposes seven HTTP endpoints. They exist so the three Rilldrop clients can find
 each other and fetch relay credentials, and they are documented here for self-hosters checking a
 deployment and for contributors.
 
 Treat this as a description of the current implementation rather than a stable public contract.
-Floe ships the clients and the server together, so these shapes change when both sides change.
+Rilldrop ships the clients and the server together, so these shapes change when both sides change.
 There is no authentication on any of them, and no endpoint ever touches file data.
 
-The base URL is your signaling server: `https://api.floe.one` by default, or whatever you set as
-`--server`, `FLOE_SERVER`, or **Server address**.
+The base URL is your signaling server: `http://localhost:3001` by default, or whatever you set as
+`--server`, `RILLDROP_SERVER`, or **Server address**.
 
 ## Status and health
 
@@ -46,7 +46,7 @@ The endpoint to point a monitor at. It survives every deployment layout, includi
 ```
 
 <ResponseField name="status" type="string" required>
-  Always `"healthy"`. Floe Desktop's **Test** button matches this value exactly, so a proxy that
+  Always `"healthy"`. Rilldrop Desktop's **Test** button matches this value exactly, so a proxy that
   answers with anything else fails the check.
 </ResponseField>
 <ResponseField name="uptime" type="number" required>
@@ -85,8 +85,8 @@ servers.
 ```json Self-hosted coturn
 [
   { "urls": "stun:turn.example.com:3478" },
-  { "urls": "turn:turn.example.com:3478", "username": "1755690000:floeuser", "credential": "..." },
-  { "urls": "turns:turn.example.com:5349", "username": "1755690000:floeuser", "credential": "..." }
+  { "urls": "turn:turn.example.com:3478", "username": "1755690000:rilldropuser", "credential": "..." },
+  { "urls": "turns:turn.example.com:5349", "username": "1755690000:rilldropuser", "credential": "..." }
 ]
 ```
 
@@ -99,7 +99,7 @@ servers.
 </CodeGroup>
 
 Note the difference in the `urls` field between the first shape and the other two. Cloudflare
-entries carry an **array** of URLs; coturn and the STUN fallback carry a **string**. Every Floe
+entries carry an **array** of URLs; coturn and the STUN fallback carry a **string**. Every Rilldrop
 client accepts either, and anything else consuming this endpoint has to as well.
 
 <ResponseField name="urls" type="string | string[]" required>
@@ -107,7 +107,7 @@ client accepts either, and anything else consuming this endpoint has to as well.
   is what lets a client strip TURN while keeping STUN when the user refuses the relay.
 </ResponseField>
 <ResponseField name="username" type="string">
-  Present on TURN entries only. For coturn this is `{expiry_unix}:floeuser`.
+  Present on TURN entries only. For coturn this is `{expiry_unix}:rilldropuser`.
 </ResponseField>
 <ResponseField name="credential" type="string">
   Present on TURN entries only. For coturn this is `base64(HMAC-SHA1(TURN_SECRET, username))`.
@@ -134,7 +134,7 @@ up to ten times, and only then falls back to a four-word phrase.
 
 ### POST /api/code
 
-Registers a short code for a room. Called by `floe send` and by Floe Desktop. The web app never
+Registers a short code for a room. Called by `rilldrop send` and by Rilldrop Desktop. The web app never
 calls it.
 
 <ParamField body="roomId" type="string" required>
@@ -142,7 +142,7 @@ calls it.
 </ParamField>
 
 ```bash Request
-curl -X POST https://api.floe.one/api/code \
+curl -X POST http://localhost:3001/api/code \
   -H "Content-Type: application/json" \
   -d '{"roomId":"3f2b9c1e-7a4d-4c2e-9b1f-8e6d5c4b3a21"}'
 ```
@@ -167,7 +167,7 @@ entries once a minute, so the count can briefly include codes that have already 
 
 ### GET /api/code/:code
 
-Resolves a code back to its room. Called by `floe receive` and by Floe Desktop's **Receive** tab.
+Resolves a code back to its room. Called by `rilldrop receive` and by Rilldrop Desktop's **Receive** tab.
 
 <ParamField path="code" type="string" required>
   The phrase, matched **exactly**. Codes are always lowercase, so `Olive-Tiger-Castle` does not
@@ -190,7 +190,7 @@ with `MAX_CODE_REQUESTS_PER_IP`.
 
 ### GET /api/stats
 
-The all-time total shown on the Floe homepage. Answered from an in-memory value, so the homepage
+The all-time total shown on the Rilldrop homepage. Answered from an in-memory value, so the homepage
 polling it every 10 seconds never reaches Redis.
 
 ```json 200 OK
@@ -216,7 +216,7 @@ transfer is counted once. Senders never report.
 </ParamField>
 
 ```bash Request
-curl -X POST https://api.floe.one/api/stats/report \
+curl -X POST http://localhost:3001/api/stats/report \
   -H "Content-Type: application/json" \
   -d '{"bytes":6291456}'
 ```
@@ -253,12 +253,12 @@ Route all of `/api/` to the signaling server and this request returns 404. Any s
 you configured is then silently discarded and the browser falls back to its own origin. Behind
 one domain that fallback happens to be correct, so the mistake stays invisible until the day
 you set a value and nothing happens. See
-[Run Floe Behind One Domain](/self-hosting/reverse-proxy) for the exact-path rule.
+[Run Rilldrop Behind One Domain](/self-hosting/reverse-proxy) for the exact-path rule.
 
 ## Behavior shared by every endpoint
 
 **CORS.** Browser requests are checked against an allow-list: whatever you set as `CLIENT_URL`,
-plus `https://floe.one`, `https://www.floe.one`, and `http://localhost:3000`. The match is exact,
+plus `http://localhost:3000` for local development. The match is exact,
 including the scheme and with no trailing slash, and `CLIENT_URL` holds **one** origin. A
 comma-separated list matches nothing. Requests with no `Origin` header always pass, which is why
 the CLI and the desktop app reach your server regardless of this setting.

@@ -1,17 +1,17 @@
 ---
 title: "File size limits and the 2 GB relay cap"
 sidebarTitle: "File size limits"
-description: "Direct Floe transfers have no size limit. Relayed ones are capped at 2 GB per session. What decides which you get, and how to stay on the unlimited path."
+description: "Direct Rilldrop transfers have no size limit. Relayed ones are capped at 2 GB per session. What decides which you get, and how to stay on the unlimited path."
 keywords: ["file size limit", "maximum file size", "2 GB", "relay cap", "how big a file", "large files"]
 boost: 2
 ---
 
-**A direct transfer has no size limit.** Floe does not cap it, because the file never touches
-anything Floe pays for. Most transfers are direct.
+**A direct transfer has no size limit.** Rilldrop does not cap it, because the file never touches
+anything Rilldrop pays for. Most transfers are direct.
 
 **A relayed transfer is capped at 2 GB per session.** When a network blocks the direct path, the
 file goes through a relay instead, and relay bandwidth costs real money. The cap is what keeps
-Floe free.
+Rilldrop free.
 
 So the practical answer to "how big a file can I send" is: as big as you like, as long as the two
 devices can reach each other directly. See
@@ -35,7 +35,7 @@ A session is one sender and one receiver. The room holds exactly two people, so 
 opened by two recipients and there is no way for a session to accumulate.
 
 The check happens **once, before any file data moves**. When the connection turns out to be
-relayed, Floe compares the total size of everything you queued against 2 GB and either allows the
+relayed, Rilldrop compares the total size of everything you queued against 2 GB and either allows the
 whole transfer or refuses it. It is not a meter that stops you partway, so a 3 GB batch over a
 relay is declined up front rather than truncated at 2 GB.
 
@@ -53,12 +53,12 @@ sent.
 **In the CLI**, the send fails with `relay connections are capped at 2 GB`, naming the total you
 selected.
 
-**In Floe Desktop**, the same message, plus `Turn off Hide my IP to send larger files` when that
+**In Rilldrop Desktop**, the same message, plus `Turn off Hide my IP to send larger files` when that
 setting is what forced the relay.
 
 ## One case that catches people out
 
-Floe Desktop's [Hide my IP address](/desktop/settings#hide-my-ip-address) setting routes every
+Rilldrop Desktop's [Hide my IP address](/desktop/settings#hide-my-ip-address) setting routes every
 transfer through the relay on purpose, so the other person never sees your address. While it is
 on, **the 2 GB cap applies to every transfer**, even on a network that could easily have connected
 directly. Turn it off to send more.
@@ -67,14 +67,14 @@ You never need to turn relay fallback off to send something large. The cap appli
 connection actually ends up relayed, so leaving fallback on costs a direct transfer nothing and
 saves the transfer that would otherwise have failed.
 
-## Two other limits, which are not Floe's
+## Two other limits, which are not Rilldrop's
 
 A **browser receiver** holds what it receives in memory. Each file accumulates there as it
 arrives, and stays there once complete so you can still save it, so the peak is closer to the whole
 transfer than to any one file. A large enough transfer exhausts the tab, and on a phone that
 happens sooner. **Download ZIP** compounds it again, because zipping reads every file back at once.
 
-Floe Desktop and the CLI write straight to disk as bytes arrive and have no such ceiling, which
+Rilldrop Desktop and the CLI write straight to disk as bytes arrive and have no such ceiling, which
 makes them the better choice for anything multi-gigabyte.
 
 Your **disk** is the other one. Nothing checks that the receiving device has room before the
@@ -93,7 +93,7 @@ transfer starts.
   **If the route cannot be determined, the sender allows the transfer** rather than blocking a
   legitimate one. That is deliberate: a probe hiccup should never stop a transfer that would have
   worked. The consequence is that a relayed transfer over 2 GB can still start and then fail
-  partway, in the rare case where Floe could not tell it was relayed.
+  partway, in the rare case where Rilldrop could not tell it was relayed.
 
   The limit lives in `RELAY_SIZE_LIMIT` in `client/lib/relay.ts` and `RelaySizeLimit` in
   `cli/engine/transfer/relay.go`. It is compiled into all three clients rather than served by the

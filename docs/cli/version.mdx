@@ -1,52 +1,52 @@
 ---
-title: "floe version command"
-sidebarTitle: "floe version"
-description: "Print the installed floe CLI version and the docs link, plus a one-line update hint when a newer release exists, so you can confirm which build you are running."
-keywords: ["floe version", "which version", "update available"]
+title: "rilldrop version command"
+sidebarTitle: "rilldrop version"
+description: "Print the installed rilldrop CLI version and the docs link, plus a one-line update hint when a newer release exists, so you can confirm which build you are running."
+keywords: ["rilldrop version", "which version", "update available"]
 ---
 
-```bash floe version
-floe version
+```bash rilldrop version
+rilldrop version
 ```
 
-Prints the current version of the `floe` binary, a link to the documentation, and an update
+Prints the current version of the `rilldrop` binary, a link to the documentation, and an update
 hint when a newer release is available.
 
 ## Output
 
 ```text Output
-floe 1.x.x
-Docs: https://www.floe.one/docs
+rilldrop 1.x.x
+Docs: https://github.com/Arnavsharma2/rilldrop/tree/main/docs
 ```
 
 When a newer release exists, a third line follows:
 
 ```text Output
-Update available: v1.x.x  run `floe update` to upgrade
+Update available: v1.x.x  run `rilldrop update` to upgrade
 ```
 
 ## The update check
 
-`floe version` is the only command that checks for a newer release on its own. `send` and
-`receive` never do, and `floe update` checks only when you run it. The check asks GitHub for
-the latest release tag (`https://api.github.com/repos/jannskiee/floe/releases/latest`) and
-caches the answer for 24 hours in `floe/update-check.json` inside your user config directory
+`rilldrop version` is the only command that checks for a newer release on its own. `send` and
+`receive` never do, and `rilldrop update` checks only when you run it. The check asks GitHub for
+the latest release tag (`https://api.github.com/repos/Arnavsharma2/rilldrop/releases/latest`) and
+caches the answer for 24 hours in `rilldrop/update-check.json` inside your user config directory
 (`~/.config` on Linux, `~/Library/Application Support` on macOS, `%AppData%` on Windows).
 Delete that file to force a fresh check. When the cache is cold, the request is abandoned
-after one second, so `floe version` never stalls on a slow network.
+after one second, so `rilldrop version` never stalls on a slow network.
 
-Set `FLOE_NO_UPDATE_CHECK=1` to skip the check and the hint entirely. Binaries built from
-source report `floe dev` and never check.
+Set `RILLDROP_NO_UPDATE_CHECK=1` to skip the check and the hint entirely. Binaries built from
+source report `rilldrop dev` and never check.
 
 ## Alternatives
 
 You can also use the root flag:
 
 ```bash Terminal
-floe --version
+rilldrop --version
 # or
-floe -v
+rilldrop -v
 ```
 
-These print the same single line as the first line of `floe version` (for example
-`floe 1.x.x`). No docs link, and no update hint.
+These print the same single line as the first line of `rilldrop version` (for example
+`rilldrop 1.x.x`). No docs link, and no update hint.

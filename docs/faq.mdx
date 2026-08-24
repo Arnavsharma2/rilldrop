@@ -1,8 +1,8 @@
 ---
-title: "Floe FAQ"
+title: "Rilldrop FAQ"
 sidebarTitle: "FAQ"
-description: "Short answers to the questions that come up most about Floe: where files go, size limits, folders, privacy, accounts, and whether versions have to match."
-keywords: ["faq", "questions", "is floe safe", "do i need an account", "how does floe work"]
+description: "Short answers to the questions that come up most about Rilldrop: where files go, size limits, folders, privacy, accounts, and whether versions have to match."
+keywords: ["faq", "questions", "is rilldrop safe", "do i need an account", "how does rilldrop work"]
 ---
 
 Short answers, each with a link to the page that covers it properly. If you are looking at an
@@ -23,8 +23,8 @@ capped at 2 GB per session. [File size limits](/how-it-works/2gb-limit)
 
 ### Can I send a folder?
 
-Yes from Floe Desktop and the CLI, which walk the folder and rebuild it on the other side. No from
-the browser, which has no folder picker. [Which Floe to use](/choosing-floe)
+Yes from Rilldrop Desktop and the CLI, which walk the folder and rebuild it on the other side. No from
+the browser, which has no folder picker. [Which Rilldrop to use](/choosing-rilldrop)
 
 ### How fast is it?
 
@@ -43,11 +43,11 @@ record of it. [Security and privacy](/security-privacy)
 
 ### Why did a file not arrive?
 
-Floe discards anything whose size does not match what the sender announced, rather than handing
+Rilldrop discards anything whose size does not match what the sender announced, rather than handing
 you a file that looks whole and is not. Ask them to send it again.
 [Troubleshooting](/troubleshooting#a-file-did-not-appear-at-all)
 
-## Using Floe
+## Using Rilldrop
 
 ### Which browsers work?
 
@@ -55,11 +55,11 @@ Any modern browser with WebRTC: Chrome, Firefox, Safari, Edge, and most Chromium
 secure context is required, which means HTTPS or localhost.
 [Sending files](/web-app/sending)
 
-### Why does Floe tell me to open the link in a different browser?
+### Why does Rilldrop tell me to open the link in a different browser?
 
 You opened it inside another app's built-in browser, and those handle file transfers poorly. The
 page does not join the room until you switch or dismiss the prompt, so nothing is lost.
-[Receiving files](/web-app/receiving#if-floe-says-open-in-your-browser)
+[Receiving files](/web-app/receiving#if-rilldrop-says-open-in-your-browser)
 
 ### Why does it say Direct when the other device is on mobile data?
 
@@ -70,18 +70,18 @@ networks without a server in the middle.
 ### Can I type a short code in the browser?
 
 No. The web app has no code field and never mints one; codes are a desktop and CLI feature in both
-directions. A browser recipient always needs the link. [Which Floe to use](/choosing-floe)
+directions. A browser recipient always needs the link. [Which Rilldrop to use](/choosing-rilldrop)
 
 ### Do both people need the same version?
 
 No. Peers on different releases interoperate, and the only time a transfer is blocked is a
-breaking wire-format change, which Floe detects before any data moves.
+breaking wire-format change, which Rilldrop detects before any data moves.
 [Protocol versioning](/reference/transfer-protocol#protocol-versioning)
 
 ### Which one should I use?
 
 The browser unless you need folders, a place on disk, or a script.
-[Which Floe to use](/choosing-floe)
+[Which Rilldrop to use](/choosing-rilldrop)
 
 ## Privacy and the project
 
@@ -89,7 +89,7 @@ The browser unless you need folders, a place on disk, or a script.
 
 No. There is no account, no sign-up, and no registration on any surface.
 
-### What does Floe collect?
+### What does Rilldrop collect?
 
 The website runs cookieless aggregate analytics and error monitoring. The CLI and the desktop app
 contain none of that: their only optional requests are a byte count and an update check, and both
@@ -97,18 +97,18 @@ have an off switch. [Security and privacy](/security-privacy)
 
 ### What is the counter on the homepage?
 
-A public all-time total of bytes Floe has moved, fed by receivers reporting a size and nothing
+A public all-time total of bytes Rilldrop has moved, fed by receivers reporting a size and nothing
 else. Every receiver can turn it off.
 [Aggregate statistics](/security-privacy#aggregate-statistics)
 
-### What does Floe not protect against?
+### What does Rilldrop not protect against?
 
 The signaling server is trusted to introduce the two devices honestly, no client shows a
 verification code today, and a browser receiver holds each file in memory. There are eight of
 these and they are all written down.
-[What Floe does not protect against](/how-it-works/known-limitations)
+[What Rilldrop does not protect against](/how-it-works/known-limitations)
 
-### Is Floe open source?
+### Is Rilldrop open source?
 
-Yes, MIT licensed, all four parts. [GitHub](https://github.com/jannskiee/floe), and you can
+Yes, MIT licensed, all four parts. [GitHub](https://github.com/Arnavsharma2/rilldrop), and you can
 [run your own instance](/self-hosting/overview).

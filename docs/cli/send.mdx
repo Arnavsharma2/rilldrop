@@ -1,51 +1,51 @@
 ---
-title: "floe send command"
-sidebarTitle: "floe send"
-description: "Use the floe send command to share files or folders peer-to-peer from your terminal over an encrypted WebRTC connection, with no upload or account."
-keywords: ["floe send", "send a folder", "share code", "command line"]
+title: "rilldrop send command"
+sidebarTitle: "rilldrop send"
+description: "Use the rilldrop send command to share files or folders peer-to-peer from your terminal over an encrypted WebRTC connection, with no upload or account."
+keywords: ["rilldrop send", "send a folder", "share code", "command line"]
 ---
 
-```bash floe send
-floe send <file|folder> [file|folder...]
+```bash rilldrop send
+rilldrop send <file|folder> [file|folder...]
 ```
 
-Starts a transfer session as the sender. Floe registers a short code with the signaling server, prints a sharing panel, then waits for a peer to connect. Once connected, it streams all files over an encrypted WebRTC data channel.
+Starts a transfer session as the sender. Rilldrop registers a short code with the signaling server, prints a sharing panel, then waits for a peer to connect. Once connected, it streams all files over an encrypted WebRTC data channel.
 
 ## Examples
 
 Send a single file:
 
 ```bash Terminal
-floe send report.pdf
+rilldrop send report.pdf
 ```
 
 Send multiple files at once:
 
 ```bash Terminal
-floe send photo.jpg video.mp4 notes.txt
+rilldrop send photo.jpg video.mp4 notes.txt
 ```
 
 Send an entire folder (transferred recursively):
 
 ```bash Terminal
-floe send ./project
+rilldrop send ./project
 ```
 
 ## Output
 
-After running `floe send`, Floe shows a summary of what will be sent, then prints a sharing panel:
+After running `rilldrop send`, Rilldrop shows a summary of what will be sent, then prints a sharing panel:
 
 ```text Output
   Sending   3 files · 11.8 MB
   ─────────────────────────────────────────────────
   Code   olive-tiger-castle
-  Link   https://floe.one/#room=...
+  Link   http://localhost:3000/#room=...
   ─────────────────────────────────────────────────
 
   Waiting for peer...
 ```
 
-Once the recipient connects, Floe negotiates the WebRTC connection and streams each file with a live progress bar:
+Once the recipient connects, Rilldrop negotiates the WebRTC connection and streams each file with a live progress bar:
 
 ```text Output
   Connecting...
@@ -67,18 +67,18 @@ Share the **code** with CLI recipients or the **link** with browser recipients. 
 
 ## Folder transfers
 
-When you send a folder, Floe walks it recursively and rebuilds the same relative paths inside the recipient's output directory. Two details are worth knowing before you point it at a project folder. Every file is included, hidden files and dotfiles among them, so a folder holding `.git` or `.env` sends those too. Empty subfolders are not recreated on the other side, because Floe transfers files and an empty folder has none.
+When you send a folder, Rilldrop walks it recursively and rebuilds the same relative paths inside the recipient's output directory. Two details are worth knowing before you point it at a project folder. Every file is included, hidden files and dotfiles among them, so a folder holding `.git` or `.env` sends those too. Empty subfolders are not recreated on the other side, because Rilldrop transfers files and an empty folder has none.
 
 ```bash Terminal
-floe send ./documents
+rilldrop send ./documents
 # Transfers documents/report.pdf, documents/images/photo.jpg, etc.
 # Receiver gets: ./documents/report.pdf, ./documents/images/photo.jpg
 ```
 
-A trailing slash changes this. Floe names each file relative to the folder's parent, and a trailing slash makes the folder itself the parent, so the folder name drops out and its contents land directly in the receiver's output directory:
+A trailing slash changes this. Rilldrop names each file relative to the folder's parent, and a trailing slash makes the folder itself the parent, so the folder name drops out and its contents land directly in the receiver's output directory:
 
 ```bash Terminal
-floe send ./documents/
+rilldrop send ./documents/
 # Receiver gets: ./report.pdf, ./images/photo.jpg
 ```
 
@@ -95,8 +95,8 @@ See [Flags Reference](/cli/flags) for `--server`, `--no-relay`, `--web`, and `--
 
 ## Notes
 
-- Relayed transfers are capped at 2 GB per session; direct connections have no size limit. When the selected route runs through the TURN relay and the queued files total more than 2 GB, `floe send` blocks the transfer before any file data moves. See [The 2 GB Relay Limit](/how-it-works/2gb-limit).
+- Relayed transfers are capped at 2 GB per session; direct connections have no size limit. When the selected route runs through the TURN relay and the queued files total more than 2 GB, `rilldrop send` blocks the transfer before any file data moves. See [The 2 GB Relay Limit](/how-it-works/2gb-limit).
 - Press `Ctrl+C` at any time to cancel the transfer and close the session.
-- If the short code cannot be registered (for example, the signaling server is unreachable), Floe prints a warning and continues with the link only.
+- If the short code cannot be registered (for example, the signaling server is unreachable), Rilldrop prints a warning and continues with the link only.
 - Files are streamed in the order they are listed. For multiple files, progress is shown per file.
-- The sender never reports to the global transfer counter. Only the receiver does. To opt out on the receiving side, the receiver uses `--no-report` or sets `FLOE_NO_STATS=1`.
+- The sender never reports to the global transfer counter. Only the receiver does. To opt out on the receiving side, the receiver uses `--no-report` or sets `RILLDROP_NO_STATS=1`.

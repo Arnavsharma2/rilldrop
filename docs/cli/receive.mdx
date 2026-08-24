@@ -1,45 +1,45 @@
 ---
-title: "floe receive command"
-sidebarTitle: "floe receive"
-description: "Use the floe receive command to accept files from a peer over an encrypted WebRTC connection using a share code, with no upload or account needed."
-keywords: ["floe receive", "accept prompt", "output directory", "save location"]
+title: "rilldrop receive command"
+sidebarTitle: "rilldrop receive"
+description: "Use the rilldrop receive command to accept files from a peer over an encrypted WebRTC connection using a share code, with no upload or account needed."
+keywords: ["rilldrop receive", "accept prompt", "output directory", "save location"]
 ---
 
-```bash floe receive
-floe receive <code | link>
+```bash rilldrop receive
+rilldrop receive <code | link>
 ```
 
-Joins an existing transfer session as the receiver. Accepts either a short code (e.g. `olive-tiger-castle`) or the full browser link. Connecting is not enough on its own: Floe waits until the sender announces the first file, then asks you to confirm the whole batch once, and only then writes anything to disk.
+Joins an existing transfer session as the receiver. Accepts either a short code (e.g. `olive-tiger-castle`) or the full browser link. Connecting is not enough on its own: Rilldrop waits until the sender announces the first file, then asks you to confirm the whole batch once, and only then writes anything to disk.
 
 ## Examples
 
 Receive using a short code:
 
 ```bash Terminal
-floe receive olive-tiger-castle
+rilldrop receive olive-tiger-castle
 ```
 
 Receive using a full link:
 
 ```bash Terminal
-floe receive "https://floe.one/#room=abc123..."
+rilldrop receive "http://localhost:3000/#room=abc123..."
 ```
 
 Save to a specific directory:
 
 ```bash Terminal
-floe receive olive-tiger-castle -o ~/Downloads
+rilldrop receive olive-tiger-castle -o ~/Downloads
 ```
 
 Auto-accept without a confirmation prompt:
 
 ```bash Terminal
-floe receive olive-tiger-castle -y
+rilldrop receive olive-tiger-castle -y
 ```
 
 ## Output
 
-Running `floe receive olive-tiger-castle -o ~/Downloads`:
+Running `rilldrop receive olive-tiger-castle -o ~/Downloads`:
 
 ```text Output
   Connecting to sender...
@@ -64,7 +64,7 @@ With no `-o` flag, files save to the current directory.
 
 ## Confirmation prompt
 
-When the first file's metadata arrives, Floe shows a summary of what is incoming and asks for confirmation:
+When the first file's metadata arrives, Rilldrop shows a summary of what is incoming and asks for confirmation:
 
 ```text Output
   ─────────────────────────────────────────────────
@@ -76,7 +76,7 @@ When the first file's metadata arrives, Floe shows a summary of what is incoming
 
 - Type `n` or `no`, in any capitalization, to decline. The transfer is canceled and the connection closes.
 - Press **Enter** or type anything else to accept and begin receiving. The prompt only looks for a decline, so a typo counts as yes.
-- The same rule applies when nothing is there to answer. In a script, a cron job, or anywhere stdin is closed or piped, the prompt reads an empty answer and accepts. `echo | floe receive <code>` accepts without `-y`. Pass `-y` anyway when you mean it, so the intent is on the command line rather than in the shell's plumbing.
+- The same rule applies when nothing is there to answer. In a script, a cron job, or anywhere stdin is closed or piped, the prompt reads an empty answer and accepts. `echo | rilldrop receive <code>` accepts without `-y`. Pass `-y` anyway when you mean it, so the intent is on the command line rather than in the shell's plumbing.
 
 Pass `-y` to skip this prompt and accept automatically.
 
@@ -86,17 +86,17 @@ Pass `-y` to skip this prompt and accept automatically.
 |------|-------|---------|-------------|
 | `--output` | `-o` | `.` (current directory) | Directory to save received files. Created automatically if it does not exist. |
 | `--yes` | `-y` | `false` | Accept incoming files without the confirmation prompt. |
-| `--no-report` | | `false` | Do not report the transferred byte count to Floe's public global counter. Set `FLOE_NO_STATS=1` to opt out permanently. |
+| `--no-report` | | `false` | Do not report the transferred byte count to Rilldrop's public global counter. Set `RILLDROP_NO_STATS=1` to opt out permanently. |
 
 See [Flags Reference](/cli/flags) for the global flags that matter here (`--server`, `--no-relay`, `--iface`) and full opt-out documentation.
 
 ## Notes
 
 - Received files are saved to the output directory. Existing files are never overwritten: if a name is already taken, the incoming file is saved with a numbered suffix before the extension (`report.pdf`, then `report (1).pdf`), the same way browsers de-duplicate downloads. The progress line shows the name actually written.
-- Each file is written under a temporary name ending in `.part` and takes its final name only once the bytes on disk match the size the sender announced, so nothing half-written can ever sit under a finished-looking name. The check is a byte count, not a checksum: Floe computes no hash of your files at any point. A transfer that fails or stalls partway deletes its `.part` file; files that completed earlier in the batch are kept, and retrying reuses the original name instead of a numbered one. Even if the process is killed outright or the machine loses power, the worst leftover is a `.part` file, which is safe to delete (until you do, a retry saves under a numbered name). On macOS and Linux a crash at the exact instant of completion can additionally leave an empty placeholder at the final name beside the intact `.part`; on Windows the final rename is atomic and no such instant exists.
+- Each file is written under a temporary name ending in `.part` and takes its final name only once the bytes on disk match the size the sender announced, so nothing half-written can ever sit under a finished-looking name. The check is a byte count, not a checksum: Rilldrop computes no hash of your files at any point. A transfer that fails or stalls partway deletes its `.part` file; files that completed earlier in the batch are kept, and retrying reuses the original name instead of a numbered one. Even if the process is killed outright or the machine loses power, the worst leftover is a `.part` file, which is safe to delete (until you do, a retry saves under a numbered name). On macOS and Linux a crash at the exact instant of completion can additionally leave an empty placeholder at the final name beside the intact `.part`; on Windows the final rename is atomic and no such instant exists.
 - Directory structure is preserved when the sender sends a folder. Files land at the same relative paths inside your output directory.
 - A name your system cannot represent is adjusted before the file is written, and the progress line shows the adjusted name. On Windows that means the characters `< > : " | ? *` become underscores, trailing dots and spaces are removed, and a name that is a reserved device name (such as `NUL`) gets an underscore in front. Names are left exactly as sent on macOS and Linux, where all of those are valid. Control characters and text-direction marks are replaced with underscores on every platform, since a file name is not a place for either. A browser receiver strips them instead of replacing them, so the same file can land under slightly different names on the two surfaces.
 - On Windows, received files are tagged with the mark of the web (a `Zone.Identifier` stream), so SmartScreen and Office Protected View treat them like browser downloads when opened.
 - Press `Ctrl+C` to cancel the transfer at any time. The in-flight `.part` file is removed on the way out.
 - Short codes expire 10 minutes after the sender starts the session. After that, only the full link works (and only while the sender is still connected).
-- After the transfer completes, the receiver posts only the total byte count to the signaling server for the public global counter. No file names or contents are included. Use `--no-report` or `FLOE_NO_STATS=1` to skip this. The sender never reports.
+- After the transfer completes, the receiver posts only the total byte count to the signaling server for the public global counter. No file names or contents are included. Use `--no-report` or `RILLDROP_NO_STATS=1` to skip this. The sender never reports.

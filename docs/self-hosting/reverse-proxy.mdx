@@ -1,12 +1,12 @@
 ---
-title: "Run Floe Behind One Domain"
+title: "Run Rilldrop Behind One Domain"
 sidebarTitle: "Reverse proxy"
-description: "Serve the Floe web client and signaling server from one domain using a reverse proxy, with copy-pasteable Caddy and nginx configs for WebSocket support."
+description: "Serve the Rilldrop web client and signaling server from one domain using a reverse proxy, with copy-pasteable Caddy and nginx configs for WebSocket support."
 keywords: ["nginx", "caddy", "reverse proxy", "one domain", "websocket upgrade"]
 ---
 
-Floe has two services, but your users do not need two addresses. Put both behind one
-reverse proxy and everything lives at `https://floe.example.com`.
+Rilldrop has two services, but your users do not need two addresses. Put both behind one
+reverse proxy and everything lives at `https://rilldrop.example.com`.
 
 This is the recommended production layout. It means one certificate, one DNS record,
 one value to configure, and share links that work without any extra setup.
@@ -47,7 +47,7 @@ instance that sets a non-empty socket URL loses it silently.
     whole config is a handful of lines.
 
     ```nginx Caddyfile
-    floe.example.com {
+    rilldrop.example.com {
         # Signaling server: WebSockets, room codes, TURN credentials, health.
         handle /socket.io/* {
             reverse_proxy localhost:3001
@@ -88,11 +88,11 @@ instance that sets a non-empty socket URL loses it silently.
 
     server {
         listen 443 ssl;
-        server_name floe.example.com;
+        server_name rilldrop.example.com;
 
         # Your TLS certificate goes here.
-        # ssl_certificate     /etc/letsencrypt/live/floe.example.com/fullchain.pem;
-        # ssl_certificate_key /etc/letsencrypt/live/floe.example.com/privkey.pem;
+        # ssl_certificate     /etc/letsencrypt/live/rilldrop.example.com/fullchain.pem;
+        # ssl_certificate_key /etc/letsencrypt/live/rilldrop.example.com/privkey.pem;
 
         # The client's own runtime config. An exact-match location outranks the
         # regex location below, so this stays on the client.
@@ -130,19 +130,19 @@ instance that sets a non-empty socket URL loses it silently.
   </Tab>
 </Tabs>
 
-## Floe configuration
+## Rilldrop configuration
 
 Leave the socket URL **empty**. The browser then talks to whatever host it was
 loaded from, which behind this proxy is already the right answer.
 
 ```dotenv .env
 NEXT_PUBLIC_SOCKET_URL=
-CLIENT_URL=https://floe.example.com
+CLIENT_URL=https://rilldrop.example.com
 TRUSTED_PROXY_COUNT=1
 
 # Read only when you build the client yourself, with the build overlay. The
 # default stack pulls a prebuilt image and ignores this line entirely.
-NEXT_PUBLIC_SITE_URL=https://floe.example.com
+NEXT_PUBLIC_SITE_URL=https://rilldrop.example.com
 ```
 
 ```bash Terminal
@@ -156,7 +156,7 @@ pointed somewhere wrong. See [Container Images](/self-hosting/images) to build t
 client with your own domain baked in.
 
 `CLIENT_URL` is matched exactly, including the scheme and with no trailing
-slash. `https://floe.example.com` and `https://www.floe.example.com` are
+slash. `https://rilldrop.example.com` and `https://www.rilldrop.example.com` are
 different origins to the CORS check, so use whichever one your users actually
 visit.
 
@@ -171,15 +171,15 @@ One address is all the CLI needs. The share link it prints resolves to the same
 origin, so it opens the web client correctly with no extra flag:
 
 ```bash Terminal
-floe send --server https://floe.example.com photo.jpg
+rilldrop send --server https://rilldrop.example.com photo.jpg
 ```
 
 The `--web` flag only exists for split deployments where the client lives on a
 different hostname from the signaling server.
 
 The desktop app takes the same single address. Open Settings, expand
-**Advanced**, put `https://floe.example.com` in **Server address**, and press
-**Test**. The test runs three checks in order: that `/health` answers as a Floe
+**Advanced**, put `https://rilldrop.example.com` in **Server address**, and press
+**Test**. The test runs three checks in order: that `/health` answers as a Rilldrop
 signaling server, that the realtime `/ws` connection is accepted, and that
 `GET /api/turn-credentials` returns usable connection details. A proxy that
 forwards only some of those is named in the failure message instead of breaking
@@ -201,13 +201,13 @@ for the port list and firewall rules.
 
 ```bash Terminal
 # Health check through the proxy.
-curl https://floe.example.com/health
+curl https://rilldrop.example.com/health
 
 # TURN credentials endpoint (returns a JSON array of ICE servers).
-curl https://floe.example.com/api/turn-credentials
+curl https://rilldrop.example.com/api/turn-credentials
 ```
 
-Then open `https://floe.example.com` in a browser. The connection badge should read
+Then open `https://rilldrop.example.com` in a browser. The connection badge should read
 `Ready`. If it stays disconnected, the `/socket.io/` route is the first thing to
 check.
 

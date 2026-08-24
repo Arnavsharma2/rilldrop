@@ -1,17 +1,17 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Floe",
+  "name": "Rilldrop",
   "theme": "mint",
   "logo": {
     "light": "/logo/dark.svg",
     "dark": "/logo/light.svg",
-    "href": "https://floe.one"
+    "href": "https://github.com/Arnavsharma2/rilldrop"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#00A3C9",
-    "light": "#B1DDEB",
-    "dark": "#00A3C9"
+    "primary": "#14B8A6",
+    "light": "#5EEAD4",
+    "dark": "#0F766E"
   },
   "styling": {
     "codeblocks": "system"
@@ -29,44 +29,41 @@
   "seo": {
     "metatags": {
       "og:type": "website",
-      "og:site_name": "Floe",
-      "og:image": "https://floe.one/og.png",
-      "twitter:card": "summary_large_image",
-      "twitter:image": "https://floe.one/og.png"
+      "og:site_name": "Rilldrop"
     }
   },
   "navbar": {
     "links": [
       {
-        "label": "floe.one",
-        "href": "https://floe.one",
+        "label": "GitHub",
+        "href": "https://github.com/Arnavsharma2/rilldrop",
         "icon": "arrow-up-right"
       }
     ],
     "primary": {
       "type": "github",
-      "href": "https://github.com/jannskiee/floe"
+      "href": "https://github.com/Arnavsharma2/rilldrop"
     }
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/jannskiee/floe"
+      "github": "https://github.com/Arnavsharma2/rilldrop"
     },
     "links": [
       {
         "header": "Product",
         "items": [
           {
-            "label": "Floe",
-            "href": "https://www.floe.one"
+            "label": "Rilldrop",
+            "href": "https://github.com/Arnavsharma2/rilldrop"
           },
           {
             "label": "Download",
-            "href": "https://www.floe.one/download"
+            "href": "https://github.com/Arnavsharma2/rilldrop/releases"
           },
           {
             "label": "How It Works",
-            "href": "https://www.floe.one/how-it-works"
+            "href": "/reference/architecture"
           }
         ]
       },
@@ -75,31 +72,31 @@
         "items": [
           {
             "label": "Quickstart",
-            "href": "https://www.floe.one/docs/quickstart"
+            "href": "/quickstart"
           },
           {
             "label": "Web App",
-            "href": "https://www.floe.one/docs/web-app/sending"
+            "href": "/web-app/sending"
           },
           {
             "label": "CLI",
-            "href": "https://www.floe.one/docs/cli/installation"
+            "href": "/cli/installation"
           },
           {
             "label": "Desktop App",
-            "href": "https://www.floe.one/docs/desktop/installation"
+            "href": "/desktop/installation"
           },
           {
             "label": "Self-Hosting",
-            "href": "https://www.floe.one/docs/self-hosting/overview"
+            "href": "/self-hosting/overview"
           },
           {
             "label": "FAQ",
-            "href": "https://www.floe.one/docs/faq"
+            "href": "/faq"
           },
           {
             "label": "Changelog",
-            "href": "https://www.floe.one/docs/changelog"
+            "href": "/changelog"
           }
         ]
       },
@@ -108,23 +105,19 @@
         "items": [
           {
             "label": "GitHub",
-            "href": "https://github.com/jannskiee/floe"
+            "href": "https://github.com/Arnavsharma2/rilldrop"
           },
           {
             "label": "Releases",
-            "href": "https://github.com/jannskiee/floe/releases"
+            "href": "https://github.com/Arnavsharma2/rilldrop/releases"
           },
           {
             "label": "Report an Issue",
-            "href": "https://github.com/jannskiee/floe/issues"
+            "href": "https://github.com/Arnavsharma2/rilldrop/issues"
           },
           {
             "label": "Contributing",
-            "href": "https://github.com/jannskiee/floe/blob/main/CONTRIBUTING.md"
-          },
-          {
-            "label": "Sponsor",
-            "href": "https://github.com/sponsors/jannskiee"
+            "href": "https://github.com/Arnavsharma2/rilldrop/blob/main/CONTRIBUTING.md"
           }
         ]
       },
@@ -132,20 +125,12 @@
         "header": "Legal",
         "items": [
           {
-            "label": "Privacy Policy",
-            "href": "https://www.floe.one/privacy"
-          },
-          {
-            "label": "Terms of Use",
-            "href": "https://www.floe.one/terms"
-          },
-          {
             "label": "Security Policy",
-            "href": "https://github.com/jannskiee/floe/security/policy"
+            "href": "https://github.com/Arnavsharma2/rilldrop/security/policy"
           },
           {
             "label": "License (MIT)",
-            "href": "https://github.com/jannskiee/floe/blob/main/LICENSE"
+            "href": "https://github.com/Arnavsharma2/rilldrop/blob/main/LICENSE"
           }
         ]
       }
@@ -158,7 +143,7 @@
         "pages": [
           "introduction",
           "quickstart",
-          "choosing-floe"
+          "choosing-rilldrop"
         ]
       },
       {
@@ -242,7 +227,7 @@
     ]
   },
   "search": {
-    "prompt": "Search the Floe docs"
+    "prompt": "Search the Rilldrop docs"
   },
   "contextual": {
     "options": [

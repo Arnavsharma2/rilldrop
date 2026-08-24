@@ -1,22 +1,22 @@
 ---
-title: "How Floe encrypts your files"
+title: "How Rilldrop encrypts your files"
 sidebarTitle: "Encryption"
-description: "Every Floe transfer is encrypted end to end with keys that exist only on the two devices involved. What that protects, what it does not, and how it actually works."
-keywords: ["encryption", "end to end", "dtls", "is floe secure", "can floe read my files"]
+description: "Every Rilldrop transfer is encrypted end to end with keys that exist only on the two devices involved. What that protects, what it does not, and how it actually works."
+keywords: ["encryption", "end to end", "dtls", "is rilldrop secure", "can rilldrop read my files"]
 ---
 
 Your files are encrypted on your device and decrypted on the other person's. Nothing in between
-can read them, and that includes Floe's own servers.
+can read them, including the signaling and relay infrastructure.
 
 There is nothing to switch on. It is not a mode, an upgrade, or a setting. Every transfer works
-this way, direct or relayed, on floe.one or on an instance you run yourself.
+this way, direct or relayed, on every Rilldrop deployment.
 
 ## Three things that follow from that
 
 **The keys exist only on the two devices.** They are generated fresh for each transfer, live in
 the two browsers or apps involved, and are thrown away when the connection closes. There is no
 key server, no escrow, and no recovery: once a transfer is over, that transfer's keys are gone
-and cannot be reconstructed by anyone, Floe included.
+and cannot be reconstructed by anyone, Rilldrop included.
 
 **The servers handle the introduction, not the content.** The signaling server passes connection
 details between the two devices for a few seconds and then plays no further part. It is not on the
@@ -37,14 +37,14 @@ The one that matters most: the two devices agree on keys by exchanging certifica
 and those fingerprints travel through the signaling server. A server that wanted to could hand
 each side a fingerprint it controls, sit in the middle, and read everything. This is true of every
 application built on WebRTC, and the usual defense is a short code the two people compare out of
-band. **Floe computes that code internally but no client shows it today.**
+band. **Rilldrop computes that code internally but no client shows it today.**
 
-Read [What Floe does not protect against](/how-it-works/known-limitations) for that and the seven
+Read [What Rilldrop does not protect against](/how-it-works/known-limitations) for that and the seven
 others in plain language. A privacy claim is worth more when the exceptions are published
 alongside it.
 
 <Accordion title="The mechanism, for the curious">
-  Floe uses WebRTC data channels, which run SCTP over **DTLS**. DTLS is TLS adapted for datagrams:
+  Rilldrop uses WebRTC data channels, which run SCTP over **DTLS**. DTLS is TLS adapted for datagrams:
   the same cipher suites and the same handshake, over a transport that does not guarantee ordering.
   This is distinct from DTLS-SRTP, which is what WebRTC uses for audio and video.
 
@@ -58,7 +58,7 @@ alongside it.
   Keys are ephemeral and per-session. They are created when the connection is created and
   discarded when it closes.
 
-  Floe adds no encryption layer of its own on top of this, and computes no hash of file contents.
+  Rilldrop adds no encryption layer of its own on top of this, and computes no hash of file contents.
   Integrity in transit comes from DTLS; integrity of the finished file is a byte-count check
   against the size the sender announced. See
   [the transfer protocol reference](/reference/transfer-protocol#integrity).

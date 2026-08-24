@@ -16,7 +16,7 @@
 
    The selector is NOT documented by Mintlify, which explicitly disclaims the
    stability of its styling hooks. Verified against the rendered DOM of
-   floe.one/docs/changelog on 2026-08-08: 43 update-tag spans, exactly matching
+   localhost:3000/docs/changelog on 2026-08-08: 43 update-tag spans, exactly matching
    the tag strings in the MDX, and distinct from the filter-panel chips. If the
    separators ever vanish, re-read the rendered DOM and update this selector.
 
@@ -27,7 +27,7 @@
    The separator hangs off the END of each tag but the last, rather than the
    start of each tag but the first. Both render identically on one line, but
    the gutter is narrow enough to wrap: trailing it keeps the dot glued to the
-   tag it follows, so a wrap reads "floe.one . floe CLI ." then "Your server"
+   tag it follows, so a wrap reads "localhost:3000 . rilldrop CLI ." then "Your server"
    rather than orphaning a leading dot onto the second line. */
 [data-component-part="update-tag"]:not(:last-child)::after {
   content: "\00B7";
@@ -39,7 +39,7 @@
 
    Mintlify's `logo` config has exactly three keys, light, dark and href, with
    no footer variant, so the footer renders the very same file as the navbar.
-   The navbar lockup reads "Floe / Docs", which is right at the top of a docs
+   The navbar lockup reads "Rilldrop / Docs", which is right at the top of a docs
    page and wrong at the bottom of one, where the label just repeats the thing
    the reader has been looking at the whole way down.
 
@@ -67,7 +67,7 @@
 
    `#footer` and `.nav-logo` are both on Mintlify's published hook list, which
    it explicitly documents as subject to change. If the footer ever shows
-   "Floe / Docs" again, this rule stopped matching and the selectors moved. */
+   "Rilldrop / Docs" again, this rule stopped matching and the selectors moved. */
 #footer img.nav-logo {
   height: 44px;
   width: 94.6px;
@@ -174,7 +174,7 @@
   margin-left: -2px;
 }
 
-/* ---- floe.one theme translation (2026-08 docs redesign) ----------------
+/* ---- localhost:3000 theme translation (2026-08 docs redesign) ----------------
 
    Everything below restyles chrome, not content. The rules above this line
    (changelog tag separators, footer logo crop, footer WCAG fixes) are load-
@@ -305,7 +305,7 @@
   --color-primary-light: rgb(255 255 255);
 }
 
-/* Navbar links hover neutral, like floe.one's navbar (zinc at rest, plain
+/* Navbar links hover neutral, like localhost:3000's navbar (zinc at rest, plain
    black or white on hover), instead of the hover:text-primary ice Mintlify
    puts on the GitHub widget. The span selector is required because the repo
    name carries its own group-hover colour class, which inheritance from the
@@ -384,7 +384,7 @@ html:not(.dark) #content-area a.link {
 
    Scoped to the five assistant roots rather than done globally, because
    `primary` still legitimately paints eyebrows, link underlines and focus
-   rings everywhere else. Observed on floe.one/docs 2026-08-10, the assistant
+   rings everywhere else. Observed on localhost:3000/docs 2026-08-10, the assistant
    surfaces that still resolved to ice were exactly three:
 
      - the Assistant glyph in the sheet header, `text-primary
@@ -503,7 +503,7 @@ html:not(.dark) #content-area a.link {
   --color-primary-light: rgb(255 255 255);
 }
 
-/* The changelog version pills (v1.10.0 and friends), neutral like every
+/* The changelog version pills (v0.1.0 and friends), neutral like every
    other selected-state chip (user call, 2026-08-09). The pill is
    bg-primary/10 text-primary dark:text-primary-light on
    data-component-part="update-label", the same documented hook family as

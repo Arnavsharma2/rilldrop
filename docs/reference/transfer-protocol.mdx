@@ -1,12 +1,12 @@
 ---
-title: "Floe data-channel transfer protocol"
+title: "Rilldrop data-channel transfer protocol"
 sidebarTitle: "Transfer protocol"
-description: "The wire format Floe peers speak over the WebRTC data channel: message types, framing, protocol versioning, chunk sizing, backpressure, and every timeout."
+description: "The wire format Rilldrop peers speak over the WebRTC data channel: message types, framing, protocol versioning, chunk sizing, backpressure, and every timeout."
 keywords: ["wire protocol", "data channel", "webrtc", "protocol version", "backpressure"]
 ---
 
 Once the WebRTC data channel opens, the signaling server is out of the picture and the two peers
-speak this protocol directly. The browser, the CLI, and Floe Desktop all implement it and are
+speak this protocol directly. The browser, the CLI, and Rilldrop Desktop all implement it and are
 interoperable in every direction. The CLI and the desktop app share one implementation in
 `cli/engine/transfer`; the browser has its own in `client/lib/transfer`.
 
@@ -46,7 +46,7 @@ small chunk that happens to look like a JSON object.** That case is real and bot
 handle it.
 
 A **string** frame that is not a control message is where they part company: the Go receiver
-discards it, and the browser receiver writes it into the file. Nothing in Floe sends such a frame,
+discards it, and the browser receiver writes it into the file. Nothing in Rilldrop sends such a frame,
 so this only matters if you are building another client.
 
 Two divergences are worth knowing if you are writing another client:
@@ -76,7 +76,7 @@ Sender to receiver, before each file.
   "totalBytes": 11800000,
   "pv": 1,
   "pvMin": 1,
-  "ver": "1.10.4"
+  "ver": "0.1.0"
 }
 ```
 
@@ -108,9 +108,9 @@ Sender to receiver, before each file.
   Lowest protocol version this peer still supports.
 </ResponseField>
 <ResponseField name="ver" type="string">
-  The human release string, and its shape depends on the build. The CLI sends `1.10.4` with no
+  The human release string, and its shape depends on the build. The CLI sends `0.1.0` with no
   leading `v`, because GoReleaser strips it. The desktop app sends the tag verbatim, as
-  `desktop-v0.2.7`. A build from source sends `dev`. Browser peers omit the field entirely. It is
+  `desktop-v0.1.0`. A build from source sends `dev`. Browser peers omit the field entirely. It is
   informational and never gates a transfer.
 </ResponseField>
 
@@ -119,7 +119,7 @@ Sender to receiver, before each file.
 Receiver to sender, once per file, before any bytes move.
 
 ```json ack
-{ "type": "ack", "id": "3f2b9c1e-...", "offset": 0, "pv": 1, "pvMin": 1, "ver": "1.10.4" }
+{ "type": "ack", "id": "3f2b9c1e-...", "offset": 0, "pv": 1, "pvMin": 1, "ver": "0.1.0" }
 ```
 
 <ResponseField name="offset" type="integer" required>
@@ -171,16 +171,16 @@ ack that never comes. Senders that predate this message type ignore it safely.
 ```json incompatible
 {
   "type": "incompatible",
-  "reason": "Cannot transfer: your floe is too old for this peer. ...",
+  "reason": "Cannot transfer: your rilldrop is too old for this peer. ...",
   "pv": 1,
   "pvMin": 1,
-  "ver": "desktop-v0.2.7"
+  "ver": "desktop-v0.1.0"
 }
 ```
 
 ## Protocol versioning
 
-The wire protocol carries a version of its own, independent of Floe's release numbers. That is
+The wire protocol carries a version of its own, independent of Rilldrop's release numbers. That is
 what lets peers on different releases interoperate while still catching a genuine breaking
 change cleanly.
 
@@ -192,7 +192,7 @@ change cleanly.
 - A peer that omits the fields is treated as version 1, so every release ever shipped stays
   compatible.
 - When the ranges miss, the receiver sends `incompatible` and each side prints a remedy for its
-  own surface: `floe update` on the CLI, the Microsoft Store or the download page on the desktop,
+  own surface: `rilldrop update` on the CLI, the packaged MSIX or the download page on the desktop,
   a page refresh in the browser.
 
 Which side is named depends on who is reading. Go peers do not trust the wire `reason`: they
@@ -225,7 +225,7 @@ A file is committed only when the bytes written match `fileSize` exactly. A mism
 direction discards the file, because a short count means truncation and an over-count means a
 frame boundary was wrong, which corrupts the result just as thoroughly.
 
-**Floe computes no hash of file contents at any point.** The check is a byte count. The transport
+**Rilldrop computes no hash of file contents at any point.** The check is a byte count. The transport
 already authenticates every packet, so corruption in flight is not the gap being covered here;
 truncation is.
 
@@ -236,7 +236,7 @@ has shipped in a long time.
 
 Receivers that write to disk stage each file under a name ending in `.part` and rename it only
 after that check passes, so a killed transfer never leaves a file sitting under its final name.
-See [What Floe does not protect against](/how-it-works/known-limitations).
+See [What Rilldrop does not protect against](/how-it-works/known-limitations).
 
 ## Timeouts
 
@@ -256,7 +256,7 @@ Every value the Go engine enforces. The browser shares only the 120 second ack d
 | The byte-count report | 5 s | Abandoned; never affects the files |
 
 A browser sender waits about 2 seconds after the peers connect before it checks the route and
-sends the first byte. A `floe receive` can linger for up to about 10 seconds after printing its
+sends the first byte. A `rilldrop receive` can linger for up to about 10 seconds after printing its
 summary, which is the teardown grace plus the report.
 
 ## One SDP detail worth knowing
@@ -266,7 +266,7 @@ answer it generates. RFC 8841 makes the absent default 65536, and Chrome then re
 larger than that. The Go engine patches the attribute into the answer with a value of 1 GB before
 sending it, which is what makes browser-to-CLI transfers work at all.
 
-If you are building another client against Floe, this is the non-obvious part.
+If you are building another client against Rilldrop, this is the non-obvious part.
 
 ## Related
 

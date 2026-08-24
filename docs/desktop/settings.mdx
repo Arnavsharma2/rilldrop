@@ -1,22 +1,19 @@
 ---
-title: "Floe Desktop Settings"
+title: "Rilldrop Desktop Settings"
 sidebarTitle: "Settings"
-description: "Every Floe Desktop setting: where received files are saved, Hide my IP, global stats, the File Explorer entry, and pointing the app at your own server."
+description: "Every Rilldrop Desktop setting: where received files are saved, Hide my IP, global stats, the File Explorer entry, and pointing the app at your own server."
 keywords: ["hide my ip", "server address", "right-click menu", "reset settings"]
 ---
 
 Open Settings with the gear in the title bar, or press `Ctrl` `,`. Press `Esc` to go back.
 Changes save as you make them.
 
-<Frame caption="Settings in the build from GitHub. The Microsoft Store build shows the same screen without the Windows section and the Check for updates switch.">
-  <img src="/images/desktop/settings.png" alt="Floe Desktop settings showing Transfers, Privacy, Windows, and Advanced sections" />
-</Frame>
 
 ## Transfers
 
 ### Save received files to
 
-Where everything you receive is written. Leave it blank and Floe uses your **Downloads** folder, or
+Where everything you receive is written. Leave it blank and Rilldrop uses your **Downloads** folder, or
 your home folder if you do not have one.
 It never asks per transfer.
 
@@ -29,11 +26,11 @@ An arriving file never replaces one you already have. See
 
 Off by default.
 
-A normal Floe transfer connects the two devices directly, which is why it is fast and
+A normal Rilldrop transfer connects the two devices directly, which is why it is fast and
 unmetered. Connecting directly means each side learns the other's IP address, in the same way
 a video call does.
 
-Turn this on and Floe stops trying for a direct path. Everything goes through the TURN relay
+Turn this on and Rilldrop stops trying for a direct path. Everything goes through the TURN relay
 instead, so the other person only ever sees the relay's address. Two consequences follow, and
 both are unavoidable rather than bugs:
 
@@ -51,8 +48,7 @@ one lets you turn the relay **off**. This one makes the relay the **only** path.
 has no direct-only mode, and the browser has no relay-only mode.
 
 <Warning>
-  **Hide my IP needs a relay to exist.** On Floe's own server there is always one. If you point
-  the app at [your own server](#server) that has no TURN relay configured, a relay-only
+  **Hide my IP needs a relay to exist.** If the configured server has no TURN relay, a relay-only
   connection has nowhere to go, and the transfer fails with a generic connection error rather
   than a message explaining why. If transfers stop working right after you switch servers, turn
   Hide my IP off and try again. To keep using it, add a relay to your instance. See
@@ -63,7 +59,7 @@ has no direct-only mode, and the browser has no relay-only mode.
 
 On by default.
 
-Floe's homepage shows a public, all-time total of bytes transferred by everyone. When a
+The deployment homepage shows a public total of bytes transferred through that server. When a
 transfer finishes, the **receiving** side reports the byte count and nothing else. No file
 names, no contents, no record of who sent what, and no link to you.
 
@@ -71,11 +67,11 @@ The sender never reports, so this setting only matters for transfers you receive
 and no request is made at all.
 
 The same opt-out exists on every surface: a checkbox on the receiver view in the browser, and
-`--no-report` or `FLOE_NO_STATS=1` for the CLI. See
+`--no-report` or `RILLDROP_NO_STATS=1` for the CLI. See
 [Security and Privacy](/security-privacy#aggregate-statistics).
 
-The report follows whichever server the app is set to, so pointing Floe at your own instance
-sends your byte counts to that server's counter rather than to floe.one.
+The report follows whichever server the app is set to, so pointing Rilldrop at your own instance
+sends your byte counts to that server&apos;s counter.
 
 ### Check for updates
 
@@ -86,34 +82,34 @@ dismissible notice when one does. The request carries nothing about you beyond w
 request reveals (your IP address and a user agent); nothing about your files or transfers is in
 it. Nothing downloads or installs by itself. See [Update](/desktop/installation#update).
 
-Turn it off and no request is made at all. Setting `FLOE_NO_UPDATE_CHECK=1` in your environment
+Turn it off and no request is made at all. Setting `RILLDROP_NO_UPDATE_CHECK=1` in your environment
 does the same, matching the CLI's [update check](/cli/version#the-update-check).
 
-The Microsoft Store build never checks and does not show this switch: the Store updates the app
-itself. Builds you compile yourself never check either.
+The packaged MSIX build never checks and does not show this switch because its package manager
+owns updates. Builds you compile yourself never check either.
 
 ## Windows
 
-This section is only shown in the build from GitHub. The Microsoft Store build hides it,
+This section is only shown in the build from GitHub. The packaged MSIX build hides it,
 because a packaged app cannot register the entry in a way File Explorer would read. See
 [Installation](/desktop/installation#choose-a-channel).
 
 ### Show in right-click menu
 
-On by default. Floe registers the entry the first time it runs, and remembers if you switch it
+On by default. Rilldrop registers the entry the first time it runs, and remembers if you switch it
 off, so it does not come back on its own.
 
-It adds **Send with Floe** to the File Explorer right-click menu. On Windows 11 it sits under
+It adds **Send with Rilldrop** to the File Explorer right-click menu. On Windows 11 it sits under
 **Show more options**.
 
 The entry is written to your own user's part of the registry. It needs no administrator
 approval, changes nothing for anyone else using the machine, and turning it off (or
-uninstalling Floe) removes it again.
+uninstalling Rilldrop) removes it again.
 
 Two details worth knowing:
 
 - The entry applies to **files**, not folders. To send a folder, use **Folder** in the app.
-- It stores the path to the Floe that registered it. If you move the app, Floe repairs the
+- It stores the path to the Rilldrop that registered it. If you move the app, Rilldrop repairs the
   entry the next time it starts. Uninstalling removes the entry outright, so after a reinstall
   check the switch is still on.
 
@@ -122,22 +118,18 @@ managed or locked-down machine.
 
 ## Advanced
 
-<Frame caption="Advanced, expanded">
-  <img src="/images/desktop/settings-server.png" alt="The expanded Server section showing the server address field, a Test button, and the share link address field" />
-</Frame>
 
 ### Server
 
-Floe uses `api.floe.one` unless you tell it otherwise. That server introduces the two devices
+Rilldrop uses `localhost:3001` unless you tell it otherwise. That server introduces the two devices
 and hands out relay credentials. It never receives your files.
 
 To use your own instance, put its address in **Server address**. Leave the field blank to go
-back to Floe's server, or use the **Use default server** button that appears once a custom
+back to the local default, or use the **Use default server** button that appears once a custom
 address is set.
 
 **Both people must be on the same server.** Servers do not talk to each other. Once you point
-Floe at your own instance, you can no longer transfer with someone on floe.one, and they
-cannot reach you. That is the point of self-hosting, but it does surprise people.
+Rilldrop at your own instance, you can only transfer with peers using that same instance.
 
 Being on the same server is not enough on its own to reach you: whoever wants to receive still
 needs the room code or link, which only exists while you are sharing.
@@ -147,7 +139,7 @@ each one catches a failure the others cannot:
 
 | Stage | What it proves |
 |---|---|
-| `/health` | Something is there, and it is a Floe signaling server. |
+| `/health` | Something is there, and it is a Rilldrop signaling server. |
 | `/ws` | The realtime connection gets through, which is what a transfer actually uses. |
 | `/api/` | Room codes and relay credentials get through. |
 
@@ -175,35 +167,35 @@ row below reaches the screen as
 | Could not connect. Check that the server is running and reachable from this machine. | The address resolved but the connection was refused or dropped. |
 | The server's security certificate could not be verified. | A TLS problem, often a self-signed certificate. |
 | The address answered with HTTP ... This may be the web app rather than the signaling server. | Something answered, but not with a health check. Usually the website rather than the API. |
-| Something answered at that address, but it is not a Floe signaling server. | Something else is on that address. |
+| Something answered at that address, but it is not a Rilldrop signaling server. | Something else is on that address. |
 | The server answered, but the realtime connection was refused. If it is behind a reverse proxy, check that /ws is being forwarded. | Stage two failed. |
 | The server is running, but its API answered with HTTP ... If it is behind a reverse proxy, check that /api/ is being forwarded. | Stage three failed. |
 | The server is running, but it did not return usable connection details. | Stage three answered, but with no ICE servers in the list. |
 
-See [Run Floe Behind One Domain](/self-hosting/reverse-proxy) for a proxy configuration that
+See [Run Rilldrop Behind One Domain](/self-hosting/reverse-proxy) for a proxy configuration that
 forwards all three.
 
 ### Share link address
 
 Leave this blank unless your web app is on a different address from your signaling server.
 
-The recommended way to self-host is one address serving both, in which case Floe works out the
+The recommended way to self-host is one address serving both, in which case Rilldrop works out the
 share link from the server address and this field stays empty. Only a split setup, where the
 API is on `api.example.com` and the web app on `app.example.com`, needs it. Without it the
 share link would point at the API, which serves no web app, and the link would be dead.
 
 This mirrors the CLI's `--web` flag. See
-[Use the Floe CLI with a Self-Hosted Server](/cli/self-hosted-server).
+[Use the Rilldrop CLI with a Self-Hosted Server](/cli/self-hosted-server).
 
 ## About
 
 ### App version
 
-The release you are running, for example `desktop-v0.2.7`. A build you compiled yourself reads
+The release you are running, for example `desktop-v0.1.0`. A build you compiled yourself reads
 `dev`.
 
 When the daily check has found a newer release, an **Update** row appears under it with a
-**Get update** button that opens the [download page](https://www.floe.one/download). The row
+**Get update** button that opens [GitHub Releases](https://github.com/Arnavsharma2/rilldrop/releases). The row
 stays as long as the app is behind, even after the notice popup is dismissed, and disappears
 once you are up to date.
 
@@ -229,20 +221,20 @@ details to include in a bug report.
 ## Reset
 
 **Reset** at the top of Settings restores the save folder, the privacy switches, and both
-server addresses to the way Floe shipped. It asks first, and tells you what it is about to
+server addresses to the way Rilldrop shipped. It asks first, and tells you what it is about to
 forget.
 
 It deliberately leaves alone:
 
 - **Your transfer history**, and the files you have already received.
-- **The File Explorer right-click entry**, because that lives in Windows rather than in Floe.
+- **The File Explorer right-click entry**, because that lives in Windows rather than in Rilldrop.
   Reset would have to either leave it dangling or silently rewrite the registry, and neither is
   something a Reset button should do. Turn it off in [Windows](#show-in-right-click-menu)
   instead.
 
 ## Where settings are stored
 
-Settings live in a plain JSON file at `%APPDATA%\floe\desktop.json`. Floe writes it on the first
+Settings live in a plain JSON file at `%APPDATA%\rilldrop\desktop.json`. Rilldrop writes it on the first
 launch, before you have touched anything, because that is when it imports the older privacy
 switches and stamps `migrated`. It is rewritten every time the Settings screen closes, changed or
 not. A fresh install looks like this:
@@ -258,19 +250,19 @@ not. A fresh install looks like this:
 }
 ```
 
-Empty address fields mean "use Floe's defaults", so a fresh install and a cleared field behave
+Empty address fields mean "use Rilldrop's defaults", so a fresh install and a cleared field behave
 identically. The file is written atomically, so an interrupted write cannot corrupt it.
 
-Edit it only while Floe is closed. The app rewrites the whole record whenever any setting
+Edit it only while Rilldrop is closed. The app rewrites the whole record whenever any setting
 changes, so an edit made while it is running is overwritten. Leave `migrated` set to `true`:
-without it Floe treats the older privacy switches as never having been set and re-imports them
+without it Rilldrop treats the older privacy switches as never having been set and re-imports them
 from its older storage, discarding whatever you wrote.
 
-Both the Microsoft Store build and the GitHub build use this same file, and the `floe` CLI keeps
-its own files in that same `floe` folder, so the two coexist. The file survives an uninstall on
+Both the packaged MSIX build and the GitHub build use this same file, and the `rilldrop` CLI keeps
+its own files in that same `rilldrop` folder, so the two coexist. The file survives an uninstall on
 purpose, so reinstalling picks up where you left off.
 
 Your save folder and transfer history are not in this file. They live in the interface's own
-storage under `%APPDATA%\floe\webview`, as the keys `floe:saveDir` and `floe:history`. That folder
+storage under `%APPDATA%\rilldrop\webview`, as the keys `rilldrop:saveDir` and `rilldrop:history`. That folder
 survives an uninstall too, which is why a reinstall still knows where you save files and what you
 have already sent.

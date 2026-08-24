@@ -1,179 +1,70 @@
 ---
-title: "Install the Floe CLI"
+title: "Install the Rilldrop CLI"
 sidebarTitle: "Installation"
-description: "Install the floe CLI in one command on macOS, Windows, or Linux to send and receive files peer-to-peer from the terminal without an account."
-keywords: ["install floe", "brew", "winget", "scoop", "go install", "download cli"]
+description: "Install or build the rilldrop command-line client for macOS, Windows, or Linux."
 ---
 
-The `floe` CLI is a single self-contained binary with no runtime dependencies.
+The `rilldrop` CLI is a self-contained Go binary. Release installers resolve assets from the standalone [Rilldrop repository](https://github.com/Arnavsharma2/rilldrop).
 
-If you would rather have a window than a terminal, [Floe Desktop](/desktop/installation) runs on
-this same transfer engine, so the two interoperate. It is Windows only; on macOS and Linux this
-CLI and the [web app](/web-app/sending) are the options.
-
-## Package managers
-
-The fastest way to install floe. Package manager installs also get updates via the
-standard upgrade command for that tool.
+## Install script
 
 <Tabs>
-  <Tab title="macOS">
+  <Tab title="macOS and Linux">
     ```bash Terminal
-    brew install --cask jannskiee/tap/floe
+    curl -fsSL https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.sh | sh
     ```
-
-    Update: `brew upgrade floe`
-
-    First run: if macOS blocks the binary (Gatekeeper), right-click the `floe` binary in Finder
-    and choose Open, or run `xattr -dr com.apple.quarantine $(which floe)`.
   </Tab>
-  <Tab title="Windows (winget)">
+  <Tab title="Windows">
     ```powershell Terminal
-    winget install jannskiee.floe
+    irm https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.ps1 | iex
     ```
-
-    Update: `winget upgrade jannskiee.floe`
-
-    Winget is built into Windows 10/11. The package is available after each release once
-    Microsoft's automated PR review completes (usually a few hours after the tag).
-  </Tab>
-  <Tab title="Windows (scoop)">
-    ```powershell Terminal
-    scoop bucket add jannskiee https://github.com/jannskiee/scoop-bucket
-    scoop install floe
-    ```
-
-    Update: `scoop update floe`
-
-    [Scoop](https://scoop.sh) can be installed with `irm get.scoop.sh | iex`.
   </Tab>
 </Tabs>
 
-## One-line installer
+The scripts download the matching archive and verify it against the release checksum file. They require a published `vX.Y.Z` release.
 
-Works on macOS, Linux, and Windows without a package manager. Re-running the script
-upgrades an existing install in place.
-
-<Tabs>
-  <Tab title="macOS / Linux">
-    ```bash Terminal
-    curl -fsSL https://floe.one/install.sh | sh
-    ```
-
-    To install a specific version, using any tag from the
-    [releases page](https://github.com/jannskiee/floe/releases):
-    ```bash Terminal
-    curl -fsSL https://floe.one/install.sh | FLOE_VERSION=vX.Y.Z sh
-    ```
-
-    The script detects your OS and architecture, downloads the correct archive, verifies the
-    SHA-256 checksum, and installs `floe` to `/usr/local/bin` (or `~/.local/bin` when
-    `/usr/local/bin` is not writable and `sudo` is unavailable).
-  </Tab>
-  <Tab title="Windows (PowerShell)">
-    ```powershell Terminal
-    irm https://floe.one/install.ps1 | iex
-    ```
-
-    To install a specific version, using any tag from the
-    [releases page](https://github.com/jannskiee/floe/releases):
-    ```powershell Terminal
-    $env:FLOE_VERSION = "vX.Y.Z"; irm https://floe.one/install.ps1 | iex
-    ```
-
-    The script downloads the correct `.zip` for your architecture, verifies the SHA-256 checksum,
-    extracts to `%LOCALAPPDATA%\Programs\floe`, and adds that directory to your user `PATH`.
-    Open a new terminal after running it.
-  </Tab>
-</Tabs>
-
-## Go install
-
-If you have Go 1.25 or later installed:
+Pin a release with `RILLDROP_VERSION`:
 
 ```bash Terminal
-go install github.com/jannskiee/floe/cli/cmd/floe@latest
+curl -fsSL https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.sh \
+  | RILLDROP_VERSION=v1.0.0 sh
 ```
 
-Go writes the binary to `$(go env GOPATH)/bin` (or `$(go env GOBIN)`), which is not on your
-`PATH` on a default Go setup. Add that directory to your `PATH` before running `floe`. The
-package managers and the install script above handle this for you.
-
-<Warning>
-  `go install` does not give you a release build. `cli` is a nested Go module and the
-  repository carries no `cli/vX.Y.Z` tags, so `@latest` resolves to the current tip of `main`
-  as a pseudo-version rather than to the newest release. The version string is stamped in at
-  release time, so a binary built this way reports `floe dev`, and `floe update` refuses to run
-  with "Cannot update a dev build." Use a package manager or the install script if you want a
-  released build with working self-update.
-</Warning>
-
-## Verify the install
-
-```bash Terminal
-floe version
+```powershell Terminal
+$env:RILLDROP_VERSION = "v1.0.0"
+irm https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.ps1 | iex
 ```
-
-Expected output:
-
-```text Output
-floe 1.x.x
-Docs: https://www.floe.one/docs
-```
-
-If you pinned an older version, a third line appears once the update check completes:
-
-```text Output
-Update available: v1.x.x  run `floe update` to upgrade
-```
-
-Set `FLOE_NO_UPDATE_CHECK=1` to silence it. See [floe version](/cli/version) for what that
-check does. A binary from `go install` or built from source prints `floe dev` instead of a
-version number.
-
-## Verify the checksum (manual download)
-
-If you downloaded an archive directly from the [GitHub Releases page](https://github.com/jannskiee/floe/releases),
-each release includes a `checksums.txt` file. To verify:
-
-```bash Terminal
-# Download checksums
-curl -LO "https://github.com/jannskiee/floe/releases/download/vX.Y.Z/checksums.txt"
-
-# Verify (macOS)
-shasum -a 256 --check --ignore-missing checksums.txt
-
-# Verify (Linux)
-sha256sum --check --ignore-missing checksums.txt
-```
-
-## Update
-
-For package manager installs, use the standard upgrade command (`brew upgrade floe`,
-`winget upgrade jannskiee.floe`, `scoop update floe`).
-
-For script or manual installs, run:
-
-```bash Terminal
-floe update
-```
-
-See [Updating floe](/cli/update) for details.
 
 ## Build from source
 
-Requires Go 1.25 or later.
+Install Go 1.25 or newer:
 
 ```bash Terminal
-git clone https://github.com/jannskiee/floe.git
-cd floe/cli
-go build ./cmd/floe
+git clone https://github.com/Arnavsharma2/rilldrop.git
+cd rilldrop
+go build -o rilldrop ./cli/cmd/rilldrop
 ```
 
-Move the resulting `floe` binary to a directory on your `PATH`. On macOS and Linux,
-`/usr/local/bin` is the usual choice, but it is root-owned on a stock system, so the move
-needs elevation: `sudo mv floe /usr/local/bin/`. A user-owned directory such as
-`~/.local/bin` works without `sudo`, as long as it is on your `PATH`.
+A source build reports version `dev`; the self-update command is disabled for development builds.
 
-Like a `go install` build, a binary compiled this way reports `floe dev` and cannot update
-itself.
+## Verify
+
+```bash Terminal
+rilldrop version
+```
+
+Expected development output:
+
+```text Output
+rilldrop dev
+Docs: https://github.com/Arnavsharma2/rilldrop/tree/main/docs
+```
+
+For self-hosted deployments, configure the signaling and web origins:
+
+```bash Terminal
+export RILLDROP_SERVER=https://files.example.com
+export RILLDROP_WEB=https://files.example.com
+```
+
+Use separate values only when the API and browser client use different origins.

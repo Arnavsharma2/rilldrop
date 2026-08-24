@@ -1,88 +1,25 @@
 ---
-title: "Update the Floe CLI"
-sidebarTitle: "floe update"
-description: "Keep the floe CLI up to date on macOS, Windows, and Linux using the built-in self-update command or by reinstalling the latest release binary."
-keywords: ["floe update", "upgrade floe", "self update"]
+title: "Update the Rilldrop CLI"
+sidebarTitle: "Update"
+description: "Check for and install a newer rilldrop CLI release from GitHub."
 ---
 
-## Package manager installs
-
-If you installed floe via a package manager, use the standard upgrade command for that tool.
-A binary built from source is checked first and stops with `Cannot update a dev build.` whatever
-its path, so the rest of this section applies only to release builds.
-
-`floe update` detects a package-managed install from the binary's path and stops with a message
-pointing you at the right command, rather than replacing the binary behind your package
-manager's back. The same guard applies to `floe update --check`.
-
-| Install method | Upgrade command |
-| -------------- | --------------- |
-| Homebrew (macOS) | `brew upgrade floe`, or `brew upgrade --cask floe` to name the cask explicitly |
-| Winget (Windows) | `winget upgrade jannskiee.floe` |
-| Scoop (Windows) | `scoop update floe` |
-
-Detection is a substring match for `homebrew`, `cellar`, `linuxbrew`, `scoop`, or `winget`
-anywhere in the binary's path, so a script install that happens to live under a directory
-containing one of those words is treated as package-managed too.
-
-This page is about the `floe` command-line tool only. Floe Desktop updates on its own track: the
-Microsoft Store build updates itself, and the GitHub `.exe` and `.zip` builds (0.2.3 and later)
-show a daily notice but never install anything, so you download and run the current build again.
-`floe update` never touches the desktop app. Desktop builds ship on their own `desktop-v*` tags as
-GitHub pre-releases, so neither `floe update` nor the install scripts ever pick them up. See
-[Update Floe Desktop](/desktop/installation#update).
-
-## Script and manual installs
-
-Run the built-in update command:
+Release builds can update themselves from the standalone repository:
 
 ```bash Terminal
-floe update
+rilldrop update --check
+rilldrop update
 ```
 
-This checks the latest release on GitHub, downloads the correct archive for your OS and
-architecture, verifies the SHA-256 checksum, and replaces the running binary in place.
+`--check` reports whether a newer `vX.Y.Z` release exists without downloading anything. `rilldrop update` downloads the archive for your operating system and architecture, verifies the release checksum, and replaces the current executable.
 
-On macOS and Linux, if floe lives in a root-owned directory such as `/usr/local/bin` (the
-install script's default), the final swap needs elevation, so floe asks for your sudo password
-once. Everything before that step (download, checksum, extraction) runs as your normal user. If
-sudo is not installed, the update stops and tells you to re-run as root or reinstall with the
-install script. On Windows no elevation is involved: floe renames the running executable aside
-and moves the new one into place.
-
-To check for an update without installing:
+Development builds report version `dev` and cannot self-update. Rebuild them from source instead:
 
 ```bash Terminal
-floe update --check
+git pull
+go build -o rilldrop ./cli/cmd/rilldrop
 ```
 
-You can also re-run the original install script at any time to upgrade:
+Set `RILLDROP_NO_UPDATE_CHECK=1` to disable the optional check performed by `rilldrop version`. Explicit `rilldrop update` commands still contact GitHub because the command itself requests that operation.
 
-```bash Terminal
-# macOS / Linux
-curl -fsSL https://floe.one/install.sh | sh
-
-# Windows
-irm https://floe.one/install.ps1 | iex
-```
-
-## The update hint
-
-When a newer release exists, `floe version` prints an extra line:
-
-```text Output
-Update available: v1.x.x  run `floe update` to upgrade
-```
-
-Only `floe version` runs this check automatically, never `send` or `receive`. The result is
-cached for 24 hours in `floe/update-check.json` inside your user config directory (`~/.config`
-on Linux, `~/Library/Application Support` on macOS, `%AppData%` on Windows), so deleting that
-file forces a fresh check. `floe update --check` is a separate, deliberate check: it asks GitHub
-directly and ignores the cache.
-
-Set `FLOE_NO_UPDATE_CHECK=1` to suppress the hint entirely. Binaries compiled from source never
-check.
-
-## Version compatibility
-
-You do not need to match versions with the person on the other end. Floe peers on different releases interoperate, so a small version difference is never a problem. In the rare case a release changes the transfer protocol in a breaking way, Floe detects it before any data moves and tells whichever side is older to update. See [Protocol versioning](/reference/transfer-protocol#protocol-versioning) for the details.
+Release assets are published at [github.com/Arnavsharma2/rilldrop/releases](https://github.com/Arnavsharma2/rilldrop/releases).

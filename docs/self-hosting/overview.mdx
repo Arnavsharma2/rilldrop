@@ -1,11 +1,11 @@
 ---
-title: "Self-Hosting Floe Overview"
+title: "Self-Hosting Rilldrop Overview"
 sidebarTitle: "Overview"
-description: "Run your own Floe signaling server, web client, and optional TURN relay on your own infrastructure for full control over peer-to-peer file transfer."
+description: "Run your own Rilldrop signaling server, web client, and optional TURN relay on your own infrastructure for full control over peer-to-peer file transfer."
 keywords: ["self host", "run your own", "on premise", "private instance"]
 ---
 
-You can self-host the entire Floe stack independently of `floe.one`. The setup uses Docker Compose so the full stack comes up with a single command.
+Rilldrop is self-host-first. The Docker Compose setup runs the full stack under your control.
 
 ## What you are hosting
 
@@ -25,21 +25,21 @@ behind a single domain, so your users never see either one. See
 
 ## Who can connect
 
-One instance serves every Floe client. They share one wire protocol, so any two of
+One instance serves every Rilldrop client. They share one wire protocol, so any two of
 them can transfer with each other on your server.
 
 | Client | How it points at your instance |
 |--------|-------------------------------|
 | Web app | Loads from your `client` container. Nothing for the user to configure. |
-| CLI | `floe send --server https://floe.example.com`. See [Use the Floe CLI with a Self-Hosted Server](/cli/self-hosted-server). |
-| Floe Desktop | Settings, **Advanced**, then **Server address**. **Test** checks the address before you rely on it, and **Use default server** returns the app to `api.floe.one`. See [Desktop Settings](/desktop/settings#server). |
+| CLI | `rilldrop send --server https://rilldrop.example.com`. See [Use the Rilldrop CLI with a Self-Hosted Server](/cli/self-hosted-server). |
+| Rilldrop Desktop | Settings, **Advanced**, then **Server address**. **Test** checks the address before you rely on it, and **Use default server** returns the app to `localhost:3001`. See [Desktop Settings](/desktop/settings#server). |
 
 Both peers must be on the same server. Servers do not talk to each other.
 
 ## Run one instance, not several
 
 The signaling server keeps rooms, room codes and its rate limiters in the memory of a single
-process. **Putting two replicas behind a load balancer does not scale Floe out; it breaks
+process. **Putting two replicas behind a load balancer does not scale Rilldrop out; it breaks
 pairing**, because the two peers can land on different replicas and never find each other.
 
 One instance goes a long way. File data never passes through it, so it is brokering a handshake

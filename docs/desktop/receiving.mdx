@@ -1,32 +1,29 @@
 ---
-title: "Receiving Files with Floe Desktop"
+title: "Receiving Files with Rilldrop Desktop"
 sidebarTitle: "Receiving files"
-description: "Receive files in Floe Desktop by entering a room code or share link, choosing where they are saved, and opening them as soon as the transfer finishes."
+description: "Receive files in Rilldrop Desktop by entering a room code or share link, choosing where they are saved, and opening them as soon as the transfer finishes."
 keywords: ["save folder", "where do my files go", "history", "mark of the web"]
 ---
 
 Switch to the **Receive** tab, paste what the sender gave you, and click **Receive**.
 
-<Frame caption="The Receive tab">
-  <img src="/images/desktop/receive.png" alt="Floe Desktop Receive tab with a room code entered and a save folder field" />
-</Frame>
 
 ## Enter a code or link
 
 The **Code or link** field accepts any of these:
 
 - A room code, three words such as `olive-tiger-castle`.
-- A share link, for example `https://floe.one/#room=...`.
-- A link from an older Floe release that used `?room=` instead.
+- A share link, for example `http://localhost:3000/#room=...`.
+- A link from an older Rilldrop release that used `?room=` instead.
 
 So whatever the sender copied, pasting it works. Press `Enter` in the field instead of clicking
 if you prefer.
 
 ## Choose where files land
 
-**Save to** is where everything arrives. Leave it blank and Floe uses your **Downloads** folder, or
+**Save to** is where everything arrives. Leave it blank and Rilldrop uses your **Downloads** folder, or
 your home folder if you do not have one.
-Click **Browse** to pick another one, or type a path directly. Floe creates the folder if it
+Click **Browse** to pick another one, or type a path directly. Rilldrop creates the folder if it
 does not exist.
 
 Whatever you choose here is remembered for next time. You can also set it once in
@@ -34,8 +31,8 @@ Whatever you choose here is remembered for next time. You can also set it once i
 
 ## The transfer
 
-Click **Receive**. Floe joins the room, connects to the sender, and starts writing files
-straight to disk. There is nothing to accept: unlike `floe receive` on the command line, the
+Click **Receive**. Rilldrop joins the room, connects to the sender, and starts writing files
+straight to disk. There is nothing to accept: unlike `rilldrop receive` on the command line, the
 desktop app starts as soon as it connects. The moment the sender is known, the card shows what
 is incoming (the file name and size, or the file count and total) before the first byte lands.
 
@@ -53,7 +50,7 @@ card shows where the files went:
 
 ## Nothing is ever overwritten
 
-If a file arrives with a name you already have, Floe does not replace it. It adds a number
+If a file arrives with a name you already have, Rilldrop does not replace it. It adds a number
 before the extension, the same way browser downloads do:
 
 ```text Example
@@ -77,20 +74,20 @@ real name only at the moment it is complete. Anything you see without `.part` is
 
 Some file names are perfectly ordinary on a Mac or a Linux machine and cannot exist on Windows.
 A timestamp like `backup:2026-08-19.log` is the common case, because Windows gives the colon a
-special meaning. Floe adjusts the name before writing the file, and the progress line and
+special meaning. Rilldrop adjusts the name before writing the file, and the progress line and
 **Show in folder** both use the adjusted name.
 
 The characters `< > : " | ? *` become underscores, trailing dots and spaces are removed, and a
 name that is a reserved device name (such as `NUL`) gets an underscore in front. If two files
 end up with the same adjusted name, the second is numbered exactly as above.
 
-This matters for more than tidiness. Before Floe did this, a file called `backup:2026-08-19.log`
+This matters for more than tidiness. Before Rilldrop did this, a file called `backup:2026-08-19.log`
 appeared in your folder as an empty file called `backup`, because Windows had quietly routed the
 contents somewhere else, and the transfer still reported success.
 
 ## Received files are marked as downloads
 
-On Windows, Floe tags each file it writes with the mark of the web, the same tag Windows puts
+On Windows, Rilldrop tags each file it writes with the mark of the web, the same tag Windows puts
 on a browser download. SmartScreen and Office Protected View then treat it like anything else
 from the internet: an executable prompts before running, and a document opens read-only until
 you choose to enable editing.
@@ -107,9 +104,6 @@ file arrives untagged. The file itself is saved either way.
 Click the clock icon at the top right of the card, or press `Ctrl` `H`, for a list of what you
 have sent and received.
 
-<Frame caption="The History view">
-  <img src="/images/desktop/history.png" alt="Floe Desktop history list showing sent and received transfers with sizes and times, with one row opened to reveal its file names, where it was saved, and Show in folder and Remove" />
-</Frame>
 
 Each row shows the file name (or the count, for a batch), the direction, the size, and when it
 happened. Click any row to open it. The panel underneath lists the individual file names and
@@ -126,7 +120,7 @@ offers an undo.
 
 ## Contribute to global stats
 
-After a transfer completes, the receiving side reports **only the number of bytes** to Floe's
+After a transfer completes, the receiving side reports **only the number of bytes** to Rilldrop's
 server, which adds it to the public counter on the homepage. File names and contents are never
 sent, and the sender never reports anything.
 
@@ -134,17 +128,17 @@ It is on by default, and you can turn it off under
 [Settings](/desktop/settings#contribute-to-global-stats). When it is off, no request is made at
 all.
 
-If you point Floe at your own server, the report goes to that server rather than to floe.one.
+If you point Rilldrop at your own server, the report goes to that server rather than to localhost:3000.
 
 ## When it does not work
 
 | Message | What it means |
 |---|---|
 | That code was not recognized ... | The code was mistyped, has passed its 10 minutes, or belongs to a different server from the one you are on. |
-| This code is no longer active; ask for a new one | The code is still valid but nobody is sharing with it. The transfer already finished, or the sender closed Floe. |
+| This code is no longer active; ask for a new one | The code is still valid but nobody is sharing with it. The transfer already finished, or the sender closed Rilldrop. |
 | Room is full (someone else may already be receiving) | Someone already joined with this code. A room takes one receiver, so ask for a new code. |
 
-If Floe connects but nothing arrives, it gives up after 30 seconds and says the sender never
+If Rilldrop connects but nothing arrives, it gives up after 30 seconds and says the sender never
 started sending; ask them to try again. If it never connects at all, check that both of you are
 on the same signaling server. See [Troubleshooting](/troubleshooting).
 
@@ -152,7 +146,7 @@ A transfer that fails or is canceled partway deletes the `.part` file it was wri
 nothing half-written is left behind under a finished-looking name. Files that completed before
 the failure are kept, and a retry can use the original name rather than a numbered one.
 
-Closing Floe while a transfer runs behaves the same way. The prompt asks first, and choosing
+Closing Rilldrop while a transfer runs behaves the same way. The prompt asks first, and choosing
 **Close anyway** stops the transfer and removes the `.part` file on the way out, so a clean quit
 leaves nothing behind at all. Only an unclean end leaves one: the machine loses power, or the
 process is ended from Task Manager. The unfinished file then sits there as a `.part` file rather
