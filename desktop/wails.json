@@ -5,7 +5,7 @@
   "info": {
     "companyName": "Arnav Sharma",
     "productName": "Rilldrop",
-    "productVersion": "0.2.7",
+    "productVersion": "0.1.0",
     "copyright": "(c) 2026 Arnav Sharma; derived from Floe under the MIT License",
     "comments": "Peer-to-peer file transfer"
   },
@@ -14,7 +14,7 @@
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "Jc Paredes",
-    "email": "paredesjancarlo99@gmail.com"
+    "name": "Arnav Sharma",
+    "email": "73969466+Arnavsharma2@users.noreply.github.com"
   }
 }

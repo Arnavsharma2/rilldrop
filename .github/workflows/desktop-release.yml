@@ -252,16 +252,12 @@ jobs:
             # only place that does; /download's "Release notes" link points there
             # too. Do not try to generate an account of the release here.
             echo "**What changed:** https://github.com/Arnavsharma2/rilldrop/blob/main/docs/changelog.mdx"
-            echo
-            echo "Most people should install from the Microsoft Store instead, which is"
-            echo "signed by Microsoft and updates itself:"
-            echo "https://apps.microsoft.com/detail/9NBQ8ZQ1065L"
           } > "$notes_file"
           # --latest=false AND --prerelease are unconditional and permanent:
           # "latest" must keep resolving to CLI releases (back-compat CI,
           # install scripts, rilldrop update), and prereleases are structurally
           # excluded from /releases/latest, which is the guarantee those four
-          # consumers actually rely on. The Store is the stable channel.
+          # consumers actually rely on.
           gh release create "$GITHUB_REF_NAME" \
             dist-desktop/* \
             --verify-tag \
