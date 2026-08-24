@@ -1,182 +1,50 @@
-# CLAUDE.md
+# Rilldrop development guide
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Rilldrop is a peer-to-peer file-transfer project with four cooperating surfaces:
 
-## Project Overview
+- `client/`: Next.js browser client
+- `server/`: Node.js signaling and short-code service
+- `cli/`: Go CLI plus the shared transfer engine
+- `desktop/`: Wails Windows application using the shared Go engine
 
-**Floe** is an encrypted, peer-to-peer file transfer app built on WebRTC, with browser, desktop, and CLI surfaces. Four components work together:
+## Local stack
 
-- **`client/`** - Next.js 16 (React 19) web app
-- **`server/`** - Node.js signaling server (Express + Socket.IO + WebSocket)
-- **`cli/`** - Go CLI (`floe`) for headless transfers, plus the shared transfer engine in `cli/engine/`
-- **`desktop/`** - Wails v2 desktop app (Go backend + React frontend), built on the same `cli/engine/`
-
-File data never touches the server. WebRTC data channels carry it directly between peers. The server only brokers WebRTC signaling (offer/answer/ICE candidates) and optionally issues TURN relay credentials.
-
-The Go side is a two-module workspace: the root `go.work` joins `cli/` and `desktop/` so the desktop app builds against the engine without publishing it. Release and CI builds can set `GOWORK=off` and rely on the `replace` directive in `desktop/go.mod`.
-
-## Commands
-
-### Client (Next.js)
-```bash
-cd client
-pnpm install
-pnpm dev         # dev server on :3000
-pnpm build       # production build
-pnpm lint        # ESLint
-pnpm test        # vitest unit suite
-pnpm test:e2e    # Playwright e2e (needs client + server running)
+```sh
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
 ```
 
-### Server (Node.js)
-```bash
-cd server
-npm install
-npm run dev      # nodemon auto-restart on :3001
-npm start        # production
-npm test         # node --test server.test.js
+The browser client runs at `http://localhost:3000`; signaling runs at `http://localhost:3001`.
+
+## Validation
+
+```sh
+cd client && pnpm lint && pnpm test && pnpm build
+cd ../server && npm test
+cd ../cli && go test ./...
+cd ../desktop/frontend && npm test && npm run build
+cd .. && go test ./...
 ```
 
-### CLI (Go)
-```bash
-cd cli
-go build ./cmd/floe    # local binary
-go test ./...          # run all tests
+## Protocol compatibility
+
+The browser protocol lives in `client/lib/transfer/protocol.ts`. The Go implementation lives in `cli/engine/transfer/protocol.go`. Keep their protocol ranges aligned. A cosmetic rename does not require a protocol-version bump.
+
+## Brand and configuration
+
+- Display name: `Rilldrop`
+- CLI and package stem: `rilldrop`
+- Environment prefix: `RILLDROP_`
+- Browser storage/event prefix: `rilldrop`
+- Repository: `github.com/Arnavsharma2/rilldrop`
+
+Generate bitmap and ICO brand assets from `desktop/build/appicon.svg` after installing `client/` dependencies:
+
+```sh
+node scripts/generate-brand-assets.mjs
 ```
 
-The CLI uses GoReleaser for cross-platform distribution; version is injected via `-ldflags "-X main.version={{ .Version }}"`, which carries NO leading `v` (a v1.10.4 tag produces a binary that prints `floe 1.10.4`). The desktop app differs: desktop-release.yml injects the tag verbatim (`desktop-v0.2.7`).
+Do not introduce an `rilldrop.one` production assumption. Rilldrop is self-host-first until a real deployment is configured.
 
-### Desktop (Wails)
-```bash
-cd desktop/frontend
-npm install
-npm run build          # REQUIRED before any Go command in desktop/ (see below)
-npm test               # vitest
+## Upstream
 
-cd ../                 # desktop/
-go test ./...
-wails dev              # live-reload development
-wails build            # production build -> build/bin/
-```
-
-`desktop/main.go` embeds `frontend/dist` (`//go:embed all:frontend/dist`), and that directory is gitignored, so on a fresh clone every Go command in `desktop/` fails with "no matching files found" until the frontend has been built once. Build the frontend first, always. Note that `wails build` can exit 0 on a silent failure; verify the executable timestamp changed.
-
-## Environment Setup
-
-**Server** - copy `server/.env.example` to `server/.env`:
-```
-CLIENT_URL=http://localhost:3000
-PORT=3001
-CLOUDFLARE_TURN_KEY_ID=      # optional, managed Cloudflare Realtime TURN (takes precedence)
-CLOUDFLARE_TURN_KEY_API_TOKEN= # optional, pairs with the key ID above
-TURN_SECRET=                 # optional coturn HMAC secret (used when Cloudflare vars unset)
-TURN_DOMAIN=                 # optional coturn hostname
-UPSTASH_REDIS_REST_URL=      # optional, durable global stats counter
-UPSTASH_REDIS_REST_TOKEN=    # optional, pairs with the URL above
-MAX_REPORT_BYTES=            # optional, per-report cap (default 5 TB)
-NODE_ENV=                    # optional, production suppresses stack traces
-TRUSTED_PROXY_COUNT=         # optional, proxy hops for client-IP parsing (default 1; affects every per-IP limiter)
-MAX_CONNECTIONS_PER_IP=      # optional, plus MAX_CODE_REQUESTS_PER_IP, MAX_TURN_REQUESTS_PER_IP,
-MAX_ACTIVE_CODES=            #   see server/.env.example for the full annotated list
-```
-
-**Client** - copy `client/.env.example` to `client/.env.local`:
-```
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3001  # build-time override; self-hosted Docker resolves at runtime via client/lib/socketUrl.ts
-NEXT_PUBLIC_SITE_URL=         # optional, canonical/OG/sitemap base for self-hosts
-NEXT_PUBLIC_SENTRY_DSN=       # optional (SENTRY_DSN / SENTRY_ORG / SENTRY_PROJECT for the server side)
-NEXT_PUBLIC_UMAMI_WEBSITE_ID= # optional analytics
-```
-
-## Architecture
-
-### Signaling Flow
-1. A peer joins a room (`join-room` event) → server assigns role: **sender** (first) or **receiver** (second).
-2. When both peers are present, server emits `user-connected` to the sender.
-3. Peers exchange WebRTC `signal` messages (offer → answer → ICE candidates) via the server.
-4. Once WebRTC connects, the data channel is used directly (server is out of the loop).
-
-A disconnect removes only that peer from the room (the room is deleted once empty), and browser peers re-send `join-room` automatically after a Socket.IO reconnect until the WebRTC connection is up.
-
-Browser peers communicate via **Socket.IO**; CLI peers communicate via **WebSocket at `/ws`**. Both share the same `rooms` registry on the server (`Map<roomId, [peer, peer]>`), so browser-to-CLI transfers work transparently.
-
-### Transfer Protocol Versioning
-The data-channel transfer protocol carries its own version, independent of the release version (1.x.y). Peers exchange `pv` (highest protocol version), `pvMin` (lowest supported), and `ver` (release string) inside the existing `metadata` and `ack` messages. Compatibility is a range-overlap check; if the ranges miss, the receiver sends an `incompatible` message before any file bytes move and each side prints a remedy for its own surface (the CLI says run `floe update`, the desktop points at the Store and floe.one/download via the `UpdateHint` option on Send/ReceiveOptions). Current Go peers rebuild the message locally from the frame's `pv`/`pvMin`; the wire `Reason` is worded from the recipient's perspective for peers that display it verbatim. Constants: `ProtocolVersion` / `MinProtocolVersion` in `cli/engine/transfer/protocol.go`, mirrored as `PROTOCOL_VERSION` / `MIN_PROTOCOL_VERSION` in `client/lib/transfer/protocol.ts`. Both are 1 today. Bump `ProtocolVersion` only on a breaking wire change; keep the two implementations in sync. Peers omitting the fields (pre-1.6.0) are treated as protocol 1.
-
-### Relay Size Limit
-Relayed (TURN) transfers are capped at 2 GB per session; direct transfers are unlimited. The cap is a sender-side, pre-transfer gate: once the connection is established the sender inspects the selected ICE candidate pair, and only a confirmed relay path with more than the limit queued blocks (strictly greater-than, so exactly 2 GB is allowed). Detection failures fail open so a probe hiccup never blocks a legitimate transfer. Constants: `RELAY_SIZE_LIMIT` in `client/lib/relay.ts` (browser) and `RelaySizeLimit` in `cli/engine/transfer/relay.go` (CLI and desktop); keep the two in sync. The gate is local policy on the sender, not part of the wire protocol, so changing it needs no `ProtocolVersion` bump; the receiver has no size check.
-
-### Room Codes
-`POST /api/code` registers a short human-readable phrase (e.g. `olive-tiger-castle`) mapping to a room ID with 10-min TTL. `GET /api/code/:code` resolves it. Words come from `server/words.json`.
-
-### TURN Credentials
-`GET /api/turn-credentials` returns the ICE server list; called by both client and CLI before connecting. Precedence: **Cloudflare Realtime TURN** when `CLOUDFLARE_TURN_KEY_ID` / `CLOUDFLARE_TURN_KEY_API_TOKEN` are set (what floe.one runs; short-lived credentials minted from Cloudflare's `generate-ice-servers` API, cached in memory ~12h, with STUN and TURN returned as separate entries so the client's relay-off filter can strip TURN while keeping STUN), then self-hosted **coturn** HMAC-SHA1 credentials (24h) when `TURN_SECRET` / `TURN_DOMAIN` are set, otherwise Google STUN only. Cloudflare's full 8-URL list is trimmed to a minimal 3-URL set (one STUN, one UDP TURN, one TLS TURN on 443) by `selectMinimalIceUrls` before serving; clients gather ICE candidates per URL per network interface, so redundant URLs multiply connection-setup time on multi-adapter machines.
-
-### Global Stats Counter
-A public, all-time counter of total bytes transferred across every Floe user, shown on the homepage (`client/components/GlobalStats.tsx`) with a NumberFlow odometer animation. Because Floe is P2P and file bytes never reach the server, the **receiver** peer reports the byte count out-of-band over HTTP after a completed transfer. Only the receiver reports (browser receiver via `client/hooks/useTransferAnalytics.ts`, composed by `P2PTransfer.tsx`; CLI and desktop receivers via `cli/engine/transfer/receiver.go`), so each transfer is counted exactly once. The sender never reports. The data-channel protocol is unchanged, so no `ProtocolVersion` bump is needed.
-
-The global total is viewable only in the browser (the `GlobalStats` component on the homepage). The CLI receiver contributes to the counter but never fetches or displays it.
-
-- `GET /api/stats` returns `{ totalBytes }` straight from an in-memory `cachedTotal`, so homepage polling (every 10s) never touches Redis.
-- `POST /api/stats/report` body `{ bytes }`: validates a positive integer `<= MAX_REPORT_BYTES` (`validateReportBytes`), rate-limits per IP (`statsRateLimits`, 60/min), increments `cachedTotal`, then fires `INCRBY floe:bytes_total` to Upstash without awaiting (a Redis hiccup never fails the response).
-- Durability is Upstash Redis over its REST API via native `fetch` (no SDK). `initStats()` seeds `cachedTotal` from Redis on startup. If `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` are unset, the counter degrades gracefully to in-memory only (resets to 0 on restart). This is a best-effort vanity metric with lightweight guardrails, not a tamper-proof figure.
-
-**Opt-out:** Both the browser and the CLI receiver support opting out of reporting.
-- Browser: a "Contribute to global stats" toggle on the receiver view (`client/components/StatsContributionToggle.tsx`, persisted in `localStorage['floe:report-stats']` by `client/hooks/useTransferAnalytics.ts`). When unchecked, neither the `POST /api/stats/report` call nor the optimistic `floe:bytes-reported` event fires.
-- CLI: pass `--no-report` to `floe receive`, or set `FLOE_NO_STATS=1` in the environment. Both gate the report by passing an empty `statsURL` to `ReceiveFiles`, which hits the empty-URL guard at the top of `reportBytesToServer` in `cli/engine/transfer/receiver.go`. No change to `ReceiveFiles` signature or receiver logic.
-
-### Rate Limiting
-Four independent per-IP limiters, each over a 60s window, tracked in plain `Map`s and cleaned every 60s. Connection limiter: 30 per IP (configurable via `MAX_CONNECTIONS_PER_IP`), shared across Socket.IO and WebSocket connections (`checkRateLimit`). TURN endpoint: a separate 20 requests per IP (configurable via `MAX_TURN_REQUESTS_PER_IP`) for `GET /api/turn-credentials` (`turnRateLimits`). Stats endpoint: a separate 60 reports per IP for `POST /api/stats/report` (`statsRateLimits`). Code endpoint: a separate 60 requests per IP (configurable via `MAX_CODE_REQUESTS_PER_IP`), shared across `POST /api/code` and `GET /api/code/:code` (`codeRateLimits`), applied via the shared `makeRateLimiter` middleware factory. As a second guard, `POST /api/code` returns 503 once `codeToRoom` holds `MAX_ACTIVE_CODES` (default 10000) live codes, bounding memory regardless of source IP.
-
-### React Strict Mode is intentionally disabled
-`next.config.mjs` sets `reactStrictMode: false`. Strict Mode's double-mount breaks Socket.IO connections and `simple-peer` instances. All socket/peer logic uses refs and cleanup functions to handle component lifecycle correctly.
-
-### Key Client Modules
-- `client/components/P2PTransfer.tsx` - transfer UI orchestrator; the extracted logic lives in `client/hooks/` (useSignaling, useFileManagement, useDownloadManager, useConnectionType, useTransferAnalytics, useRelayConfiguration, useWakeLock)
-- `client/lib/transfer/` - browser side of the wire protocol (protocol.ts, sender.ts, receiver.ts, verify.ts)
-- `client/lib/transferUtils.ts` - `formatSpeed()` and `formatETA()` used by the progress display
-
-### Shared Go Engine
-All under `cli/engine/`, imported by both the CLI (`cli/cmd/floe`) and the desktop app (`desktop/`):
-- `signaling/` - WebSocket client for the `/ws` endpoint
-- `peer/` - WebRTC peer setup via Pion
-- `transfer/sender.go` / `transfer/receiver.go` - binary protocol over the data channel
-- `ice/` - fetches STUN/TURN credentials from server
-- `code/` - registers and resolves short room codes
-- `serverurl/` - normalizes user-supplied server URLs (whitespace, trailing slashes)
-- `verify/` - short authentication string for out-of-band MITM verification
-
-`cli/internal/` still exists but holds only `selfupdate/`, which stays private to the CLI on purpose (`floe update` has no meaning for the desktop app).
-
-## Documentation Site
-
-The docs live in `docs/` (Mintlify), git-synced to `main`, and are served at `floe.one/docs` (Mintlify deployment `floe` at base path `/docs`, reverse-proxied through the Vercel app's `next.config.mjs` rewrite to `floe.mintlify.site`; the old `docs.floe.one` 301-redirects there).
-
-- `docs/changelog.mdx` is written by hand and is never auto-generated. Its shape is fixed by the authoring contract in the MDX comment at the top of the file: one timeline for both version lines, `label` is the git tag verbatim (and therefore the anchor, so never edit a shipped one), `description` is the release date, and `tags` come from the fixed set `Web`, `Desktop`, `CLI`, `Self-hosting`, primary surface first. Follow that contract when adding an entry. Changing the contract itself is a restructure and needs its own discussion.
-- `docs/style.css` is auto-loaded by Mintlify on every docs page (no `docs.json` entry, that is how Mintlify works). Since the docs redesign (#269) it carries the full docs CSS (sidebar, theme, landing, code blocks). The changelog tag-separator rule near the top is still the only thing keeping the tags in an entry's left gutter legible (Mintlify renders them as bare space-separated text with no delimiter of its own), and its selector is undocumented by Mintlify, so if the tag row ever loses its separators that is the first thing to check.
-- Docs-only PRs stay fast without dodging branch protection: the `changes` job in `.github/workflows/ci.yml` diffs the PR and, when every changed file is under `docs/`, the heavy jobs skip and the `CI green` check reports success in under a minute, so docs and Mintlify PRs merge quickly without running the client/server/CLI/e2e suite.
-
-Automated doc-maintenance PRs (style, links, SEO) are managed in the Mintlify dashboard. They open PRs against `main`, only edit `docs/**`, and never auto-merge.
-
-## CI
-
-`CI green` is the single required status check on `main`. It is a gate job in `.github/workflows/ci.yml` that needs every other job; any new CI job must be added to its `needs` list or its failures are invisible to branch protection. New or experimental jobs should start OUTSIDE the gate's needs (visible but non-blocking) and be promoted in once stable. Deterministic linters (for example actionlint) are the exception and may enter the gate's `needs` immediately: their failures are reproducible locally, and their whole purpose is to block broken workflow edits, which a soak period outside the gate would defeat.
-
-ci.yml also has a `workflow_dispatch` trigger: a dispatched run behaves exactly like a push (full suite, no path skips). Use it to recover from a lost push event or to re-roll the suite when investigating flaky tests. The e2e and back-compat jobs upload a Playwright evidence artifact (HTML report, traces, and stamped CLI transcripts) on every non-cancelled run, so a test that fails once and passes on the CI retry still leaves its first attempt inspectable.
-
-## Writing Style
-
-Do not use em dashes in any markdown files or documentation. Use periods, commas, hyphens, or parentheses instead. In `docs/`, Vale checks this (`docs/.vale.ini` plus the `docs/styles/Floe/EmDash.yml` rule, surfaced as the Mintlify Grammar linter CI check), reinforced by the weekly Apply style guide automation.
-
-What Vale actually covers is narrower than this rule: it matches the em dash and en dash characters only, in `docs/` only. An ASCII `--` used as a dash is a human-review matter, because a token for it fires on every CLI flag in the docs. Markdown outside `docs/` has no style linter (root Prettier can format it, but nothing checks dash usage there).
-
-Floe writes American English, in the docs and in user-facing product strings alike. In `docs/`, Vale enforces it (`docs/styles/Floe/Spelling.yml`), with `docs/changelog.mdx` exempted because its shipped entries describe releases whose UI really did say "Cancelling". The word list is short on purpose: it covers the pairs that have actually come up here rather than English generally, so extend it when a new one appears. The rule must stay at `level: error`, because `MinAlertLevel = error` makes Vale skip a lower-level rule entirely rather than merely hiding its output. Outside `docs/` this is a convention rather than a check, and it covers text a user can see (window titles, status lines, error messages, CLI output), not code comments or identifiers. Wails runtime names such as `WindowMinimise` are upstream API and stay as they are.
-
-## Git Conventions
-
-Do not credit Claude or any AI assistant as an author. Specifically:
-
-- Omit the `Co-Authored-By: Claude ...` trailer from commit messages.
-- Omit the `🤖 Generated with Claude Code` footer from pull request descriptions.
-
-Commit messages and PR bodies stay attribution-free. PR Summary and Test plan sections are fine, just leave out any AI footer or co-author line.
+The initial source came from [Floe](https://github.com/jannskiee/floe) by Jan Carlo Paredes, at commit `6d1e629`, under the MIT License. Preserve `LICENSE` and the attribution in `README.md`.
