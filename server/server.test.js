@@ -559,8 +559,8 @@ describe('errorHandler', () => {
         err.stack = [
             "SyntaxError: Expected property name or '}' in JSON at position 1",
             '    at JSON.parse (<anonymous>)',
-            '    at parse (/home/azureuser/floe/server/node_modules/body-parser/lib/types/json.js:91:21)',
-            '    at /home/azureuser/floe/server/node_modules/body-parser/lib/read.js:162:18',
+            '    at parse (/home/azureuser/rilldrop/server/node_modules/body-parser/lib/types/json.js:91:21)',
+            '    at /home/azureuser/rilldrop/server/node_modules/body-parser/lib/read.js:162:18',
         ].join('\n');
         return err;
     }

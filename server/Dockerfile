@@ -1,4 +1,4 @@
-# Floe signaling server — production image.
+# Rilldrop signaling server — production image.
 # The server only brokers WebRTC signaling and issues TURN credentials; it never
 # touches file data. It binds 0.0.0.0:$PORT (default 3001) and reads its config
 # from environment variables (see server/.env.example).

@@ -43,8 +43,6 @@ function getClientIp(xffHeader, socketAddr) {
 
 const allowedOrigins = [
     process.env.CLIENT_URL,
-    'https://www.floe.one',
-    'https://floe.one',
     'http://localhost:3000',
 ].filter(Boolean);
 
@@ -129,7 +127,7 @@ function generateCoturnCredentials() {
     // who opens the link after the credentials expire.
     const ttl = 24 * 3600;
     const expiry = Math.floor(Date.now() / 1000) + ttl;
-    const username = `${expiry}:floeuser`;
+    const username = `${expiry}:rilldropuser`;
     const password = crypto.createHmac('sha1', turnSecret).update(username).digest('base64');
 
     return [
@@ -302,7 +300,7 @@ app.get('/api/code/:code', codeRateLimiter, (req, res) => {
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
-const STATS_KEY = 'floe:bytes_total';
+const STATS_KEY = 'rilldrop:bytes_total';
 
 let cachedTotal = 0;
 

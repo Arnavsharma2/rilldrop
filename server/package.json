@@ -1,7 +1,7 @@
 {
-  "name": "p2p-fileshare",
+  "name": "rilldrop-server",
   "version": "1.0.0",
-  "description": "P2P file sharing backend using WebRTC and Socket.io",
+  "description": "Rilldrop signaling backend for peer-to-peer file transfer",
   "main": "server.js",
   "scripts": {
     "test": "node --test server.test.js",
@@ -9,7 +9,7 @@
     "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "Jan Carlo Paredes",
+  "author": "Arnav Sharma",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.6",
