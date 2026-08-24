@@ -1,4 +1,4 @@
-# Contributing to Floe
+# Contributing to Rilldrop
 
 Thank you for your interest in contributing! All contributions are welcome. This project follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -14,9 +14,9 @@ Thank you for your interest in contributing! All contributions are welcome. This
 
 ## Development Setup
 
-Floe has four parts: a **Next.js client**, a **Node.js signaling server**, a **Go CLI**, and a **Wails desktop app**. The CLI and the desktop app share the Go transfer engine in `cli/engine/`, joined by the `go.work` workspace at the repository root.
+Rilldrop has four parts: a **Next.js client**, a **Node.js signaling server**, a **Go CLI**, and a **Wails desktop app**. The CLI and the desktop app share the Go transfer engine in `cli/engine/`, joined by the `go.work` workspace at the repository root.
 
-For most contributions (UI, pages, components), you only need to run the client. Point it at the live signaling server at `api.floe.one` so you do not need to run a server locally.
+For visual-only work you can run the client by itself. Transfer testing requires the local signaling server on port 3001.
 
 ### Prerequisites
 
@@ -28,16 +28,16 @@ For most contributions (UI, pages, components), you only need to run the client.
 ### Client Only (Recommended for most contributors)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/floe.git
-cd floe/client
+git clone https://github.com/YOUR_USERNAME/rilldrop.git
+cd rilldrop/client
 
 cp .env.example .env.local
-# In .env.local, set NEXT_PUBLIC_SOCKET_URL=https://api.floe.one
+# In .env.local, set NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). With `NEXT_PUBLIC_SOCKET_URL` set to `https://api.floe.one`, the client uses the live signaling server, so you do not need to run one locally.
+Open [http://localhost:3000](http://localhost:3000). Transfer actions will remain offline until you also run the signaling server.
 
 ### Client + Server (Only needed if you're changing server code)
 
@@ -64,7 +64,7 @@ From the repository root:
 
 ```bash
 cd cli
-go build ./cmd/floe
+go build ./cmd/rilldrop
 go test ./...
 ```
 
@@ -105,7 +105,7 @@ To run the client and signaling server together in containers (without installin
 docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 ```
 
-The overlay tags its output `floe-client:dev` and `floe-server:dev`, so a local build never replaces a pulled image under the same name.
+The overlay tags its output `rilldrop-client:dev` and `rilldrop-server:dev`, so a local build never replaces a pulled image under the same name.
 
 Without the overlay, `docker compose up -d` pulls the prebuilt images from ghcr.io and ignores your working tree entirely, which is what a self-hoster wants but almost never what a contributor wants.
 
@@ -119,8 +119,8 @@ Even with the overlay this is a production build with no hot reload, so use it t
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NEXT_PUBLIC_SOCKET_URL` | No | Signaling server URL the browser connects to. `pnpm dev` already defaults to `http://localhost:3001`; for UI-only work set it to `https://api.floe.one` to use the live server without running one locally. Inlined at build time when set. Self-hosted Docker instances leave it unset and resolve the address at runtime instead. |
-| `NEXT_PUBLIC_SITE_URL` | No | Public base URL for canonical links, Open Graph tags, and the sitemap. Defaults to `https://www.floe.one`. Set to your own domain when self-hosting. |
+| `NEXT_PUBLIC_SOCKET_URL` | No | Signaling server URL the browser connects to. `pnpm dev` defaults to `http://localhost:3001`. Inlined at build time when set. Self-hosted Docker instances leave it unset and resolve the address at runtime instead. |
+| `NEXT_PUBLIC_SITE_URL` | No | Public base URL for canonical links, Open Graph tags, and the sitemap. Defaults to `http://localhost:3000`. Set to your own domain when self-hosting. |
 | `NEXT_PUBLIC_SENTRY_DSN` | No | Your Sentry DSN for client-side error tracking. Leave empty to disable. |
 | `SENTRY_DSN` | No | Your Sentry DSN for server-side error tracking. Leave empty to disable. |
 | `SENTRY_ORG` | No | Your Sentry organization slug. |
@@ -187,6 +187,6 @@ Open an issue and describe what you'd like and why it would be useful.
 
 ## Questions
 
-Ask in [Discussions](https://github.com/jannskiee/floe/discussions). For bugs and concrete feature requests, open an issue. We are happy to help.
+Ask in [Discussions](https://github.com/Arnavsharma2/rilldrop/discussions). For bugs and concrete feature requests, open an issue. We are happy to help.
 
 Thank you for contributing!

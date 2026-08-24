@@ -1,37 +1,27 @@
-# Self-Hosting Floe
+# Self-Hosting Rilldrop
 
-Run your own Floe instance (the web client and the signaling server) on your own
-infrastructure, independent of `floe.one`. File data still flows peer-to-peer; the
+Run your own Rilldrop instance (the web client and the signaling server) on your own
+infrastructure. File data still flows peer-to-peer; the
 server you run only brokers the WebRTC handshake.
 
-Full documentation is at **[floe.one/docs/self-hosting](https://www.floe.one/docs/self-hosting)**,
+Full documentation is in **[docs/self-hosting](docs/self-hosting/overview.mdx)**,
 including production deployment, reverse-proxy and TLS setup, and the complete
 configuration reference.
 
 ## Quick start (Docker)
 
-Prebuilt images are published to ghcr.io and `docker-compose.yml` pulls them, so
-there is nothing to clone and no toolchain to install.
+Clone the repository and build the images from source:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/jannskiee/floe/main/docker-compose.yml
-docker compose up -d
+git clone https://github.com/Arnavsharma2/rilldrop.git
+cd rilldrop
+cp .env.docker.example .env
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-A `.env` file is optional; every value has a working default. To change something,
-fetch the annotated example next to the compose file:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jannskiee/floe/main/.env.docker.example -o .env
-```
-
-To build from source instead, add the overlay:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
-```
+The `.env` file is optional for local testing; `.env.docker.example` documents every setting.
 
 ## Configuration
 
@@ -40,7 +30,7 @@ that matter most:
 
 | Variable | What it does |
 | --- | --- |
-| `FLOE_IMAGE_TAG` | Which published image tag to run. Defaults to `latest`, the newest release. |
+| `RILLDROP_IMAGE_TAG` | Which published image tag to run. Defaults to `latest`, the newest release. |
 | `NEXT_PUBLIC_SOCKET_URL` | URL the browser uses to reach your signaling server. |
 | `PORT` | Host port the server is published on. |
 | `CLIENT_PORT` | Host port the client is published on. |
@@ -80,7 +70,7 @@ which belongs to the client), and `/health` to the server and everything else to
 the client, and the whole instance lives at one address. That means one certificate and one URL to configure.
 
 Copy-pasteable Caddy and nginx configuration is in
-[the reverse proxy guide](https://www.floe.one/docs/self-hosting/reverse-proxy).
+[the reverse proxy guide](docs/self-hosting/reverse-proxy.mdx).
 
 ## Connectivity: STUN vs TURN
 
@@ -98,7 +88,7 @@ Copy-pasteable Caddy and nginx configuration is in
 
   ```bash
   curl -fsSL --create-dirs -o coturn/turnserver.conf \
-    https://raw.githubusercontent.com/jannskiee/floe/main/coturn/turnserver.conf.example
+    https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/coturn/turnserver.conf.example
   docker compose --profile turn up -d
   ```
 
@@ -109,7 +99,7 @@ Copy-pasteable Caddy and nginx configuration is in
   recovery needs `rmdir coturn/turnserver.conf` first, because copying onto a
   directory succeeds and writes the file inside it.
   TURN needs its own ports and cannot be served through an HTTP reverse proxy; see
-  [the TURN relay guide](https://www.floe.one/docs/self-hosting/turn-relay).
+  [the TURN relay guide](docs/self-hosting/turn-relay.mdx).
 
 ## Without Docker
 

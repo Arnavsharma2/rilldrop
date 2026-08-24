@@ -1,119 +1,97 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/floe-mark-dark.svg">
-    <img src=".github/assets/floe-mark-light.svg" alt="Floe" width="100" height="100" />
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rilldrop-mark-dark.svg">
+    <img src=".github/assets/rilldrop-mark-light.svg" alt="Rilldrop" width="112" height="112" />
   </picture>
 </p>
 
-<h1 align="center">Floe</h1>
+<h1 align="center">Rilldrop</h1>
 
 <p align="center">
-  <strong>Encrypted peer-to-peer file transfer for the browser, desktop, and command line</strong>
+  <strong>Private peer-to-peer file transfer, wherever you work.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/jannskiee/floe/releases/latest"><img src="https://img.shields.io/github/v/release/jannskiee/floe?filter=v*&label=CLI" alt="CLI release" /></a>
-  <a href="https://github.com/jannskiee/floe/releases"><img src="https://img.shields.io/github/v/release/jannskiee/floe?filter=desktop-v*&label=Windows&include_prereleases" alt="Desktop release" /></a>
-  <a href="https://github.com/jannskiee/floe/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/jannskiee/floe/ci.yml?branch=main&label=build" alt="Build status" /></a>
-  <a href="https://github.com/jannskiee/floe/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
-  <a href="https://github.com/jannskiee/floe/stargazers"><img src="https://img.shields.io/github/stars/jannskiee/floe?style=social" alt="Stars" /></a>
+  <a href="https://github.com/Arnavsharma2/rilldrop/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Arnavsharma2/rilldrop/ci.yml?branch=main&label=build" alt="Build status" /></a>
+  <a href="https://github.com/Arnavsharma2/rilldrop/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-2dd4bf.svg" alt="MIT License" /></a>
 </p>
 
 <p align="center">
-  <a href="https://floe.one">Try Floe</a> ·
-  <a href="https://www.floe.one/docs">Documentation</a> ·
-  <a href="#desktop">Desktop</a> ·
-  <a href="#cli">CLI</a> ·
-  <a href="#self-hosting">Self-hosting</a> ·
-  <a href="#contributing">Contributing</a>
+  <a href="#quick-start">Quick start</a> ·
+  <a href="docs/introduction.mdx">Documentation</a> ·
+  <a href="SELF_HOSTING.md">Self-hosting</a> ·
+  <a href="#upstream-credit">Upstream credit</a>
 </p>
 
 ## About
 
-Floe is an open-source peer-to-peer file transfer application built on WebRTC. Files stream directly between devices; the signaling server negotiates connections and never stores, inspects, or decrypts file data. When a direct path is blocked, an optional TURN relay bridges the transfer while the data stays end-to-end encrypted. The desktop app and the CLI contain no analytics or telemetry; the only things either sends are an optional, anonymous byte count that powers the public counter and an optional once-a-day update check against GitHub, and you can turn both off in any client. The floe.one website itself runs cookieless, aggregate analytics (including anonymous transfer outcomes) and error monitoring, detailed in the [security and privacy docs](https://www.floe.one/docs/security-privacy).
+Rilldrop streams files directly between devices over WebRTC. A small signaling server introduces peers but never stores, inspects, or decrypts file contents. If a direct route is unavailable, an optional TURN relay forwards the same end-to-end encrypted traffic.
 
-Three clients share one wire protocol: the web app at [floe.one](https://floe.one), a Windows desktop app, and a Go CLI. Send from a browser tab and receive in the desktop app or the CLI, or any other combination, even across different networks.
+The project includes a Next.js web client, a Windows desktop client, a Go command-line client, and a Node.js signaling server. They share one transfer protocol, so a sender and receiver can use different clients.
 
-For the design behind this, see [how it works](https://www.floe.one/how-it-works) and the [technical reference](https://www.floe.one/docs/how-it-works/signaling).
+Rilldrop is currently a self-host-first development project. It does not claim an official hosted service, app-store listing, or package-manager release yet; configure your own public client and signaling URLs when deploying it.
 
 ## Quick start
 
-Open [floe.one](https://floe.one), pick a file, and share the generated link or QR code with the receiver. No account or installation required.
-
-The [quickstart guide](https://www.floe.one/docs/quickstart) walks through sending and receiving your first file.
-
-## Desktop
-
-Floe for Windows 10 and 11 (x64), currently in beta. The Microsoft Store build is signed by Microsoft and updates automatically.
-
-<a href="https://apps.microsoft.com/detail/9NBQ8ZQ1065L"><img src="client/public/ms-store-badge.svg" alt="Download from the Microsoft Store" width="161" height="44" /></a>
-
-Prefer a direct download? An installer and a portable build are on the [download page](https://www.floe.one/download). Setup details are in the [desktop installation guide](https://www.floe.one/docs/desktop/installation).
-
-## CLI
-
-Send and receive from terminals, servers, and scripts.
+Build and run the full stack locally:
 
 ```sh
-brew install --cask jannskiee/tap/floe        # macOS
-winget install jannskiee.floe                 # Windows
-curl -fsSL https://floe.one/install.sh | sh   # Linux and other systems
+git clone https://github.com/Arnavsharma2/rilldrop.git
+cd rilldrop
+cp .env.docker.example .env
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
 ```
 
-Send with `floe send photo.jpg`, receive with `floe receive olive-tiger-castle`, and update in place with `floe update`.
+Then open `http://localhost:3000` on both devices. For use across networks, follow [SELF_HOSTING.md](SELF_HOSTING.md) and configure HTTPS plus a public signaling address.
 
-Senders in the CLI and the desktop app produce both a short code and a browser link, so the receiver can join from any client. Other install channels, checksum verification, and PATH setup are covered in the [CLI installation guide](https://www.floe.one/docs/cli/installation).
-
-## Self-hosting
-
-Prefer your own infrastructure? Prebuilt images on ghcr.io bring up the full stack in two commands, with no clone and no toolchain:
+### Web development
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/jannskiee/floe/main/docker-compose.yml
-docker compose up -d
+cd server
+npm install
+npm run dev
 ```
 
-All three clients can point at a self-hosted server. Configuration, deployment behind HTTPS, and the optional TURN relay are covered in [SELF_HOSTING.md](SELF_HOSTING.md) and the [self-hosting docs](https://www.floe.one/docs/self-hosting/overview).
+In another terminal:
+
+```sh
+cd client
+pnpm install
+pnpm dev
+```
+
+### CLI development
+
+```sh
+go build -o rilldrop ./cli/cmd/rilldrop
+./rilldrop send photo.jpg --server http://localhost:3001
+./rilldrop receive olive-tiger-castle --server http://localhost:3001
+```
+
+Set `RILLDROP_SERVER` and, for split deployments, `RILLDROP_WEB` to avoid repeating those flags.
+
+## What changed
+
+- New Rilldrop product identity, logo, executable names, package coordinates, configuration keys, and distribution metadata.
+- Local and self-hosted endpoints replace assumptions about an upstream hosted service.
+- Transfer lists, progress, and icon-only controls expose clearer semantics to assistive technology.
+- The original Git history is intentionally not included; this repository starts with a credited source-import commit and continues with Rilldrop-specific work.
 
 ## Documentation
 
-The [documentation](https://www.floe.one/docs) covers all three clients in depth, from your first transfer to a self-hosted deployment.
+- [Introduction](docs/introduction.mdx)
+- [Quickstart](docs/quickstart.mdx)
+- [How the transfer works](docs/reference/architecture.mdx)
+- [Security and privacy](docs/security-privacy.mdx)
+- [Self-hosting](SELF_HOSTING.md)
+- [Contributing](CONTRIBUTING.md)
 
-The [FAQ](https://www.floe.one/docs/faq) answers the questions that come up most, from transfer limits to privacy, and the [troubleshooting guide](https://www.floe.one/docs/troubleshooting) starts from the symptom when something will not connect. The [changelog](https://www.floe.one/docs/changelog) tracks every release across web, desktop, and CLI.
+## Upstream credit
 
-## Contributing
+Rilldrop is derived from [Floe](https://github.com/jannskiee/floe), created by [Jan Carlo Paredes (@jannskiee)](https://github.com/jannskiee). The source was imported from upstream commit [`6d1e629`](https://github.com/jannskiee/floe/commit/6d1e629) and then rebranded and modified independently.
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, environment variables, and the pull request process. If you encounter a bug or have a feature suggestion, please open an [issue](https://github.com/jannskiee/floe/issues).
-
-This project follows the [Code of Conduct](CODE_OF_CONDUCT.md). To report a vulnerability, see [SECURITY.md](SECURITY.md).
-
-## Support
-
-Floe is free and open source. Contributions help cover the ongoing costs of backend infrastructure that keeps the service accessible to everyone. This includes the signaling server for WebRTC connection negotiation and room management, and the TURN relay service that provides encrypted relay for users behind strict firewalls or Carrier-Grade NAT.
-
-**[GitHub Sponsors](https://github.com/sponsors/jannskiee)**\
-**[Ko-fi](https://ko-fi.com/jannskiee)**
-
-## Acknowledgments
-
-Floe is supported by open source sponsorship programs that donate the tools and infrastructure behind it:
-
-- **Error monitoring** is generously provided by [Sentry](https://sentry.io) through [Sentry for Good](https://sentry.io/for/good/).
-- **Documentation** is generously hosted by [Mintlify](https://mintlify.com) through the [Mintlify OSS Program](https://mintlify.com/oss-program).
-- **Development** is supported by [Claude](https://claude.com/claude-code) through Anthropic's open source program.
-
-Thank you to these programs for helping keep Floe sustainable as an independent open source project.
-
-<p align="center">
-  <a href="https://sentry.io"><img src="https://img.shields.io/badge/Monitored%20by-Sentry-362D59?logo=sentry&logoColor=white" alt="Monitored by Sentry" /></a>
-  <a href="https://mintlify.com"><img src="https://img.shields.io/badge/Docs%20by-Mintlify-18E299?logo=mintlify&logoColor=white" alt="Documentation by Mintlify" /></a>
-  <a href="https://www.anthropic.com"><img src="https://img.shields.io/badge/Sponsored%20by-Anthropic-D97757?logo=anthropic&logoColor=white" alt="Sponsored by Anthropic" /></a>
-</p>
+Thank you to Jan Carlo Paredes and the Floe contributors for publishing the original work as open source. This repository preserves the original copyright notice and MIT license in [LICENSE](LICENSE).
 
 ## License
 
-MIT License, Copyright Jan Carlo Paredes. See [LICENSE](LICENSE) for details.
-
-<p align="center">
-  <sub>Open source. Built for everyone.</sub>
-</p>
+MIT License. Copyright © 2026 Jan Carlo Paredes. See [LICENSE](LICENSE).

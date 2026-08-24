@@ -2,12 +2,9 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Floe, please report it privately. Do not open a public issue, as that may expose the vulnerability before a fix is available.
+If you discover a security vulnerability in Rilldrop, please report it privately. Do not open a public issue, as that may expose the vulnerability before a fix is available.
 
-There are two ways to report:
-
-1. **GitHub Security Advisories (preferred):** Open the [Security tab](https://github.com/jannskiee/floe/security/advisories/new) and select "Report a vulnerability". This keeps the report private until a fix is released.
-2. **Email:** Send the details to paredesjancarlo99@gmail.com.
+Use **GitHub Security Advisories**: open the [Security tab](https://github.com/Arnavsharma2/rilldrop/security/advisories/new) and select "Report a vulnerability". This keeps the report private until a fix is released.
 
 Please include as much of the following as possible:
 
@@ -24,8 +21,8 @@ Please include as much of the following as possible:
 
 ## Scope
 
-This policy covers the Floe web client, signaling server, CLI, and desktop app in this repository. The signaling server brokers connection setup only. File data travels peer-to-peer over end-to-end encrypted WebRTC data channels, directly when possible or through an encrypted TURN relay that cannot read it, and is never stored or inspected by Floe infrastructure.
+This policy covers the Rilldrop web client, signaling server, CLI, and desktop app in this repository. The signaling server brokers connection setup only. File data travels peer-to-peer over end-to-end encrypted WebRTC data channels, directly when possible or through an encrypted TURN relay that cannot read it, and is never stored or inspected by Rilldrop infrastructure.
 
 ## Supported Versions
 
-Security fixes land on `main` and ship in the next release of the affected component. Floe has two release lines: the CLI releases as `v*` tags (the repository's Latest release) and the desktop app releases as `desktop-v*` pre-release tags, while the web client at floe.one always runs the newest `main`. Please make sure you are on the most recent release of the component you are reporting against.
+Rilldrop is pre-1.0 software. Security fixes land on `main`; tagged fixes ship on the CLI `v*` or desktop `desktop-v*` release line as appropriate. Reports should identify the exact commit or tag tested.
