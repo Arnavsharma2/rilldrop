@@ -1,13 +1,13 @@
-# Floe CLI installer for Windows
-# Usage: irm https://floe.one/install.ps1 | iex
-#        $env:FLOE_VERSION = "v1.2.0"; irm https://floe.one/install.ps1 | iex
+# Rilldrop CLI installer for Windows
+# Usage: irm https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.ps1 | iex
+#        $env:RILLDROP_VERSION = "v1.2.0"; irm https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.ps1 | iex
 # Re-running upgrades an existing install in place.
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "jannskiee/floe"
-$Binary = "floe.exe"
-$InstallDir = "$env:LOCALAPPDATA\Programs\floe"
+$Repo = "Arnavsharma2/rilldrop"
+$Binary = "rilldrop.exe"
+$InstallDir = "$env:LOCALAPPDATA\Programs\rilldrop"
 
 # Detect architecture
 $Arch = switch ($env:PROCESSOR_ARCHITECTURE) {
@@ -20,7 +20,7 @@ $Arch = switch ($env:PROCESSOR_ARCHITECTURE) {
 }
 
 # Resolve version
-$Version = $env:FLOE_VERSION
+$Version = $env:RILLDROP_VERSION
 if (-not $Version) {
     Write-Host "Fetching latest version..."
     $Release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest"
@@ -28,13 +28,13 @@ if (-not $Version) {
 }
 
 if (-not $Version) {
-    Write-Error "Could not determine latest version. Set `$env:FLOE_VERSION = 'vX.Y.Z'` to install a specific version."
+    Write-Error "Could not determine latest version. Set `$env:RILLDROP_VERSION = 'vX.Y.Z'` to install a specific version."
     exit 1
 }
 
 # The release tag carries a leading "v" (e.g. v1.5.2), but GoReleaser strips it
-# from the archive name (floe_1.5.2_...). Use the tag for the download path and
-# the bare version number for the filename. Tolerate FLOE_VERSION set with or
+# from the archive name (rilldrop_1.5.2_...). Use the tag for the download path and
+# the bare version number for the filename. Tolerate RILLDROP_VERSION set with or
 # without the leading "v".
 if ($Version.StartsWith("v")) {
     $Tag = $Version
@@ -44,16 +44,16 @@ if ($Version.StartsWith("v")) {
     $VersionNum = $Version
 }
 
-$Archive = "floe_${VersionNum}_windows_${Arch}.zip"
+$Archive = "rilldrop_${VersionNum}_windows_${Arch}.zip"
 $DownloadUrl = "https://github.com/$Repo/releases/download/$Tag/$Archive"
 $ChecksumsUrl = "https://github.com/$Repo/releases/download/$Tag/checksums.txt"
 
-$TmpDir = New-Item -ItemType Directory -Path "$env:TEMP\floe-install-$(Get-Random)"
+$TmpDir = New-Item -ItemType Directory -Path "$env:TEMP\rilldrop-install-$(Get-Random)"
 
 try {
     $ArchivePath = Join-Path $TmpDir $Archive
 
-    Write-Host "Downloading floe $Version (windows/$Arch)..."
+    Write-Host "Downloading rilldrop $Version (windows/$Arch)..."
     Invoke-WebRequest -Uri $DownloadUrl -OutFile $ArchivePath -UseBasicParsing
 
     # Verify SHA-256 checksum
@@ -99,8 +99,8 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Installed floe $Version to $InstallDir\$Binary"
-    Write-Host "Open a new terminal, then run 'floe version' to verify."
+    Write-Host "Installed rilldrop $Version to $InstallDir\$Binary"
+    Write-Host "Open a new terminal, then run 'rilldrop version' to verify."
 
 } finally {
     Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
