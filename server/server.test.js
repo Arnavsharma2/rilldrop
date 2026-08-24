@@ -21,6 +21,7 @@ const {
     validateReportBytes,
     statsRateLimits,
     makeRateLimiter,
+    recentTimestamps,
     codeRateLimits,
     selectMinimalIceUrls,
 } = require('./server');
@@ -440,6 +441,27 @@ describe('makeRateLimiter', () => {
         limiter({ ip: '2.2.2.2' }, res, () => { allowed = true; });
         assert.equal(allowed, true, 'a different IP must still be allowed');
         assert.equal(res.statusCode, 200);
+    });
+});
+
+describe('recentTimestamps', () => {
+    it('prunes the expired prefix without allocating a replacement array', () => {
+        const now = 100000;
+        const original = [1, now - 59999, now];
+        const map = new Map([['peer', original]]);
+
+        const recent = recentTimestamps(map, 'peer', 60000, now);
+
+        assert.strictEqual(recent, original);
+        assert.deepEqual(recent, [now - 59999, now]);
+    });
+
+    it('returns a reusable empty array for a new key', () => {
+        const map = new Map();
+        const recent = recentTimestamps(map, 'new-peer', 60000, 100000);
+        recent.push(100000);
+        map.set('new-peer', recent);
+        assert.strictEqual(recentTimestamps(map, 'new-peer', 60000, 100001), recent);
     });
 });
 

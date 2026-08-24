@@ -104,7 +104,7 @@ const MAX_ACTIVE_CODES = parseInt(process.env.MAX_ACTIVE_CODES, 10) || 10000;
 function makeRateLimiter(map, windowMs, max) {
     return (req, res, next) => {
         const now = Date.now();
-        const timestamps = (map.get(req.ip) || []).filter(t => now - t < windowMs);
+        const timestamps = recentTimestamps(map, req.ip, windowMs, now);
         if (timestamps.length >= max) {
             return res.status(429).json({ error: 'Too many requests' });
         }
@@ -114,6 +114,26 @@ function makeRateLimiter(map, windowMs, max) {
     };
 }
 const codeRateLimiter = makeRateLimiter(codeRateLimits, CODE_RATE_WINDOW, CODE_MAX_REQUESTS);
+
+// Rate-limit timestamps are appended in chronological order. Drop the expired
+// prefix in place so hot endpoints reuse one small array per IP instead of
+// allocating a filtered copy for every request.
+function recentTimestamps(map, key, windowMs, now = Date.now()) {
+    const timestamps = map.get(key) || [];
+    let firstValid = 0;
+    while (firstValid < timestamps.length && now - timestamps[firstValid] >= windowMs) {
+        firstValid++;
+    }
+    if (firstValid > 0) timestamps.splice(0, firstValid);
+    return timestamps;
+}
+
+function pruneRateLimitMap(map, windowMs, now) {
+    for (const [key] of map) {
+        const timestamps = recentTimestamps(map, key, windowMs, now);
+        if (timestamps.length === 0) map.delete(key);
+    }
+}
 
 function generateCoturnCredentials() {
     const turnSecret = process.env.TURN_SECRET;
@@ -233,8 +253,7 @@ app.get('/api/turn-credentials', async (req, res) => {
     const ip = req.ip;  // Express resolves this correctly via trust proxy
     const now = Date.now();
 
-    if (!turnRateLimits.has(ip)) turnRateLimits.set(ip, []);
-    const timestamps = turnRateLimits.get(ip).filter(t => now - t < TURN_RATE_WINDOW);
+    const timestamps = recentTimestamps(turnRateLimits, ip, TURN_RATE_WINDOW, now);
     if (timestamps.length >= TURN_MAX_REQUESTS) return res.status(429).json({ error: 'Too many requests' });
     timestamps.push(now);
     turnRateLimits.set(ip, timestamps);
@@ -340,8 +359,7 @@ app.post('/api/stats/report', (req, res) => {
     const ip = req.ip;
     const now = Date.now();
 
-    if (!statsRateLimits.has(ip)) statsRateLimits.set(ip, []);
-    const timestamps = statsRateLimits.get(ip).filter(t => now - t < STATS_RATE_WINDOW);
+    const timestamps = recentTimestamps(statsRateLimits, ip, STATS_RATE_WINDOW, now);
     if (timestamps.length >= STATS_MAX_REPORTS) {
         return res.status(429).json({ error: 'Too many reports' });
     }
@@ -408,8 +426,7 @@ const MAX_CONNECTIONS_PER_IP = parseInt(process.env.MAX_CONNECTIONS_PER_IP, 10) 
 
 function checkRateLimit(ip) {
     const now = Date.now();
-    if (!connectionCounts.has(ip)) connectionCounts.set(ip, []);
-    const timestamps = connectionCounts.get(ip).filter(t => now - t < RATE_LIMIT_WINDOW);
+    const timestamps = recentTimestamps(connectionCounts, ip, RATE_LIMIT_WINDOW, now);
     timestamps.push(now);
     connectionCounts.set(ip, timestamps);
     return timestamps.length <= MAX_CONNECTIONS_PER_IP;
@@ -419,26 +436,10 @@ function checkRateLimit(ip) {
 // .unref() so the interval doesn't prevent the process from exiting (e.g. in tests).
 const cleanupInterval = setInterval(() => {
     const now = Date.now();
-    for (const [ip, timestamps] of connectionCounts.entries()) {
-        const valid = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-        if (valid.length === 0) connectionCounts.delete(ip);
-        else connectionCounts.set(ip, valid);
-    }
-    for (const [ip, timestamps] of turnRateLimits.entries()) {
-        const valid = timestamps.filter(t => now - t < TURN_RATE_WINDOW);
-        if (valid.length === 0) turnRateLimits.delete(ip);
-        else turnRateLimits.set(ip, valid);
-    }
-    for (const [ip, timestamps] of statsRateLimits.entries()) {
-        const valid = timestamps.filter(t => now - t < STATS_RATE_WINDOW);
-        if (valid.length === 0) statsRateLimits.delete(ip);
-        else statsRateLimits.set(ip, valid);
-    }
-    for (const [ip, timestamps] of codeRateLimits.entries()) {
-        const valid = timestamps.filter(t => now - t < CODE_RATE_WINDOW);
-        if (valid.length === 0) codeRateLimits.delete(ip);
-        else codeRateLimits.set(ip, valid);
-    }
+    pruneRateLimitMap(connectionCounts, RATE_LIMIT_WINDOW, now);
+    pruneRateLimitMap(turnRateLimits, TURN_RATE_WINDOW, now);
+    pruneRateLimitMap(statsRateLimits, STATS_RATE_WINDOW, now);
+    pruneRateLimitMap(codeRateLimits, CODE_RATE_WINDOW, now);
     for (const [code, entry] of codeToRoom.entries()) {
         if (now > entry.expires) codeToRoom.delete(code);
     }
@@ -725,6 +726,7 @@ module.exports = {
     validateReportBytes,
     statsRateLimits,
     makeRateLimiter,
+    recentTimestamps,
     codeRateLimits,
     selectMinimalIceUrls,
 };
