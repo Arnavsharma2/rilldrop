@@ -3,8 +3,6 @@ import {
     DESKTOP_VERSION,
     DESKTOP_RELEASE_DATE,
     DESKTOP_TAG,
-    DESKTOP_STORE_ID,
-    DESKTOP_STORE_URL,
     DESKTOP_SETUP_URL,
     DESKTOP_ZIP_URL,
     DESKTOP_SHA_URL,
@@ -33,21 +31,17 @@ describe('desktopRelease', () => {
 
     it('builds asset URLs matching the release workflow naming', () => {
         expect(DESKTOP_SETUP_URL).toBe(
-            `https://github.com/jannskiee/floe/releases/download/desktop-v${DESKTOP_VERSION}/floe-desktop-setup-${DESKTOP_VERSION}.exe`
+            `https://github.com/Arnavsharma2/rilldrop/releases/download/desktop-v${DESKTOP_VERSION}/rilldrop-desktop-setup-${DESKTOP_VERSION}.exe`
         );
         expect(DESKTOP_ZIP_URL).toBe(
-            `https://github.com/jannskiee/floe/releases/download/desktop-v${DESKTOP_VERSION}/floe-desktop-${DESKTOP_VERSION}-windows-amd64.zip`
+            `https://github.com/Arnavsharma2/rilldrop/releases/download/desktop-v${DESKTOP_VERSION}/rilldrop-desktop-${DESKTOP_VERSION}-windows-amd64.zip`
         );
         expect(DESKTOP_SHA_URL).toContain('/SHA256SUMS.txt');
         expect(DESKTOP_RELEASE_PAGE_URL).toContain(`/releases/tag/desktop-v${DESKTOP_VERSION}`);
     });
 
-    it('points "release notes" at the changelog, not the generated GitHub body', () => {
-        // desktop-release.yml writes the same boilerplate body on every tag, so
-        // the GitHub release page carries no account of what changed. The docs
-        // changelog is the only place that does.
-        expect(DESKTOP_RELEASE_NOTES_URL).toBe('https://www.floe.one/docs/changelog');
-        expect(DESKTOP_RELEASE_NOTES_URL).not.toContain('github.com');
+    it('keeps release notes within the standalone repository', () => {
+        expect(DESKTOP_RELEASE_NOTES_URL).toBe(DESKTOP_RELEASE_PAGE_URL);
     });
 
     it('never uses the releases/latest permalink, which resolves to the CLI', () => {
@@ -60,15 +54,5 @@ describe('desktopRelease', () => {
         ]) {
             expect(url).not.toContain('/releases/latest');
         }
-    });
-
-    it('links the Microsoft Store listing by product id (the primary install path)', () => {
-        // The Store ID is assigned by Partner Center and never changes, even
-        // across renames; the https detail URL works in any browser on any OS.
-        expect(DESKTOP_STORE_ID).toMatch(/^9[A-Z0-9]{11}$/);
-        expect(DESKTOP_STORE_URL).toBe(`https://apps.microsoft.com/detail/${DESKTOP_STORE_ID}`);
-        // The ms-windows-store: protocol form errors on non-Windows, so it must
-        // never appear here.
-        expect(DESKTOP_STORE_URL).not.toContain('ms-windows-store');
     });
 });

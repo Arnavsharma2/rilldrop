@@ -26,7 +26,7 @@ const SW_SOURCE = readFileSync(
     'utf8'
 );
 
-const ORIGIN = 'https://www.floe.one';
+const ORIGIN = 'http://localhost:3000';
 const NETWORK_BODY = 'from the network';
 
 // The name v4 shipped. The rename is NOT what makes the routing fix take effect:
@@ -34,7 +34,7 @@ const NETWORK_BODY = 'from the network';
 // stale entries the moment v5 activates, whatever the cache is called. The
 // rename is what reclaims those entries from disk, because activate purges by
 // name and nothing else ever evicts.
-const PREVIOUS_CACHE_NAME = 'floe-cache-v4';
+const PREVIOUS_CACHE_NAME = 'rilldrop-cache-v4';
 
 interface FakeRequest {
     url: string;
@@ -230,7 +230,7 @@ describe('activate', () => {
         await dispatchLifecycle(sw, 'install');
         const current = sw.opened[0];
         sw.entriesFor(PREVIOUS_CACHE_NAME).set(`${ORIGIN}/docs/changelog`, makeResponse('stale'));
-        sw.entriesFor('floe-cache-v3').set(`${ORIGIN}/_next/image?url=x`, makeResponse('stale'));
+        sw.entriesFor('rilldrop-cache-v3').set(`${ORIGIN}/_next/image?url=x`, makeResponse('stale'));
 
         await dispatchLifecycle(sw, 'activate');
 
@@ -269,7 +269,7 @@ describe('URLs the worker must leave alone', () => {
         ['a hash-suffixed icon route', `${ORIGIN}/icon.svg?f7a1c2b9`],
         ['a public image', `${ORIGIN}/og.png`],
         ['the CLI install script', `${ORIGIN}/install.sh`],
-        ['another host entirely', 'https://api.floe.one/api/turn-credentials'],
+        ['another host entirely', 'http://localhost:3001/api/turn-credentials'],
         ['build output on another host', 'https://cdn.example.com/_next/static/chunks/a.js'],
     ];
 

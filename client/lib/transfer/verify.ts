@@ -1,4 +1,4 @@
-// Floe connection verification code. Mirrors cli/engine/verify/verify.go and MUST
+// Rilldrop connection verification code. Mirrors cli/engine/verify/verify.go and MUST
 // stay in sync with it so a browser peer computes the same code as a CLI/desktop
 // peer.
 //

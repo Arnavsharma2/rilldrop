@@ -3,8 +3,8 @@
  *
  * Extensions inject content scripts into every page they run on, so an
  * unhandled rejection thrown inside one is captured by Sentry's global
- * handlers and reported as if it came from Floe. MetaMask does exactly this
- * (FLOE-E) on a site with no web3 code at all:
+ * handlers and reported as if it came from Rilldrop. MetaMask does exactly this
+ * (RILLDROP-E) on a site with no web3 code at all:
  *
  *   chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/scripts/inpage.js
  *

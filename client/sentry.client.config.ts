@@ -30,11 +30,11 @@ Sentry.init({
     ],
 
     // Drop errors thrown by browser extensions' injected content scripts: not
-    // Floe code, never actionable. Matched on the frame's URL scheme rather
+    // Rilldrop code, never actionable. Matched on the frame's URL scheme rather
     // than its message, so this covers every extension without needing a
     // per-wording entry above. It has to be denyUrls and not beforeSend:
     // EventFilters runs first, before @sentry/nextjs rewrites every frame
-    // origin to "app://" (see lib/browserExtensions.ts). Fixes FLOE-E,
+    // origin to "app://" (see lib/browserExtensions.ts). Fixes RILLDROP-E,
     // MetaMask's inpage.js rejecting with "Failed to connect to MetaMask".
     denyUrls: BROWSER_EXTENSION_URL_PATTERNS,
 

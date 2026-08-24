@@ -37,8 +37,8 @@ const nextConfig = {
         formats: ['image/webp'],
     },
 
-    // Security response headers. floe.one previously sent none at all: the only
-    // one on the wire was Vercel's own HSTS, while api.floe.one has had the full
+    // Security response headers. localhost:3000 previously sent none at all: the only
+    // one on the wire was Vercel's own HSTS, while localhost:3001 has had the full
     // helmet set all along.
     //
     // frame-ancestors is the one that actually matters here, and it is not a
@@ -82,33 +82,6 @@ const nextConfig = {
         ];
     },
 
-    // Documentation lives on Mintlify and is served at floe.one/docs (a subpath
-    // of the primary domain, for SEO) via a reverse proxy: every /docs request
-    // is rewritten to the Mintlify deployment, which is configured with base
-    // path /docs so its own links and assets resolve under /docs too. The single
-    // /docs/:path* rule also covers Mintlify's re-rooted assets.
-    async rewrites() {
-        return [
-            { source: '/docs', destination: 'https://floe.mintlify.site/docs' },
-            { source: '/docs/:path*', destination: 'https://floe.mintlify.site/docs/:path*' },
-        ];
-    },
-
-    // The docs used to live at docs.floe.one; they permanently moved onto the
-    // subpath. Once docs.floe.one points at this Vercel project, a request on
-    // that host is 301'd to the matching www.floe.one/docs URL with the full
-    // path preserved. Scoped by host so it never touches the main site. This is
-    // inert until docs.floe.one's DNS is repointed here during cutover.
-    async redirects() {
-        return [
-            {
-                source: '/:path*',
-                has: [{ type: 'host', value: 'docs.floe.one' }],
-                destination: 'https://www.floe.one/docs/:path*',
-                statusCode: 301,
-            },
-        ];
-    },
 };
 
 export default withSentryConfig(nextConfig, {

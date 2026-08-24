@@ -23,7 +23,7 @@
 //                reload cannot clear the Cache API. The worker was manufacturing
 //                the failure that module exists to recover from, then disabling
 //                its remedy.
-const CACHE_NAME = 'floe-cache-v5';
+const CACHE_NAME = 'rilldrop-cache-v5';
 
 // Navigations only. These are the documents that must still render with no
 // network, served by the fallback in the navigate branch below. /github-mark-white.png

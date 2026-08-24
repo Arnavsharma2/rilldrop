@@ -1,4 +1,4 @@
-// Floe wire-protocol constants and message helpers.
+// Rilldrop wire-protocol constants and message helpers.
 // Mirrors cli/internal/transfer/sender.go + receiver.go — keep in sync.
 
 export const CONTROL_MSG_MAX = 1000; // bytes; matches browser byteLength guard
@@ -159,9 +159,9 @@ export function compatErrorMessage(
     const localStr = localVer ? `${localRange} (${localVer})` : localRange;
     const remoteStr = remoteVer ? `${remoteRange} (${remoteVer})` : remoteRange;
     if (localTooOld) {
-        return `Cannot transfer: your browser is running an older version of Floe.\nYou: ${localStr}  Peer: ${remoteStr}\nRefresh the page to get the latest version.`;
+        return `Cannot transfer: your browser is running an older version of Rilldrop.\nYou: ${localStr}  Peer: ${remoteStr}\nRefresh the page to get the latest version.`;
     }
-    return `Cannot transfer: peer's floe is too old.\nYou: ${localStr}  Peer: ${remoteStr}\nAsk the other side to run \`floe update\`.`;
+    return `Cannot transfer: peer's rilldrop is too old.\nYou: ${localStr}  Peer: ${remoteStr}\nAsk the other side to run \`rilldrop update\`.`;
 }
 
 // --- Control message classifier ---
@@ -169,7 +169,7 @@ export function compatErrorMessage(
 const decoder = new TextDecoder();
 
 /**
- * Classifies a data channel message as a Floe control message or file data.
+ * Classifies a data channel message as a Rilldrop control message or file data.
  * Returns the parsed control message if recognized, null if it should be
  * treated as file data (written to disk / appended to the receive buffer).
  *

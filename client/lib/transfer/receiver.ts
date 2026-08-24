@@ -1,4 +1,4 @@
-// Floe receiver engine — framework-agnostic, no React or simple-peer imports.
+// Rilldrop receiver engine — framework-agnostic, no React or simple-peer imports.
 // Extracted from P2PTransfer.tsx peer.on('data') handler.
 import {
     classifyControl,

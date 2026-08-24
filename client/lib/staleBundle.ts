@@ -37,7 +37,7 @@ export function isStaleBundleError(message: string | undefined | null): boolean 
 // sessionStorage key holding the timestamp of the last auto-reload. Used to
 // break reload loops: if a fresh bundle *still* fails, the error is not stale
 // and we must not keep reloading.
-const RELOAD_KEY = 'floe:stale-bundle-reloaded-at';
+const RELOAD_KEY = 'rilldrop:stale-bundle-reloaded-at';
 
 // If a reload happened within this window and we hit another stale-bundle
 // error, treat it as a genuine failure and stop reloading. Long enough to

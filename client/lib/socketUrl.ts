@@ -7,7 +7,7 @@
  *
  * Resolution order, first match wins:
  *
- *   1. NEXT_PUBLIC_SOCKET_URL, inlined at build time. Keeps floe.one, Vercel, and
+ *   1. NEXT_PUBLIC_SOCKET_URL, inlined at build time. Keeps localhost:3000, Vercel, and
  *      the e2e suite behaving exactly as before, and still lets anyone bake a URL
  *      into their own image. An EMPTY value falls through, which is what the
  *      Docker image ships so runtime resolution takes over.

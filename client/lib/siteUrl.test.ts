@@ -27,44 +27,44 @@ afterEach(() => {
 describe('siteUrl', () => {
     it('uses NEXT_PUBLIC_SITE_URL when set', async () => {
         const { siteUrl } = await load({
-            NEXT_PUBLIC_SITE_URL: 'https://floe.example.com',
+            NEXT_PUBLIC_SITE_URL: 'https://rilldrop.example.com',
         });
-        expect(siteUrl).toBe('https://floe.example.com');
+        expect(siteUrl).toBe('https://rilldrop.example.com');
     });
 
     it('strips trailing slashes so callers can append a path', async () => {
         const { siteUrl } = await load({
-            NEXT_PUBLIC_SITE_URL: 'https://floe.example.com///',
+            NEXT_PUBLIC_SITE_URL: 'https://rilldrop.example.com///',
         });
-        expect(siteUrl).toBe('https://floe.example.com');
+        expect(siteUrl).toBe('https://rilldrop.example.com');
     });
 
     it('trims surrounding whitespace', async () => {
         const { siteUrl } = await load({
-            NEXT_PUBLIC_SITE_URL: '  https://floe.example.com  ',
+            NEXT_PUBLIC_SITE_URL: '  https://rilldrop.example.com  ',
         });
-        expect(siteUrl).toBe('https://floe.example.com');
+        expect(siteUrl).toBe('https://rilldrop.example.com');
     });
 
-    it('falls back to floe.one for an ordinary build', async () => {
+    it('falls back to localhost:3000 for an ordinary build', async () => {
         const { siteUrl } = await load({
             NEXT_PUBLIC_SITE_URL: '',
-            FLOE_DISTRIBUTABLE_IMAGE: '',
+            RILLDROP_DISTRIBUTABLE_IMAGE: '',
         });
-        expect(siteUrl).toBe('https://www.floe.one');
+        expect(siteUrl).toBe('http://localhost:3000');
     });
 
     // The property that makes this change a no-op for the canonical deploy: with
     // no flag set, behaviour is identical to before the helper existed.
-    it('falls back to floe.one when the variable is absent entirely', async () => {
+    it('falls back to localhost:3000 when the variable is absent entirely', async () => {
         const { siteUrl } = await load({});
-        expect(siteUrl).toBe('https://www.floe.one');
+        expect(siteUrl).toBe('http://localhost:3000');
     });
 
-    it('is undefined in the published image, rather than claiming floe.one', async () => {
+    it('is undefined in the published image, rather than claiming localhost:3000', async () => {
         const { siteUrl } = await load({
             NEXT_PUBLIC_SITE_URL: '',
-            FLOE_DISTRIBUTABLE_IMAGE: '1',
+            RILLDROP_DISTRIBUTABLE_IMAGE: '1',
         });
         expect(siteUrl).toBeUndefined();
     });
@@ -75,7 +75,7 @@ describe('siteUrl', () => {
     it('treats an empty string as unset, not as a URL', async () => {
         const { siteUrl, metadataBase } = await load({
             NEXT_PUBLIC_SITE_URL: '   ',
-            FLOE_DISTRIBUTABLE_IMAGE: '1',
+            RILLDROP_DISTRIBUTABLE_IMAGE: '1',
         });
         expect(siteUrl).toBeUndefined();
         expect(metadataBase).toBeNull();
@@ -84,7 +84,7 @@ describe('siteUrl', () => {
     it('lets a self-hoster override even inside the published image', async () => {
         const { siteUrl } = await load({
             NEXT_PUBLIC_SITE_URL: 'https://files.example.org',
-            FLOE_DISTRIBUTABLE_IMAGE: '1',
+            RILLDROP_DISTRIBUTABLE_IMAGE: '1',
         });
         expect(siteUrl).toBe('https://files.example.org');
     });
@@ -93,10 +93,10 @@ describe('siteUrl', () => {
 describe('metadataBase', () => {
     it('is a URL when the origin is known', async () => {
         const { metadataBase } = await load({
-            NEXT_PUBLIC_SITE_URL: 'https://floe.example.com',
+            NEXT_PUBLIC_SITE_URL: 'https://rilldrop.example.com',
         });
         expect(metadataBase).toBeInstanceOf(URL);
-        expect(metadataBase?.origin).toBe('https://floe.example.com');
+        expect(metadataBase?.origin).toBe('https://rilldrop.example.com');
     });
 
     // null, not undefined: an absent metadataBase makes Next resolve relative
@@ -105,7 +105,7 @@ describe('metadataBase', () => {
     it('is null in the published image', async () => {
         const { metadataBase } = await load({
             NEXT_PUBLIC_SITE_URL: '',
-            FLOE_DISTRIBUTABLE_IMAGE: '1',
+            RILLDROP_DISTRIBUTABLE_IMAGE: '1',
         });
         expect(metadataBase).toBeNull();
     });

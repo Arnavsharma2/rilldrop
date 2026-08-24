@@ -113,7 +113,7 @@ export function useDownloadManager(
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `floe_transfer_${new Date().getTime()}.zip`;
+                link.download = `rilldrop_transfer_${new Date().getTime()}.zip`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);

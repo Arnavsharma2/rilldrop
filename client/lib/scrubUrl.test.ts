@@ -3,20 +3,20 @@ import { scrubUrl } from './scrubUrl';
 
 describe('scrubUrl', () => {
     it('strips the room id from a fragment (new-style links)', () => {
-        const out = scrubUrl('https://floe.one/#room=secret-uuid');
+        const out = scrubUrl('http://localhost:3000/#room=secret-uuid');
         expect(out).not.toContain('secret-uuid');
         expect(out).not.toContain('#');
-        expect(out).toBe('https://floe.one/');
+        expect(out).toBe('http://localhost:3000/');
     });
 
     it('redacts the room id from a query param (old-style links)', () => {
-        expect(scrubUrl('https://floe.one/?room=secret-uuid')).toBe(
-            'https://floe.one/?room=redacted'
+        expect(scrubUrl('http://localhost:3000/?room=secret-uuid')).toBe(
+            'http://localhost:3000/?room=redacted'
         );
     });
 
     it('keeps other query params while redacting room', () => {
-        const out = scrubUrl('https://floe.one/?room=secret-uuid&foo=1');
+        const out = scrubUrl('http://localhost:3000/?room=secret-uuid&foo=1');
         expect(out).not.toContain('secret-uuid');
         expect(out).toContain('foo=1');
     });
@@ -27,8 +27,8 @@ describe('scrubUrl', () => {
     });
 
     it('leaves URLs without a room secret untouched', () => {
-        expect(scrubUrl('https://floe.one/how-it-works')).toBe(
-            'https://floe.one/how-it-works'
+        expect(scrubUrl('http://localhost:3000/how-it-works')).toBe(
+            'http://localhost:3000/how-it-works'
         );
     });
 

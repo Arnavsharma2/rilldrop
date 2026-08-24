@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { resolveSocketUrl, peekSocketUrl, resetSocketUrlCache } from './socketUrl';
 
-const ORIGIN = 'https://floe.example.com';
+const ORIGIN = 'https://rilldrop.example.com';
 
 /** Minimal `window` stand-in: the resolver only ever reads location.origin. */
 function stubWindow(origin = ORIGIN) {
@@ -31,11 +31,11 @@ afterEach(() => {
 
 describe('resolveSocketUrl', () => {
     it('uses NEXT_PUBLIC_SOCKET_URL when it is set', async () => {
-        vi.stubEnv('NEXT_PUBLIC_SOCKET_URL', 'https://api.floe.one');
+        vi.stubEnv('NEXT_PUBLIC_SOCKET_URL', 'http://localhost:3001');
         const fetchMock = stubFetchJson({ socketUrl: 'https://wrong.example' });
         stubWindow();
 
-        await expect(resolveSocketUrl()).resolves.toBe('https://api.floe.one');
+        await expect(resolveSocketUrl()).resolves.toBe('http://localhost:3001');
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -49,10 +49,10 @@ describe('resolveSocketUrl', () => {
     });
 
     it('strips a trailing slash from the build-time value', async () => {
-        vi.stubEnv('NEXT_PUBLIC_SOCKET_URL', 'https://api.floe.one/');
+        vi.stubEnv('NEXT_PUBLIC_SOCKET_URL', 'http://localhost:3001/');
         stubWindow();
 
-        await expect(resolveSocketUrl()).resolves.toBe('https://api.floe.one');
+        await expect(resolveSocketUrl()).resolves.toBe('http://localhost:3001');
     });
 
     it('falls back to localhost in development without fetching', async () => {

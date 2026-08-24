@@ -14,7 +14,7 @@ interface UmamiWindow extends Window {
 function readInitialReportStats(): boolean {
     if (typeof window === 'undefined') return true;
     try {
-        return localStorage.getItem('floe:report-stats') !== 'false';
+        return localStorage.getItem('rilldrop:report-stats') !== 'false';
     } catch {
         return true;
     }
@@ -27,7 +27,7 @@ export function useTransferAnalytics() {
     useEffect(() => {
         reportStatsEnabledRef.current = reportStatsEnabled;
         try {
-            localStorage.setItem('floe:report-stats', String(reportStatsEnabled));
+            localStorage.setItem('rilldrop:report-stats', String(reportStatsEnabled));
         } catch { }
     }, [reportStatsEnabled]);
 
@@ -58,7 +58,7 @@ export function useTransferAnalytics() {
         else void resolveSocketUrl().then(send);
 
         window.dispatchEvent(
-            new CustomEvent('floe:bytes-reported', { detail: { bytes } })
+            new CustomEvent('rilldrop:bytes-reported', { detail: { bytes } })
         );
     };
 

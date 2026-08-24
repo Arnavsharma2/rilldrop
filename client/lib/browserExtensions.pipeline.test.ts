@@ -3,7 +3,7 @@ import { eventFiltersIntegration, rewriteFramesIntegration } from '@sentry/nextj
 import type { ErrorEvent, Event, EventHint, Exception, StackFrame } from '@sentry/nextjs';
 import { BROWSER_EXTENSION_URL_PATTERNS } from './browserExtensions';
 
-// Proves the FLOE-E fix against the REAL @sentry/core filter rather than a
+// Proves the RILLDROP-E fix against the REAL @sentry/core filter rather than a
 // reimplementation of it. sentry.client.config.ts cannot be imported here: it
 // calls Sentry.replayIntegration() at module scope, and in a node test
 // '@sentry/nextjs' resolves to build/cjs/index.server.js where that export does
@@ -44,7 +44,7 @@ function assertSync(result: ProcessEventResult | undefined): Event | null {
 // --- Fixtures --------------------------------------------------------------
 
 const METAMASK_INPAGE_URL = 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/scripts/inpage.js';
-const FLOE_CHUNK_URL = 'https://www.floe.one/_next/static/chunks/page-abc.js';
+const RILLDROP_CHUNK_URL = 'http://localhost:3000/_next/static/chunks/page-abc.js';
 
 // Events are built by factories, never shared. rewriteFramesIntegration returns
 // a new event but reuses the SAME frame objects, and its iteratee assigns to
@@ -54,7 +54,7 @@ function metaMaskFrames(): StackFrame[] {
     return [{ filename: METAMASK_INPAGE_URL, function: 'Object.connect', in_app: true, lineno: 7, colno: 84179 }];
 }
 
-// FLOE-E as Sentry received it: an unhandled rejection raised inside MetaMask's
+// RILLDROP-E as Sentry received it: an unhandled rejection raised inside MetaMask's
 // injected script, with a chained "MetaMask extension not found" cause linked
 // to it by LinkedErrors.
 //
@@ -63,7 +63,7 @@ function metaMaskFrames(): StackFrame[] {
 // _getLastValidUrl then walks THAT value's frames backward, skipping
 // <anonymous> and [native code]. values[0] carries parent_id so it is skipped;
 // values[1] is what decides the filtered URL.
-function makeFloeEEvent(frames: StackFrame[] = metaMaskFrames()): ErrorEvent {
+function makeRilldropEEvent(frames: StackFrame[] = metaMaskFrames()): ErrorEvent {
     const values: Exception[] = [
         {
             type: 'Error',
@@ -80,8 +80,8 @@ function makeFloeEEvent(frames: StackFrame[] = metaMaskFrames()): ErrorEvent {
     return { type: undefined, level: 'error', platform: 'javascript', exception: { values } };
 }
 
-// A real Floe bug: the regression guard.
-function makeFloeApplicationEvent(): ErrorEvent {
+// A real Rilldrop bug: the regression guard.
+function makeRilldropApplicationEvent(): ErrorEvent {
     const values: Exception[] = [
         {
             type: 'TypeError',
@@ -89,8 +89,8 @@ function makeFloeApplicationEvent(): ErrorEvent {
             mechanism: { type: 'onunhandledrejection', handled: false },
             stacktrace: {
                 frames: [
-                    { filename: FLOE_CHUNK_URL, function: 'sendFiles', in_app: true, lineno: 1, colno: 5312 },
-                    { filename: FLOE_CHUNK_URL, function: 'onDataChannelOpen', in_app: true, lineno: 1, colno: 4210 },
+                    { filename: RILLDROP_CHUNK_URL, function: 'sendFiles', in_app: true, lineno: 1, colno: 5312 },
+                    { filename: RILLDROP_CHUNK_URL, function: 'onDataChannelOpen', in_app: true, lineno: 1, colno: 4210 },
                 ],
             },
         },
@@ -157,19 +157,19 @@ function runNormalization(event: Event): Event {
 }
 
 describe('browser-extension denyUrls in the Sentry event pipeline', () => {
-    it('drops the MetaMask unhandled rejection (FLOE-E)', () => {
-        expect(runEventFilters(makeFloeEEvent(), BROWSER_EXTENSION_URL_PATTERNS)).toBeNull();
+    it('drops the MetaMask unhandled rejection (RILLDROP-E)', () => {
+        expect(runEventFilters(makeRilldropEEvent(), BROWSER_EXTENSION_URL_PATTERNS)).toBeNull();
     });
 
     it('keeps the same event when denyUrls is absent (guards a false pass)', () => {
         // Without this, the test above could pass for a reason unrelated to the
         // fix: a DEFAULT_IGNORE_ERRORS entry matching the message, or
-        // _isUselessError discarding it. It must be denyUrls that drops FLOE-E.
-        expect(runEventFilters(makeFloeEEvent())).not.toBeNull();
+        // _isUselessError discarding it. It must be denyUrls that drops RILLDROP-E.
+        expect(runEventFilters(makeRilldropEEvent())).not.toBeNull();
     });
 
-    it('keeps a genuine Floe application error (reporting must not regress)', () => {
-        expect(runEventFilters(makeFloeApplicationEvent(), BROWSER_EXTENSION_URL_PATTERNS)).not.toBeNull();
+    it('keeps a genuine Rilldrop application error (reporting must not regress)', () => {
+        expect(runEventFilters(makeRilldropApplicationEvent(), BROWSER_EXTENSION_URL_PATTERNS)).not.toBeNull();
     });
 
     it('drops when the extension frame sits behind one of ours', () => {
@@ -179,11 +179,11 @@ describe('browser-extension denyUrls in the Sentry event pipeline', () => {
         // find it. Observed live: the browser produced exactly
         // [<app chunk>, chrome-extension://...inpage.js] for this rejection.
         const frames: StackFrame[] = [
-            { filename: FLOE_CHUNK_URL, function: 'sendFiles', in_app: true },
+            { filename: RILLDROP_CHUNK_URL, function: 'sendFiles', in_app: true },
             { filename: METAMASK_INPAGE_URL, function: 'Object.connect', in_app: true },
             { filename: '<anonymous>', function: 'new Promise', in_app: false },
         ];
-        expect(runEventFilters(makeFloeEEvent(frames), BROWSER_EXTENSION_URL_PATTERNS)).toBeNull();
+        expect(runEventFilters(makeRilldropEEvent(frames), BROWSER_EXTENSION_URL_PATTERNS)).toBeNull();
     });
 });
 
@@ -193,22 +193,22 @@ describe('EventFilters must run before NextjsClientStackFrameNormalization', () 
         // browser. Observed live on a production build: the same event carried
         // chrome-extension://...inpage.js at preprocessEvent time and
         // app:///scripts/inpage.js by the time it reached the transport.
-        const normalized = runNormalization(makeFloeEEvent());
+        const normalized = runNormalization(makeRilldropEEvent());
         expect(normalized.exception?.values?.[1]?.stacktrace?.frames?.[0]?.filename).toBe(
             'app:///scripts/inpage.js'
         );
     });
 
-    it('would report FLOE-E if normalization ran first', () => {
+    it('would report RILLDROP-E if normalization ran first', () => {
         // The executable statement of the assumption this fix rests on. Once
         // the filename is app:///scripts/inpage.js it is indistinguishable from
         // our own code and no denyUrls entry can - or should - match it.
         // @sentry/browser lists the filter FIRST in getDefaultIntegrations()
         // and @sentry/nextjs pushes the normalization LAST, and processEvent
         // hooks run in registration order, so in production the filter wins.
-        // If that ever changes, this test still passes and FLOE-E simply
+        // If that ever changes, this test still passes and RILLDROP-E simply
         // reappears in Sentry; treat it as documentation, not a canary.
-        const reported = runEventFilters(runNormalization(makeFloeEEvent()), BROWSER_EXTENSION_URL_PATTERNS);
+        const reported = runEventFilters(runNormalization(makeRilldropEEvent()), BROWSER_EXTENSION_URL_PATTERNS);
         expect(reported).not.toBeNull();
     });
 });

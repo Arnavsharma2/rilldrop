@@ -7,13 +7,13 @@ import { BROWSER_EXTENSION_URL_PATTERNS } from './browserExtensions';
 const isExtensionUrl = (url: string): boolean =>
     BROWSER_EXTENSION_URL_PATTERNS.some((pattern) => pattern.test(url));
 
-// The exact filename from FLOE-E. `nkbihfbeogaeaoehlefnkodbefgpgknn` is
+// The exact filename from RILLDROP-E. `nkbihfbeogaeaoehlefnkodbefgpgknn` is
 // MetaMask's extension id and `scripts/inpage.js` is the script it injects into
 // every page, including pages that never touch a wallet.
 const METAMASK_INPAGE_URL = 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/scripts/inpage.js';
 
 describe('BROWSER_EXTENSION_URL_PATTERNS', () => {
-    it("matches MetaMask's injected content script (FLOE-E)", () => {
+    it("matches MetaMask's injected content script (RILLDROP-E)", () => {
         expect(isExtensionUrl(METAMASK_INPAGE_URL)).toBe(true);
     });
 
@@ -41,11 +41,11 @@ describe('BROWSER_EXTENSION_URL_PATTERNS', () => {
         expect(isExtensionUrl('MOZ-EXTENSION://d0a2b1c3/content.js')).toBe(true);
     });
 
-    it('never matches Floe production or Vercel preview bundles', () => {
-        expect(isExtensionUrl('https://www.floe.one/_next/static/chunks/page-abc.js')).toBe(false);
-        expect(isExtensionUrl('https://floe.one/_next/static/chunks/main-app-9f2c1b8e.js')).toBe(false);
+    it('never matches Rilldrop production or Vercel preview bundles', () => {
+        expect(isExtensionUrl('http://localhost:3000/_next/static/chunks/page-abc.js')).toBe(false);
+        expect(isExtensionUrl('http://localhost:3000/_next/static/chunks/main-app-9f2c1b8e.js')).toBe(false);
         expect(
-            isExtensionUrl('https://p2p-file-share-git-fix-abc123-floe.vercel.app/_next/static/chunks/layout.js')
+            isExtensionUrl('https://p2p-file-share-git-fix-abc123-rilldrop.vercel.app/_next/static/chunks/layout.js')
         ).toBe(false);
         expect(isExtensionUrl('http://localhost:3000/_next/static/chunks/page.js')).toBe(false);
     });
@@ -64,15 +64,15 @@ describe('BROWSER_EXTENSION_URL_PATTERNS', () => {
     it('never matches blob: or data: frames', () => {
         // fflate's `zip` (hooks/useDownloadManager.ts) boots a worker from a
         // blob: URL, so genuine in-app errors really can carry blob frames.
-        expect(isExtensionUrl('blob:https://www.floe.one/2f8a5f6c-1b7d-4a3e-9c2f-8d1e5a6b7c90')).toBe(false);
+        expect(isExtensionUrl('blob:http://localhost:3000/2f8a5f6c-1b7d-4a3e-9c2f-8d1e5a6b7c90')).toBe(false);
         expect(isExtensionUrl('data:text/javascript;base64,Y29uc29sZS5sb2coMSk=')).toBe(false);
     });
 
     it('never matches an extension scheme appearing later in the URL', () => {
         // Proves the ^ anchor. /docs is reverse-proxied to Mintlify
         // (next.config.mjs), so arbitrary paths do reach frame filenames.
-        expect(isExtensionUrl('https://www.floe.one/docs/chrome-extension://guide')).toBe(false);
-        expect(isExtensionUrl('https://www.floe.one/blog/moz-extension://x')).toBe(false);
+        expect(isExtensionUrl('http://localhost:3000/docs/chrome-extension://guide')).toBe(false);
+        expect(isExtensionUrl('http://localhost:3000/blog/moz-extension://x')).toBe(false);
     });
 
     it('carries no stateful regex flags (Sentry reuses these instances)', () => {

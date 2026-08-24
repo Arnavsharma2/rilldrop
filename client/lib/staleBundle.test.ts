@@ -8,7 +8,7 @@ describe('isStaleBundleError', () => {
         expect(isStaleBundleError('')).toBe(false);
     });
 
-    it('detects the Turbopack stale module-factory error (FLOE-C)', () => {
+    it('detects the Turbopack stale module-factory error (RILLDROP-C)', () => {
         expect(
             isStaleBundleError(
                 'Module 74891 was instantiated because it was required from module 88178, but the module factory is not available.'
