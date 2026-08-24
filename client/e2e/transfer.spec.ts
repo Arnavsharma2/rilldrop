@@ -8,7 +8,7 @@ import { tmpdir } from 'os';
 // Helpers
 // ---------------------------------------------------------------------------
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-e2e');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-e2e');
 
 function createFixture(size: number): { path: string; sha256: string } {
     mkdirSync(FIXTURE_DIR, { recursive: true });

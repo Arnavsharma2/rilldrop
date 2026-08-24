@@ -179,21 +179,21 @@ test('home: no horizontal overflow at any viewport', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     await expect(page.getByText('Drop files or click to browse')).toBeVisible();
-    await expect(page.getByText('floe send vacation-photos/')).toBeVisible(); // terminal hydrated
+    await expect(page.getByText('rilldrop send vacation-photos/')).toBeVisible(); // terminal hydrated
     await sweepViewports(page, '/', true);
 });
 
 test('download: no horizontal overflow at any viewport', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/download');
-    await expect(page.getByRole('heading', { name: 'Floe Desktop' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Rilldrop Desktop' })).toBeVisible();
     await sweepViewports(page, '/download', true);
 });
 
 test('how-it-works: no horizontal overflow at any viewport', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/how-it-works');
-    await expect(page.getByRole('heading', { name: 'How Floe Works' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'How Rilldrop Works' })).toBeVisible();
     await sweepViewports(page, '/how-it-works');
 });
 
@@ -228,7 +228,7 @@ test('receiver view: no horizontal overflow at any viewport', async ({ page }) =
 // Interactive sender flow at the two most important phone widths
 // ---------------------------------------------------------------------------
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-e2e-responsive');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-e2e-responsive');
 
 test.afterAll(() => {
     try {
@@ -269,7 +269,7 @@ test('sender flow stays inside the viewport at 320 and 390 wide', async ({ page 
         if (vp.width === 320) {
             // The longest FAQ answer must render fully now that the accordion
             // tracks true content height instead of a fixed max-h cap.
-            await page.getByRole('button', { name: /how do i use floe/i }).click();
+            await page.getByRole('button', { name: /how do i use rilldrop/i }).click();
             await expect(page.getByText(/no accounts needed, no waiting/i)).toBeVisible();
             await assertNoHorizontalOverflow(page, `${label} (FAQ open)`);
         }

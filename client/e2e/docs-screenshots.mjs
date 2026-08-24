@@ -3,8 +3,8 @@
 // Run:  node e2e/docs-screenshots.mjs [outDir]
 // Default outDir is ../docs/images/web.
 //
-// Runs against production floe.one on purpose, so the share link in the shot
-// reads www.floe.one rather than localhost. The room is single use and dies
+// Runs against production localhost:3000 on purpose, so the share link in the shot
+// reads localhost:3000 rather than localhost. The room is single use and dies
 // with the browser.
 //
 // The receiver never reports to the public byte counter: POST /api/stats/report
@@ -24,7 +24,7 @@ import { tmpdir } from 'os';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = process.argv[2] || join(HERE, '..', '..', 'docs', 'images', 'web');
-const BASE = 'https://www.floe.one';
+const BASE = 'http://localhost:3000';
 const SCALE = 3;
 const VIEWPORT = { width: 1280, height: 900 };
 const IAB_VIEWPORT = { width: 430, height: 932 };
@@ -33,7 +33,7 @@ mkdirSync(OUT, { recursive: true });
 
 // Synthetic fixtures with neutral names. Nothing from the machine's own disk
 // ever appears in a published screenshot.
-const FIX = join(tmpdir(), 'floe-docs-shots');
+const FIX = join(tmpdir(), 'rilldrop-docs-shots');
 rmSync(FIX, { recursive: true, force: true });
 mkdirSync(FIX, { recursive: true });
 const fixtures = [

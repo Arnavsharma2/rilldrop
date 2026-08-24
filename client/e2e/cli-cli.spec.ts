@@ -27,7 +27,7 @@ import {
     waitForExit,
 } from './helpers';
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-cli-cli');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-cli-cli');
 // Same 12 MB as cli-interop: large enough to exercise the 8 MB backpressure loop.
 const FIXTURE_SIZE = 12 * 1024 * 1024;
 
@@ -37,7 +37,7 @@ test.afterAll(() => {
 
 test('CLI to CLI: 12 MB file transfer with SHA-256 integrity', async () => {
     const { path: fixturePath, sha256: expectedHash } = createFixture(FIXTURE_DIR, FIXTURE_SIZE);
-    // floe receive creates the output directory itself.
+    // rilldrop receive creates the output directory itself.
     const outputDir = join(FIXTURE_DIR, 'received-file');
 
     const { linkPromise, proc: sender } = spawnSend(fixturePath);

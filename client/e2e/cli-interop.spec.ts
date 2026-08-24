@@ -1,7 +1,7 @@
 /**
  * CLI↔Browser interop tests.
  *
- * These tests are the cross-implementation deployment guard for Floe — they
+ * These tests are the cross-implementation deployment guard for Rilldrop — they
  * prove that the Go CLI and the JS browser client share a working wire protocol
  * in both transfer directions.
  *
@@ -29,7 +29,7 @@ import {
     spawnReceive,
 } from './helpers';
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-cli-interop');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-cli-interop');
 // File size: large enough to exercise the 8 MB backpressure loop (~12 MB).
 const FIXTURE_SIZE = 12 * 1024 * 1024;
 

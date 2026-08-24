@@ -1,15 +1,15 @@
 /**
  * Released-CLI ↔ HEAD back-compat tests.
  *
- * floe.one ships the browser client the moment a PR merges, but installed
- * CLIs only change when a user runs brew/scoop/winget or `floe update`, so
+ * localhost:3000 ships the browser client the moment a PR merges, but installed
+ * CLIs only change when a user runs brew/scoop/winget or `rilldrop update`, so
  * the latest RELEASED binary keeps talking to freshly deployed code for
  * weeks. The e2e matrix proves HEAD against HEAD; this spec proves the
  * released binary against HEAD in all four pairings, so a PR that breaks
  * the wire protocol for already-installed CLIs goes red before merge
  * instead of after deploy.
  *
- * Gating: the released binary's path arrives via FLOE_RELEASED_CLI, set by
+ * Gating: the released binary's path arrives via RILLDROP_RELEASED_CLI, set by
  * the back-compat CI job (which downloads the latest GitHub Release and
  * verifies it against checksums.txt) or by a local opt-in. Everywhere else
  * this whole file reports as skipped, leaving the 3-OS e2e matrix legs
@@ -35,17 +35,17 @@ import {
 } from './helpers';
 
 // Spawned CLIs inherit this process's env. v1.7.5 only phones GitHub from
-// `floe version`, but a future released binary under test might check on
+// `rilldrop version`, but a future released binary under test might check on
 // send/receive startup too; suppress up front so no pairing ever leaves
 // localhost. (Stats need no gate: the CLI reports them to --server, which
 // is the local test server here.)
-process.env.FLOE_NO_UPDATE_CHECK = '1';
+process.env.RILLDROP_NO_UPDATE_CHECK = '1';
 
 // Runs only where the back-compat CI job (or a local opt-in) provides a
 // released binary; everywhere else the file reports as skipped.
-test.skip(!process.env.FLOE_RELEASED_CLI, 'FLOE_RELEASED_CLI is not set (back-compat CI job only)');
+test.skip(!process.env.RILLDROP_RELEASED_CLI, 'RILLDROP_RELEASED_CLI is not set (back-compat CI job only)');
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-back-compat');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-back-compat');
 // Same 12 MB as cli-interop: large enough to exercise the 8 MB backpressure loop.
 const FIXTURE_SIZE = 12 * 1024 * 1024;
 
@@ -54,10 +54,10 @@ const FIXTURE_SIZE = 12 * 1024 * 1024;
  * a half-configured environment names the fix instead of failing on ENOENT.
  */
 function releasedCli(): string {
-    const bin = process.env.FLOE_RELEASED_CLI;
+    const bin = process.env.RILLDROP_RELEASED_CLI;
     if (!bin) {
         throw new Error(
-            'FLOE_RELEASED_CLI is not set. The back-compat CI job exports it ' +
+            'RILLDROP_RELEASED_CLI is not set. The back-compat CI job exports it ' +
             'after downloading the latest GitHub Release; without it this ' +
             'spec should have been skipped.',
         );
@@ -67,7 +67,7 @@ function releasedCli(): string {
 
 test.beforeAll(() => {
     // Pin down which release this run actually exercised.
-    console.log(`Released tag: ${process.env.FLOE_RELEASED_VERSION ?? 'unknown'}`);
+    console.log(`Released tag: ${process.env.RILLDROP_RELEASED_VERSION ?? 'unknown'}`);
 });
 
 test.afterAll(() => {
@@ -76,7 +76,7 @@ test.afterAll(() => {
 
 test('released CLI send → HEAD CLI receive (SHA-256 integrity)', async () => {
     const { path: fixturePath, sha256: expectedHash } = createFixture(FIXTURE_DIR, FIXTURE_SIZE);
-    // HEAD floe receive creates the output directory itself.
+    // HEAD rilldrop receive creates the output directory itself.
     const outputDir = join(FIXTURE_DIR, 'received-released-to-head');
 
     const { linkPromise, proc: sender } = spawnSend(fixturePath, releasedCli());

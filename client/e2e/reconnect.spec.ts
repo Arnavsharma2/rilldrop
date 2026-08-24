@@ -23,7 +23,7 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 import { createFixture, sha256OfBlobUrl, browserSenderSetup } from './helpers';
 
-const FIXTURE_DIR = join(tmpdir(), 'floe-e2e-reconnect');
+const FIXTURE_DIR = join(tmpdir(), 'rilldrop-e2e-reconnect');
 // Small on purpose: these tests exercise room lifecycle, not throughput.
 const FIXTURE_SIZE = 1024 * 1024;
 

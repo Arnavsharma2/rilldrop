@@ -11,10 +11,10 @@ import { join } from 'path';
 import { tmpdir, platform } from 'os';
 
 /** Directory the test CLI binary is built into by e2e/global-setup.ts. */
-export const CLI_BUILD_DIR = join(tmpdir(), 'floe-e2e-cli');
+export const CLI_BUILD_DIR = join(tmpdir(), 'rilldrop-e2e-cli');
 
 /** Where global-setup builds the binary (only global-setup should write it). */
 export const CLI_BUILD_BINARY = join(
     CLI_BUILD_DIR,
-    platform() === 'win32' ? 'floe-test.exe' : 'floe-test',
+    platform() === 'win32' ? 'rilldrop-test.exe' : 'rilldrop-test',
 );

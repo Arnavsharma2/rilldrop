@@ -120,20 +120,20 @@ const run = async () => {
     // Home, idle (terminal hydrated = widest static state)
     await page.goto(BASE + '/', { waitUntil: 'networkidle' });
     await page.getByText('Drop files or click to browse').waitFor();
-    await page.getByText('floe send vacation-photos/').waitFor();
+    await page.getByText('rilldrop send vacation-photos/').waitFor();
     for (const vp of VIEWPORTS) await capture(page, 'home', vp);
 
     // Home, FAQ open (longest answer) at the subset
     for (const vp of VIEWPORTS.filter((v) => SUBSET.includes(KEY(v)))) {
         await page.setViewportSize(vp);
         await page.reload({ waitUntil: 'networkidle' });
-        await page.getByRole('button', { name: /how do i use floe/i }).click();
+        await page.getByRole('button', { name: /how do i use rilldrop/i }).click();
         await page.getByText(/no accounts needed, no waiting/i).waitFor();
         await capture(page, 'home-faq', vp);
     }
 
     // Sender flow staged + QR open at the subset
-    const fixtureDir = join(tmpdir(), 'floe-shot-matrix');
+    const fixtureDir = join(tmpdir(), 'rilldrop-shot-matrix');
     mkdirSync(fixtureDir, { recursive: true });
     const fixture = join(fixtureDir, 'fixture-1k.bin');
     writeFileSync(fixture, randomBytes(1024));
@@ -155,7 +155,7 @@ const run = async () => {
 
     // Download page (Windows arrangement = server-rendered default in chromium)
     await page.goto(BASE + '/download', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Floe Desktop' }).waitFor();
+    await page.getByRole('heading', { name: 'Rilldrop Desktop' }).waitFor();
     for (const vp of VIEWPORTS) await capture(page, 'download', vp);
 
     // Download, non-Windows arrangement (mac UA) at the subset
@@ -166,7 +166,7 @@ const run = async () => {
     });
     const macPage = await macCtx.newPage();
     await macPage.goto(BASE + '/download', { waitUntil: 'networkidle' });
-    await macPage.getByRole('heading', { name: 'Floe Desktop' }).waitFor();
+    await macPage.getByRole('heading', { name: 'Rilldrop Desktop' }).waitFor();
     for (const vp of VIEWPORTS.filter((v) => ['320x568', '390x844', '414x896', '430x932', '480x854', '640x960', '768x1024', '1920x1080'].includes(KEY(v)))) {
         await capture(macPage, 'download-mac', vp);
     }
@@ -183,7 +183,7 @@ const run = async () => {
     const hiPage = await hiCtx.newPage();
     for (const [route, name, ready] of [
         ['/', 'home-2x', () => hiPage.getByText('Drop files or click to browse').waitFor()],
-        ['/download', 'download-2x', () => hiPage.getByRole('heading', { name: 'Floe Desktop' }).waitFor()],
+        ['/download', 'download-2x', () => hiPage.getByRole('heading', { name: 'Rilldrop Desktop' }).waitFor()],
     ]) {
         await hiPage.goto(BASE + route, { waitUntil: 'networkidle' });
         await ready();

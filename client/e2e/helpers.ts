@@ -4,7 +4,7 @@
  * them without duplicating process/fixture plumbing.
  *
  * The CLI binary is built ONCE per run by e2e/global-setup.ts, which
- * publishes its path via the FLOE_E2E_CLI_BINARY environment variable;
+ * publishes its path via the RILLDROP_E2E_CLI_BINARY environment variable;
  * cliBinary() reads it back here.
  *
  * spawnSend/spawnReceive default to that HEAD build but accept an explicit
@@ -37,10 +37,10 @@ export const CLI_TIMEOUT_MS = 60_000;
  * without global setup so the failure names the fix instead of ENOENT.
  */
 export function cliBinary(): string {
-    const bin = process.env.FLOE_E2E_CLI_BINARY;
+    const bin = process.env.RILLDROP_E2E_CLI_BINARY;
     if (!bin) {
         throw new Error(
-            'FLOE_E2E_CLI_BINARY is not set. The CLI binary is built by ' +
+            'RILLDROP_E2E_CLI_BINARY is not set. The CLI binary is built by ' +
             'e2e/global-setup.ts; run this spec via `pnpm exec playwright test` ' +
             '(which runs globalSetup), not by importing it directly.',
         );
@@ -65,7 +65,7 @@ export function writeRandomFile(filePath: string, size: number): string {
 
 /**
  * Create `fixture-<size>.bin` with random content inside `dir`.
- * Every spec passes its own dir (e.g. join(tmpdir(), 'floe-cli-interop')) so
+ * Every spec passes its own dir (e.g. join(tmpdir(), 'rilldrop-cli-interop')) so
  * one spec's afterAll rmSync can never race another spec's fixtures.
  */
 export function createFixture(dir: string, size: number): { path: string; sha256: string } {
@@ -141,7 +141,7 @@ function captureTranscript(proc: ChildProcess, name: string): void {
 }
 
 /**
- * Spawn `floe send` and return a promise that resolves to the room link once
+ * Spawn `rilldrop send` and return a promise that resolves to the room link once
  * it appears in stdout, plus the process so the caller can await/kill it.
  * The caller owns the process and must kill it in a finally block.
  *
@@ -159,7 +159,7 @@ export function spawnSend(path: string, binary: string = cliBinary()): {
         '--web', WEB_URL,
         '--no-relay',
     ]);
-    captureTranscript(proc, 'floe send transcript');
+    captureTranscript(proc, 'rilldrop send transcript');
 
     const linkPromise = new Promise<string>((resolve, reject) => {
         let stdout = '';
@@ -186,7 +186,7 @@ export function spawnSend(path: string, binary: string = cliBinary()): {
         proc.on('close', (code) => {
             if (code !== 0 && code !== null) {
                 clearTimeout(timer);
-                reject(new Error(`floe send exited with code ${code}${tail(stdout, stderr)}`));
+                reject(new Error(`rilldrop send exited with code ${code}${tail(stdout, stderr)}`));
             }
         });
     });
@@ -195,7 +195,7 @@ export function spawnSend(path: string, binary: string = cliBinary()): {
 }
 
 /**
- * Spawn `floe receive` and return a promise that resolves once the process
+ * Spawn `rilldrop receive` and return a promise that resolves once the process
  * exits successfully (its integrity guard ties exit 0 to every byte of every
  * file being on disk), and rejects on nonzero exit or after CLI_TIMEOUT_MS.
  *
@@ -210,7 +210,7 @@ export function spawnReceive(link: string, outputDir: string, binary: string = c
             '--yes',       // auto-accept
             '--no-relay',
         ]);
-        captureTranscript(proc, 'floe receive transcript');
+        captureTranscript(proc, 'rilldrop receive transcript');
 
         let stdout = '';
         let stderr = '';
@@ -220,7 +220,7 @@ export function spawnReceive(link: string, outputDir: string, binary: string = c
         const timer = setTimeout(
             () => {
                 proc.kill();
-                reject(new Error(`floe receive timed out after ${CLI_TIMEOUT_MS} ms${tail(stdout, stderr)}`));
+                reject(new Error(`rilldrop receive timed out after ${CLI_TIMEOUT_MS} ms${tail(stdout, stderr)}`));
             },
             CLI_TIMEOUT_MS,
         );
@@ -229,7 +229,7 @@ export function spawnReceive(link: string, outputDir: string, binary: string = c
         proc.on('close', (code) => {
             clearTimeout(timer);
             if (code === 0) resolve();
-            else reject(new Error(`floe receive exited with code ${code}${tail(stdout, stderr)}`));
+            else reject(new Error(`rilldrop receive exited with code ${code}${tail(stdout, stderr)}`));
         });
     });
 }

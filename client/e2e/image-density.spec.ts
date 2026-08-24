@@ -148,7 +148,7 @@ for (const dpr of [1, 2]) {
         test(`download: images carry enough pixels`, async ({ page }) => {
             await page.emulateMedia({ reducedMotion: 'reduce' });
             await page.goto('/download');
-            await expect(page.getByRole('heading', { name: 'Floe Desktop' })).toBeVisible();
+            await expect(page.getByRole('heading', { name: 'Rilldrop Desktop' })).toBeVisible();
             await settleImages(page);
             await assertDensity(page, '/download', dpr);
         });
