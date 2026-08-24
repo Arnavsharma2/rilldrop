@@ -33,8 +33,8 @@ export function TransferProgressBar({
                             ? `Sent ${filesCount} ${filesCount === 1 ? 'file' : 'files'}`
                             : `Sending file ${currentFileIndex + 1} of ${filesCount}...`
                         : status.includes('Receiving')
-                            ? status
-                            : 'Receiving...'}
+                          ? status
+                          : 'Receiving...'}
                 </span>
                 <span className="flex items-center gap-2">
                     {transferSpeed && estimatedTime && progress < 100 && (
@@ -47,6 +47,9 @@ export function TransferProgressBar({
             </div>
             <Progress
                 value={progress}
+                aria-label={
+                    isSender ? 'File upload progress' : 'File download progress'
+                }
                 className="h-1 bg-white/10 [&>div]:bg-white"
             />
         </div>

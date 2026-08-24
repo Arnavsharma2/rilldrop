@@ -32,22 +32,22 @@ export function SelectedFilesList({
     return (
         <div
             ref={listRef}
+            role="list"
+            aria-label="Files selected for transfer"
             className="space-y-3 max-h-[300px] overflow-y-auto pr-1 pb-1 custom-scrollbar"
         >
             {files.map((item, i) => (
                 <div
-                    key={i}
+                    key={item.id}
+                    role="listitem"
                     className="flex items-center gap-3 bg-white/[0.02] p-2 rounded-lg border border-white/[0.06]"
                 >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-inset ring-white/10">
-                        <FileIcon
-                            fileName={
-                                item.file.name
-                            }
-                        />
+                        <FileIcon fileName={item.file.name} />
                     </div>
                     <div className="flex flex-col min-w-0 relative">
                         <span
+                            title={item.file.name}
                             className={`peer text-sm font-medium truncate cursor-help transition-colors ${i === currentFileIndex && progress > 0 && progress < 100 ? 'text-white' : 'text-zinc-400'}`}
                         >
                             {item.file.name}
@@ -58,28 +58,38 @@ export function SelectedFilesList({
                             <div className="absolute bottom-full left-[17px] mt-[1px] h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-zinc-950"></div>
                         </div>
                         <span className="text-xs text-zinc-500 font-mono">
-                            {formatBytes(
-                                item.file.size
-                            )}
+                            {formatBytes(item.file.size)}
                         </span>
                     </div>
                     <div className="ml-auto flex items-center gap-2">
                         {!generatedLink ? (
                             <button
+                                type="button"
                                 onClick={() => onDeleteFile(item.id)}
+                                aria-label={`Remove ${item.file.name}`}
                                 className="relative before:absolute before:-inset-2 p-1.5 rounded-md hover:bg-red-500/20 text-zinc-500 hover:text-red-400 transition-all"
                             >
-                                <X className="h-4 w-4" strokeWidth={3} />
+                                <X
+                                    className="h-4 w-4"
+                                    strokeWidth={3}
+                                    aria-hidden="true"
+                                />
                             </button>
-                        ) : i <
-                            currentFileIndex ||
-                            status ===
-                            'All Files Sent!' ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        ) : i ===
-                            currentFileIndex &&
-                            progress > 0 ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-white" />
+                        ) : i < currentFileIndex ||
+                          status === 'All Files Sent!' ? (
+                            <span role="img" aria-label="Transfer complete">
+                                <CheckCircle2
+                                    className="h-4 w-4 text-green-500"
+                                    aria-hidden="true"
+                                />
+                            </span>
+                        ) : i === currentFileIndex && progress > 0 ? (
+                            <span role="img" aria-label="Transfer in progress">
+                                <Loader2
+                                    className="h-4 w-4 animate-spin text-white"
+                                    aria-hidden="true"
+                                />
+                            </span>
                         ) : null}
                     </div>
                 </div>
