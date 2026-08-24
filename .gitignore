@@ -1,0 +1,82 @@
+# --- Dependencies ---
+node_modules/
+
+# --- Next.js Build Output ---
+.next/
+out/
+*.tsbuildinfo
+
+# --- Vercel ---
+.vercel
+
+# --- OS Junk ---
+.DS_Store
+Thumbs.db
+
+# --- IDE Settings ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Environment Variables ---
+.env
+.env.local
+.env.*
+!.env.example
+!.env.docker.example
+
+# --- Self-hosting: generated coturn config holds a secret ---
+coturn/turnserver.conf
+
+# --- Build Outputs ---
+# Anchored to the repo root on purpose: the unanchored forms reached into
+# desktop/build/, hiding the Wails installer sources that must be tracked
+# (desktop/.gitignore handles that package's own outputs).
+/dist/
+/build/
+# pack.ps1's default OutDir when invoked from the repo root (how CI runs it);
+# holds an exe copy and an unsigned .msix.
+/dist-msix/
+
+# --- Logs ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Go workspace ---
+# go.work is tracked (local multi-module dev); its lock-ish sum file is not.
+# Release builds use GOWORK=off plus the replace in desktop/go.mod, and no CI
+# command consults go.work.sum.
+go.work.sum
+
+# --- CLI build artifacts ---
+# a bare `go build ./cli/cmd/floe` from the repo root drops the binary here
+/floe
+/floe.exe
+cli/floe
+cli/floe.exe
+cli/floe-rpi
+cli/floe-*
+cli/cmd/floe/floe
+cli/cmd/floe/floe.exe
+cli/received*/
+cli/output/
+cli/*.txt
+cli/*.bin
+
+# --- Package managers (client uses pnpm; keep only pnpm-lock.yaml there) ---
+client/package-lock.json
+
+# --- Playwright (e2e test artifacts) ---
+client/test-results/
+client/playwright-report/
+client/blob-report/
+client/.playwright/
+
+# --- Throwaway measurement and screenshot scripts ---
+# One-off scripts written to measure a layout or shoot a screenshot, then kept
+# around for the next pass. They were untracked and unignored, which is one
+# `git add -A` away from landing in an unrelated commit.
+*.local.mjs
+.*-tmp.mjs

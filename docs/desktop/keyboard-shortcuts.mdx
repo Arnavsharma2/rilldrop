@@ -1,0 +1,62 @@
+---
+title: "Floe Desktop Keyboard Shortcuts"
+sidebarTitle: "Keyboard shortcuts"
+description: "Every keyboard shortcut in Floe Desktop for Windows: adding files, sending, pasting from the clipboard, opening history, settings, and starting over."
+keywords: ["shortcuts", "hotkeys", "start over", "undo"]
+---
+
+| Shortcut | Does |
+|---|---|
+| `Ctrl` `O` | Add files. Switches to **Send**, then opens the file picker. |
+| `Ctrl` `Enter` | The current tab's main action: **Send** on the Send tab, **Receive** on the Receive tab. |
+| `Ctrl` `V` | Paste files copied in File Explorer, or an image from the clipboard, into the send list. |
+| `Ctrl` `H` | Show or hide **History**. |
+| `Ctrl` `,` | Open or close **Settings**. |
+| `Ctrl` `R` | Start over. Clears the current selection and result. |
+| `Ctrl` `Z` | Undo a **Clear**, including after its bar has gone. Works on the Send tab the clear came from; does nothing anywhere else. |
+| `Esc` | Close whatever is on top: a dialog first, then Settings. On the plain Send and Receive screens nothing is on top, so it does nothing. |
+| `Enter` | In the **Code or link** field, starts receiving. In the **Text** box, use `Ctrl` `Enter`. |
+
+## Behavior worth knowing
+
+**Most shortcuts pause while you type.** `Ctrl` `O`, `Ctrl` `Enter`, `Ctrl` `V`, `Ctrl` `H`,
+`Ctrl` `R` and `Ctrl` `Z` do nothing while the cursor is in a text field, so typing a room code or
+a note is never interrupted, nothing fires twice, a half-typed note is never wiped mid-word, and
+the text box keeps its own undo.
+
+**Some also pause while a transfer runs.** `Ctrl` `O` does nothing while one is in flight, and
+`Ctrl` `Enter` does nothing while one is in flight, while Settings or History is open, or behind a
+dialog. Both are the same rule the buttons follow, so a shortcut can never do something its button
+would refuse.
+
+**One fires from anywhere.** `Ctrl` `,` opens Settings, the way a preferences shortcut normally
+does.
+
+**`Ctrl` `Z` is the narrowest of them.** It undoes a **Clear**, and only from the send tab that
+clear came from: on the other send tab, on **Receive**, in **History**, in **Settings**, or with
+a dialog open, it does nothing at all. The offer itself survives all of those, so going back to
+the tab you cleared brings it within reach again. `Ctrl` `Shift` `Z` is deliberately not an undo,
+because it is redo on every platform that has it.
+
+**`Ctrl` `R` asks first when there is something to lose, and only then.** Three cases prompt: a
+transfer that is actually moving data, a note in the text box that has not been sent, and a note
+you cleared that had never been sent and whose **Undo** is still available, whether or not its bar
+is still on screen. The dialog is titled **Start over?**, and the buttons are **Keep going** and
+**Start over**.
+
+The two note prompts quote what is at stake. The unsent one reads "The text you typed has not been
+sent yet. Starting over will clear it."; the cleared one reads "The text you cleared can still be
+brought back. Starting over will discard it." Both cover either route to Start over, the shortcut
+and clicking the Floe lockup in the titlebar.
+
+A note counts as sent only while the box still holds exactly what went out, so typing a new one
+after a send prompts again, and so does a note you typed and then abandoned in favor of sending
+files. Staged files never prompt, because the originals are untouched on disk. Neither does a send
+or receive that is still connecting, which keeps Start over a one-click escape from a stuck
+connection.
+
+**`Ctrl` `R` does not reload the app.** In a browser that key reloads the page, which here
+would abandon a transfer in progress. Floe intercepts it and uses it to clear the card instead.
+
+**Holding `Ctrl` `V` pastes once.** Key repeat is ignored, so the list is not flooded. Paste is
+also ignored entirely while a transfer is running.

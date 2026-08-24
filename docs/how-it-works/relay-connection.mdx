@@ -1,0 +1,89 @@
+---
+title: "Relay fallback when a direct connection is impossible"
+sidebarTitle: "Relay fallback"
+description: "Some networks make a direct connection impossible. Floe then routes the transfer through an encrypted relay that cannot read it, at the cost of speed and a 2 GB session cap."
+keywords: ["relay", "turn", "cgnat", "firewall", "why is my transfer slow", "amber"]
+---
+
+Some networks make it impossible for two devices to reach each other directly. Strict corporate
+and university firewalls do it deliberately, and carrier-grade NAT, where a mobile provider puts
+many customers behind one shared address, does it as a side effect.
+
+When that happens, Floe routes the transfer through a **relay**: a server both devices can reach,
+which forwards packets between them. Think of a courier carrying a locked box. It gets the box
+where it needs to go and cannot open it.
+
+## Direct and relayed, side by side
+
+| | Direct | Relayed |
+|---|---|---|
+| Speed | Whatever your connections allow | Depends on the relay and the detour |
+| Size limit | None | 2 GB per session |
+| Who pays for the bandwidth | Nobody | Floe, or you, if you self-host |
+| Encryption | End to end | End to end, unchanged |
+| Typical networks | Home Wi-Fi, hotspots, most mobile | Corporate, university, carrier-grade NAT |
+| Badge | **Direct**, green | **Relay**, amber |
+
+The encryption row is the important one. Relaying changes the route, not the protection. Your
+files are encrypted before they reach the relay and decrypted only on the other device, so the
+relay forwards packets it cannot read.
+
+## What it costs you
+
+**Speed**, because every byte takes a detour through a third machine instead of going straight
+across.
+
+**Size**, because relay bandwidth costs real money. Relayed transfers are capped at 2 GB per
+session. See [File size limits](/how-it-works/2gb-limit).
+
+**A little more metadata exposure.** The relay is an endpoint both devices connect to, so it sees
+both IP addresses and the timing and size of what it forwards. It cannot see contents. On
+floe.one the relay is Cloudflare's Realtime TURN network, which means a relayed transfer does
+cross infrastructure Floe does not own. See
+[What Floe does not protect against](/how-it-works/known-limitations).
+
+## Turning it off, and the opposite
+
+**In the browser**, the **Network relay fallback** checkbox appears on the sending side once you
+have picked files. It is on by default. Off means only direct connections are attempted, and the
+transfer fails if none is possible. A browser recipient has no such control, so if you are
+receiving and a transfer will not start, this is the sender's setting to check.
+
+**In the CLI**, `--no-relay` does the same thing, on either `floe send` or `floe receive`.
+
+```bash Terminal
+floe send photo.jpg --no-relay
+```
+
+**Floe Desktop has no relay-fallback switch at all**, so the relay is always available there. Its
+[Hide my IP address](/desktop/settings#hide-my-ip-address) setting is the opposite control: it
+makes the relay the **only** path, so the other person sees the relay's address rather than yours.
+That means every transfer is relayed and every transfer is capped at 2 GB while it is on.
+
+Nothing in Floe offers a direct-only mode in the desktop app, and nothing offers a relay-only mode
+in the browser or the CLI.
+
+<Accordion title="How the route is chosen, and how Floe knows which it got">
+  ICE tries the candidate pairs it gathered and nominates one that works. Traffic is relayed when
+  the nominated pair has a `relay` candidate on either side. Host and reflexive candidates are
+  still gathered and offered in that case; they simply lost.
+
+  Turning the relay off does not veto a relayed connection after the fact. It removes the relay
+  entries from the address list the client uses, so it has nothing relayed to offer. The other
+  side can still offer one, though, and if that path wins the two surfaces then behave
+  differently. The **browser** notices and blocks the transfer before any file data moves. The
+  **CLI does not**: `--no-relay` is ICE filtering and nothing more, so a `floe send --no-relay`
+  whose peer supplied the winning relay candidate goes ahead over it. Treat the flag as "do not
+  offer a relay" rather than as a guarantee.
+
+  The browser re-reads the connection statistics every five seconds and flips the badge to amber
+  when the nominated pair is relayed. Floe Desktop reads it once, when the connection is
+  established, so its badge is a snapshot rather than a live reading. The CLI never reads it at
+  all and shows no direct-or-relay indicator; it only consults the route when deciding whether the
+  size cap applies.
+
+  On floe.one the signaling server hands out three endpoints and no more: a STUN URL, a TURN URL
+  over UDP, and a TURN URL over TLS on port 443, which looks like ordinary HTTPS to a network that
+  blocks everything else. Cloudflare offers more variants, but every extra URL multiplies the
+  connectivity checks each client runs during setup, so the list is trimmed before it is served.
+</Accordion>

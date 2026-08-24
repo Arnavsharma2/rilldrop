@@ -1,0 +1,12 @@
+{
+  "name": "floe",
+  "private": true,
+  "description": "Repo-wide tooling (Prettier). Each component has its own manifest: client/, server/, cli/.",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.7.4"
+  }
+}

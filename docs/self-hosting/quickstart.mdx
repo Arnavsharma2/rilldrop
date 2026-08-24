@@ -1,0 +1,59 @@
+---
+title: "Self-Hosting Quick Start"
+sidebarTitle: "Docker quickstart"
+description: "Spin up a local Floe instance with Docker Compose in a few minutes to try self-hosted peer-to-peer file transfer on your own machine before deploying."
+keywords: ["docker compose", "try self hosting", "get started"]
+---
+
+## Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2 (`docker compose`, bundled with Docker Desktop and modern Docker Engine).
+
+## Steps
+
+<Steps>
+  <Step title="Download the compose file">
+    ```bash Terminal
+    curl -fsSLO https://raw.githubusercontent.com/jannskiee/floe/main/docker-compose.yml
+    ```
+    That is the only file you need. There is nothing to clone and no toolchain to install.
+  </Step>
+  <Step title="Start the stack">
+    ```bash Terminal
+    docker compose up -d
+    ```
+    Docker pulls the [prebuilt images](/self-hosting/images) and starts the client and server containers. Nothing is compiled locally.
+  </Step>
+  <Step title="Open the app">
+    Open [http://localhost:3000](http://localhost:3000) in your browser. Pick a file and press **Create secure link**, then paste that link into a second tab to join as the receiver. **Show QR** renders the same link as a scannable code, which is how you receive on a phone once the app is reachable from one (see the note below).
+  </Step>
+</Steps>
+
+A `.env` file is optional. Every setting has a working default, so the two commands above are genuinely all you need to try it. To change something, fetch the annotated example alongside the compose file:
+
+```bash Terminal
+curl -fsSL https://raw.githubusercontent.com/jannskiee/floe/main/.env.docker.example -o .env
+```
+
+## What this runs
+
+This starts the stack in **STUN-only** mode. Direct peer-to-peer connections are used, which work on most home and mobile networks. No files pass through the server.
+
+To support peers behind strict firewalls, symmetric NAT, or CGNAT, add a [TURN relay](/self-hosting/turn-relay).
+
+The defaults assume the browser and the server are on the same machine. To reach the app from another device on your network, set **both** of these in `.env` to your machine's LAN IP:
+
+```dotenv .env
+NEXT_PUBLIC_SOCKET_URL=http://192.168.1.x:3001
+CLIENT_URL=http://192.168.1.x:3000
+```
+
+```bash Terminal
+docker compose up -d
+```
+
+Then open the app at `http://192.168.1.x:3000` on the sending machine too, not `localhost:3000`. The share link and its QR code carry whichever address the page was loaded from, so a sender sitting on `localhost` hands the phone an address that only resolves back to the phone.
+
+No rebuild: the client reads its server address at runtime. `CLIENT_URL` matters as much as the socket URL, because it is the origin the server's CORS check allows, and without it the browser is blocked even though the page loads.
+
+Ports are configurable. Set `CLIENT_PORT` and `PORT` in `.env` to publish the web app and the signaling server somewhere other than 3000 and 3001. If you change `PORT`, update `NEXT_PUBLIC_SOCKET_URL` to match and run `docker compose up -d`, or the browser will keep looking for the old port. No rebuild is needed; the client reads that address at runtime.

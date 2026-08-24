@@ -1,0 +1,75 @@
+---
+title: "Self-Hosted Floe Operations"
+sidebarTitle: "Operations"
+description: "Day-to-day operations for a self-hosted Floe instance: common Compose commands, updating to the latest images, and the health endpoints to point a monitor at."
+keywords: ["logs", "update containers", "health check", "restart"]
+---
+
+## Common commands
+
+```bash Terminal
+docker compose logs -f                  # tail logs for all services
+docker compose ps                       # check container status and health
+docker compose down                     # stop and remove the stack
+docker compose restart server           # restart only the signaling server
+```
+
+**Restarting the server is not free.** Rooms and room codes live in that process's memory, so a
+restart ends every transfer in flight and invalidates every short code that has not been used yet.
+There is no draining and no warning. Pick a quiet moment, or expect people to need a new link.
+
+The client also waits on the server: Compose starts it only once the server reports healthy. If
+the server never gets there, you do not get a web app that cannot connect, you get no web app at
+all.
+
+## Update to the latest code
+
+```bash Terminal
+docker compose pull
+docker compose up -d
+```
+
+That pulls the newest [published images](/self-hosting/images) and restarts. Nothing is built locally, so there is no repository to keep in sync.
+
+If you run the optional coturn relay, add its profile to both commands or Compose skips the service entirely, so a new coturn image is never pulled and a stopped relay is never restarted:
+
+```bash Terminal
+docker compose --profile turn pull
+docker compose --profile turn up -d
+```
+
+Setting `COMPOSE_PROFILES=turn` in your `.env` applies it to every later `docker compose` command.
+
+Changing `NEXT_PUBLIC_SOCKET_URL` needs only `docker compose up -d`; the client reads it at runtime. See [How the Client Finds the Signaling Server](/self-hosting/build-time-url). `NEXT_PUBLIC_SITE_URL` is the exception: it is written into the page at build time, so the published image omits those tags entirely rather than pointing them at somebody else's domain. See [Container Images](/self-hosting/images) if you want your own.
+
+## The server does not log anything
+
+Worth knowing before you go looking. The signaling server has no access log, no request log, and
+no startup banner, not even a line saying which port it bound. `docker compose logs server` on a
+perfectly healthy instance is empty, and that is expected rather than a symptom.
+
+The only thing it ever writes is a stack trace when an unhandled error reaches its error handler.
+To confirm the server is alive, or that a restart actually landed, use the health endpoint below
+rather than the logs.
+
+`docker compose ps` is a similar case: **the client image ships no healthcheck**, so it never
+reports a health state. Only the server does.
+
+On `SIGTERM` or `SIGINT` the server closes every WebSocket with code `1001` and the reason
+`Server shutting down`, stops accepting connections, and exits. If something is still holding it
+open ten seconds later it exits anyway.
+
+## Health endpoints
+
+The signaling server exposes two status endpoints:
+
+| Endpoint | Purpose | Response |
+|----------|---------|---------|
+| `GET /health` | Liveness check | `{ "status": "healthy", "uptime": <seconds> }` |
+| `GET /` | Status and timestamp | `{ "status": "ok", "timestamp": "..." }` |
+
+Point a monitor at `/health`. It is the only one of the two that survives a
+[one-domain deployment](/self-hosting/reverse-proxy), where `/` belongs to the
+web client and returns a page rather than JSON. `GET /` on the signaling server
+is reachable only when you address the server directly, on `:3001` or on its own
+subdomain.

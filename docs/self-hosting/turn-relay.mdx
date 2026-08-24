@@ -1,0 +1,137 @@
+---
+title: "Add a TURN Relay to Self-Hosted Floe"
+sidebarTitle: "TURN relay"
+description: "Add a coturn TURN relay to a self-hosted Floe instance so peers behind strict NAT, CGNAT, or corporate firewalls can still complete file transfers."
+keywords: ["coturn", "turn server", "cloudflare turn", "cgnat"]
+---
+
+A TURN server relays the (still end-to-end encrypted) stream when two peers cannot reach each other directly. This is common with symmetric NAT or carrier-grade NAT. Without TURN, those specific transfers fail. All other transfers still work over direct connections.
+
+You have two options: a managed TURN service (recommended) or a self-hosted coturn relay.
+
+One thing to know before choosing either. If a browser cannot fetch connection details from your
+server, because the request is misrouted, rate limited, or the server is down, it falls back to a
+pair of hard-coded Google STUN addresses rather than giving up. Configuring a relay does not remove
+that fallback; it just means the fallback is rarely reached. If your instance exists so that no
+traffic leaves your control, that is worth knowing about.
+
+## Managed TURN via Cloudflare (recommended)
+
+Cloudflare's Realtime TURN service runs on Cloudflare's global anycast network. It needs no public IP, no UDP port range, and no TLS certificates on your side, and it includes a generous free tier.
+
+<Steps>
+  <Step title="Create a TURN key">
+    In the [Cloudflare dashboard](https://dash.cloudflare.com), open **Realtime > TURN Server** and create a key. Copy the **Turn Token ID** and its **API token** (the token is shown only once).
+  </Step>
+  <Step title="Set the server environment">
+    In `.env`:
+
+    ```dotenv .env
+    CLOUDFLARE_TURN_KEY_ID=<your Turn Token ID>
+    CLOUDFLARE_TURN_KEY_API_TOKEN=<your API token>
+    ```
+
+    The signaling server mints short-lived ICE credentials from Cloudflare and caches them. These variables take precedence over the coturn variables below, so you do not need to run coturn.
+  </Step>
+</Steps>
+
+## Self-hosting with coturn
+
+Prefer to run the relay yourself? Leave the Cloudflare variables unset and configure coturn instead.
+
+TURN requires a **public IP address**, a **domain name**, and **TLS certificates**. The bundled `coturn` service uses host networking and is intended for a Linux host with a public IP.
+
+The coturn service uses host networking (`network_mode: host`). This only works on Linux. On macOS or Windows with Docker Desktop, you will need to run coturn separately or on a Linux VM.
+
+## Setup
+
+<Steps>
+  <Step title="Create the coturn config">
+    ```bash Terminal
+    curl -fsSL --create-dirs -o coturn/turnserver.conf \
+      https://raw.githubusercontent.com/jannskiee/floe/main/coturn/turnserver.conf.example
+    ```
+
+    This file holds your shared secret, so it is never shipped and you always create it yourself.
+
+    <Warning>
+      Do not skip this. Docker creates a **directory** at that path instead, and coturn then **starts anyway** and sits there as `running` in `docker compose ps`, on built-in defaults with no auth secret. Relaying silently fails for exactly the peers TURN exists to serve. The giveaway is `Default realm: localdomain` in `docker compose logs coturn`.
+
+      Recovering needs `rmdir coturn/turnserver.conf` **first**: copying onto a directory succeeds and writes the file inside it, so the obvious fix appears to work and does not.
+    </Warning>
+
+    Edit `coturn/turnserver.conf` and set:
+    - `static-auth-secret` to a strong random value (e.g. `openssl rand -hex 32`)
+    - `realm` to your TURN hostname (e.g. `turn.your-domain.com`)
+    - `cert` and `pkey` (both commented out) to the paths of your TLS certificate and key
+    - `external-ip` to the machine's public IP, if the interface itself holds a private address
+
+    `external-ip` is commented out in the example file, and uncommenting it is the normal case on AWS, GCP, Azure, and any VPS behind 1:1 NAT. Leave it commented out only when the public address is bound directly to the interface. Get it wrong and coturn advertises a relay candidate nobody can route to, so relayed transfers fail with no error message.
+
+    The certificate mount is shipped commented out too. Uncomment it in `docker-compose.yml` so the paths you just set in `turnserver.conf` exist inside the container:
+
+    ```yaml docker-compose.yml
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - ./coturn/certs:/etc/coturn/certs:ro
+    ```
+
+    If you started from the `curl` quickstart rather than a clone, that means editing your downloaded `docker-compose.yml`. Skip it and the signaling server still advertises a `turns:` URL, pointing at a port that cannot complete a TLS handshake.
+  </Step>
+  <Step title="Match the server environment">
+    In `.env`:
+
+    ```dotenv .env
+    TURN_SECRET=<same value as static-auth-secret>
+    TURN_DOMAIN=turn.your-domain.com
+    ```
+
+    The signaling server uses these to issue time-limited HMAC-SHA1 credentials for coturn. Credentials expire after 24 hours.
+  </Step>
+  <Step title="Open firewall ports">
+    On the host, open the following ports:
+
+    | Port | Protocol | Purpose |
+    |------|----------|---------|
+    | `3478` | UDP/TCP | STUN and TURN |
+    | `5349` | UDP/TCP | TURNS (TURN over TLS) |
+    | `49152-65535` | UDP | Relay data range (configurable in `turnserver.conf`) |
+
+    These ports must be reachable directly. TURN is not HTTP, so it cannot be routed through the reverse proxy that fronts the web client and signaling server. Even on a [one-domain deployment](/self-hosting/reverse-proxy), coturn keeps its own ports and its own TLS certificate.
+  </Step>
+  <Step title="Start the stack with the TURN profile">
+    ```bash Terminal
+    docker compose --profile turn up -d
+    ```
+
+    Create `coturn/turnserver.conf` first, as the earlier step describes. Starting the profile without it looks successful and is not.
+  </Step>
+</Steps>
+
+## Verify
+
+Check that the signaling server returns TURN credentials:
+
+```bash Terminal
+curl http://localhost:3001/api/turn-credentials
+```
+
+When TURN is configured, the response contains `turn:` and `turns:` entries, plus a `stun:` entry pointing at your TURN host:
+
+```json Output
+[
+  { "urls": "stun:turn.your-domain.com:3478" },
+  { "urls": "turn:turn.your-domain.com:3478", "username": "...", "credential": "..." },
+  { "urls": "turns:turn.your-domain.com:5349", "username": "...", "credential": "..." }
+]
+```
+
+With Cloudflare configured the response is two entries rather than three, and `urls` is an array rather than a string: one `stun:stun.cloudflare.com:3478` with **no** username or credential, and one carrying both a `turn:` and a `turns:` URL with the credentials. See [the API reference](/reference/http-api#relay-credentials) for the exact shape. When neither the Cloudflare variables nor `TURN_SECRET` / `TURN_DOMAIN` are set, the endpoint returns the Google public STUN servers only.
+
+Credentials are minted from Cloudflare once and then **cached in memory for 12 hours**. Two consequences worth planning around: rotating a Cloudflare key can take up to 12 hours to take effect unless you restart the server, and if the Cloudflare API starts failing the server keeps serving the last good copy for that long rather than falling back, so a broken key looks healthy for a while.
+
+## How credentials work
+
+The signaling server generates time-limited credentials using HMAC-SHA1. The username is `{expiry_unix_timestamp}:floeuser` and the password is `base64(HMAC-SHA1(TURN_SECRET, username))`. coturn validates these against the shared secret without needing a database of user accounts.
+
+Relayed transfers stay capped at 2 GB per session even on a relay you run yourself. The cap is compiled into the browser client, the CLI, and the desktop app, not read from your server, so raising it means building all three from modified source. Direct connections are unaffected and have no size limit. See [The 2 GB Relay Limit](/how-it-works/2gb-limit).

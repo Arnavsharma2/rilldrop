@@ -1,0 +1,114 @@
+---
+title: "Floe FAQ"
+sidebarTitle: "FAQ"
+description: "Short answers to the questions that come up most about Floe: where files go, size limits, folders, privacy, accounts, and whether versions have to match."
+keywords: ["faq", "questions", "is floe safe", "do i need an account", "how does floe work"]
+---
+
+Short answers, each with a link to the page that covers it properly. If you are looking at an
+error message, go to [Troubleshooting](/troubleshooting) instead.
+
+## Files and transfers
+
+### Where do my files go?
+
+Straight to the other person's device. In most transfers they never touch a server at all, and
+when a network forces a relay, that relay carries encrypted packets it cannot read.
+[How a transfer works](/how-it-works/signaling)
+
+### How big a file can I send?
+
+There is no limit on a direct connection, which is what most transfers get. A relayed transfer is
+capped at 2 GB per session. [File size limits](/how-it-works/2gb-limit)
+
+### Can I send a folder?
+
+Yes from Floe Desktop and the CLI, which walk the folder and rebuild it on the other side. No from
+the browser, which has no folder picker. [Which Floe to use](/choosing-floe)
+
+### How fast is it?
+
+As fast as the slower of the two internet connections, with no throttling of any kind. A relayed
+transfer is slower because every byte takes a detour. [Direct connections](/how-it-works/direct-connection)
+
+### How long does the sender have to stay connected?
+
+For the whole transfer. Files stream from their device, so closing the tab, quitting the app, or
+stopping the process ends it. [Receiving files](/web-app/receiving#the-sender-has-to-stay-connected)
+
+### Are my files stored anywhere?
+
+No. Nothing is stored on any server at any point, and once the session closes the server keeps no
+record of it. [Security and privacy](/security-privacy)
+
+### Why did a file not arrive?
+
+Floe discards anything whose size does not match what the sender announced, rather than handing
+you a file that looks whole and is not. Ask them to send it again.
+[Troubleshooting](/troubleshooting#a-file-did-not-appear-at-all)
+
+## Using Floe
+
+### Which browsers work?
+
+Any modern browser with WebRTC: Chrome, Firefox, Safari, Edge, and most Chromium-based browsers. A
+secure context is required, which means HTTPS or localhost.
+[Sending files](/web-app/sending)
+
+### Why does Floe tell me to open the link in a different browser?
+
+You opened it inside another app's built-in browser, and those handle file transfers poorly. The
+page does not join the room until you switch or dismiss the prompt, so nothing is lost.
+[Receiving files](/web-app/receiving#if-floe-says-open-in-your-browser)
+
+### Why does it say Direct when the other device is on mobile data?
+
+Because it really is direct. WebRTC opens a path between two devices on completely different
+networks without a server in the middle.
+[Direct connections](/how-it-works/direct-connection)
+
+### Can I type a short code in the browser?
+
+No. The web app has no code field and never mints one; codes are a desktop and CLI feature in both
+directions. A browser recipient always needs the link. [Which Floe to use](/choosing-floe)
+
+### Do both people need the same version?
+
+No. Peers on different releases interoperate, and the only time a transfer is blocked is a
+breaking wire-format change, which Floe detects before any data moves.
+[Protocol versioning](/reference/transfer-protocol#protocol-versioning)
+
+### Which one should I use?
+
+The browser unless you need folders, a place on disk, or a script.
+[Which Floe to use](/choosing-floe)
+
+## Privacy and the project
+
+### Do I need an account?
+
+No. There is no account, no sign-up, and no registration on any surface.
+
+### What does Floe collect?
+
+The website runs cookieless aggregate analytics and error monitoring. The CLI and the desktop app
+contain none of that: their only optional requests are a byte count and an update check, and both
+have an off switch. [Security and privacy](/security-privacy)
+
+### What is the counter on the homepage?
+
+A public all-time total of bytes Floe has moved, fed by receivers reporting a size and nothing
+else. Every receiver can turn it off.
+[Aggregate statistics](/security-privacy#aggregate-statistics)
+
+### What does Floe not protect against?
+
+The signaling server is trusted to introduce the two devices honestly, no client shows a
+verification code today, and a browser receiver holds each file in memory. There are eight of
+these and they are all written down.
+[What Floe does not protect against](/how-it-works/known-limitations)
+
+### Is Floe open source?
+
+Yes, MIT licensed, all four parts. [GitHub](https://github.com/jannskiee/floe), and you can
+[run your own instance](/self-hosting/overview).

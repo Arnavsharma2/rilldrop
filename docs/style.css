@@ -1,0 +1,601 @@
+/* Mintlify auto-includes any .css file in the content directory on every page.
+   No docs.json registration is needed, and none exists. */
+
+/* Separate the tags in a changelog entry's left gutter.
+
+   Mintlify renders an <Update>'s tags there as bare space-separated text, with
+   no pill, border, or delimiter, even though the same values render as proper
+   chips in the right-hand filter panel. Adjacent values therefore fuse into a
+   phrase: "CLI Web" read as a product that does not exist, which is what
+   prompted this rule.
+
+   This rule is the whole fix, so treat it as load-bearing. The tag values are
+   deliberately plain words ("Web", "CLI", "Desktop", "Self-hosting") that
+   match the docs sidebar, and nothing else keeps them apart. If this rule ever
+   stops applying, the gutter goes straight back to "Web CLI Self-hosting".
+
+   The selector is NOT documented by Mintlify, which explicitly disclaims the
+   stability of its styling hooks. Verified against the rendered DOM of
+   floe.one/docs/changelog on 2026-08-08: 43 update-tag spans, exactly matching
+   the tag strings in the MDX, and distinct from the filter-panel chips. If the
+   separators ever vanish, re-read the rendered DOM and update this selector.
+
+   Take that count on a hard reload. This note first recorded 36, which was the
+   number a stale service-worker copy of the page rendered, not the number in the
+   MDX at the time. See client/public/sw.js, whose v5 stops caching /docs at all.
+
+   The separator hangs off the END of each tag but the last, rather than the
+   start of each tag but the first. Both render identically on one line, but
+   the gutter is narrow enough to wrap: trailing it keeps the dot glued to the
+   tag it follows, so a wrap reads "floe.one . floe CLI ." then "Your server"
+   rather than orphaning a leading dot onto the second line. */
+[data-component-part="update-tag"]:not(:last-child)::after {
+  content: "\00B7";
+  margin-inline-start: 0.3em;
+  opacity: 0.5;
+}
+
+/* Drop the section label from the footer logo.
+
+   Mintlify's `logo` config has exactly three keys, light, dark and href, with
+   no footer variant, so the footer renders the very same file as the navbar.
+   The navbar lockup reads "Floe / Docs", which is right at the top of a docs
+   page and wrong at the bottom of one, where the label just repeats the thing
+   the reader has been looking at the whole way down.
+
+   This crops the label off the image rather than swapping in a second file.
+   Swapping was tried first and shipped broken: a `content: url("/logo/...")`
+   resolves against the site root, and the docs are served under /docs, so in
+   production it pointed at the Next.js app, 404ed, and the footer rendered a
+   broken-image glyph. It looked fine locally only because `mint dev` serves
+   the docs at the root, which is exactly the kind of bug that survives local
+   review. Cropping touches no URL, so local and production cannot disagree.
+
+   The numbers: the navbar lockup is 135x28, and the mark plus wordmark, up to
+   but not including the gap before the separator, occupies the first 60.19 of
+   it. The footer is given an explicit 44px height here (up from the 26px the
+   theme renders naturally; user call, 2026-08-09, matching the prominence of
+   Mintlify's own footer logo), so the full lockup scales to 212.1px wide and
+   the part worth keeping is 60.19 * (44 / 28) = 94.6px. `cover` makes the
+   image fill that narrower box at its scaled height instead of shrinking to
+   fit, and `left center` decides which end survives the crop.
+
+   Both footer images are cropped identically, so this needs no light/dark
+   split. If the lockup is ever regenerated at a different width, update 94.6
+   to match: the value is (mark + wordmark width / total width) * (135 * 44 /
+   28), and getting it wrong is visible immediately in local preview.
+
+   `#footer` and `.nav-logo` are both on Mintlify's published hook list, which
+   it explicitly documents as subject to change. If the footer ever shows
+   "Floe / Docs" again, this rule stopped matching and the selectors moved. */
+#footer img.nav-logo {
+  height: 44px;
+  width: 94.6px;
+  object-fit: cover;
+  object-position: left center;
+  /* The theme top-aligns the logo box, and at the natural 26px that put the
+     logo's centre on the column headers' text line, which is the alignment
+     Mintlify's own footer uses. At 44px the centre drops below that line;
+     -12px measured out to a 0px centre delta against the Product header
+     (-9 from the size difference, -3 from the box's own line metrics). */
+  margin-top: -12px;
+}
+
+/* Raise the footer links to WCAG AA.
+
+   Mintlify paints footer links at 50% alpha: gray-950/50 in light, white/50 in
+   dark. Composited over the real footer ground (rgb(255,255,255) light,
+   rgb(12,13,15) dark) that lands on rgb(132,132,132) either way, which is
+   3.74:1 in light. AA wants 4.5:1 for body text, so every footer link on every
+   docs page was failing. Dark was already fine at 5.37:1.
+
+   The dark ground quoted above is Mintlify's default. It was #09090b while
+   docs.json set background.color, and the ratios here shifted by hundredths
+   when that block was removed; none of them crossed a threshold.
+
+   Measured, 0.56 alpha is the exact break-even in light. This uses 0.62 so a
+   future tweak to the background does not silently drop it back under. Both
+   themes are set explicitly rather than only patching light, so the two stay
+   legible together and neither depends on Mintlify's default.
+
+   No !important is needed: `#footer a` is (1,0,1) against Tailwind's single
+   utility class at (0,1,0), and `.dark #footer a` at (1,1,1) beats the light
+   rule in turn. The Mintlify credit link is excluded here and handled below,
+   because it should stay quieter than the navigation. */
+#footer a:not([href*="mintlify.com"]) {
+  color: rgb(10 10 10 / 0.62);
+}
+
+#footer a:not([href*="mintlify.com"]):hover {
+  color: rgb(10 10 10 / 0.85);
+}
+
+.dark #footer a:not([href*="mintlify.com"]) {
+  color: rgb(255 255 255 / 0.62);
+}
+
+.dark #footer a:not([href*="mintlify.com"]):hover {
+  color: rgb(255 255 255 / 0.85);
+}
+
+/* Mintlify's own credit sits at rgb(159,159,159) on white, which is 2.65:1 and
+   under even the 3:1 floor for non-text. It stays deliberately quieter than the
+   link columns, just no longer invisible. */
+#footer a[href*="mintlify.com"] {
+  color: rgb(110 110 110);
+}
+
+.dark #footer a[href*="mintlify.com"] {
+  color: rgb(140 140 140);
+}
+
+/* The social icon is a CSS mask, so its colour comes from background-color, not
+   color. Mintlify sets `bg-gray-500 dark:bg-gray-600`, which runs the wrong
+   way: the dark variant is the darker one, on the darker ground, giving 2.39:1
+   against the 3:1 that WCAG 1.4.11 wants for a meaningful graphic. Light is
+   already 4.95:1 and is left alone. The aria-hidden guard keeps this off the
+   Mintlify wordmark, which is a real svg rather than a mask. */
+.dark #footer a > svg[aria-hidden='true'] {
+  background-color: rgb(140 140 140);
+}
+
+/* Both inactive theme-switch icons also miss 1.4.11, at 2.39:1 in dark and
+   2.65:1 in light. The active button carries a bg-gray-* chip, so excluding
+   that class leaves the selected state exactly as emphasised as before. */
+#footer button:not([class*='bg-gray']) {
+  color: rgb(110 110 110);
+}
+
+.dark #footer button:not([class*='bg-gray']) {
+  color: rgb(140 140 140);
+}
+
+/* Footer links are 20px tall, so a thumb gets a thin target on a phone. This
+   already passes WCAG 2.5.8 through the spacing exception (36px centre to
+   centre against a 24px circle), so the padding is for comfort rather than
+   conformance. It is padding-block only, so nothing reflows sideways and the
+   16px gap between links is untouched. */
+#footer a[rel='noreferrer'] {
+  padding-block: 2px;
+}
+
+/* The social icon is the one footer link Mintlify ships without rel, so the
+   rule above skips it and it stays a 20px box. Centring it in a 24px one
+   squares it up with the text links without moving anything around it. The
+   negative margin cancels the 2px of centring inset on the left so the
+   glyph sits optically flush with the logo's bolt above it (the alignment
+   Mintlify's own footer socials have), while the 24px tap box survives. */
+#footer a:has(> svg[aria-hidden='true']) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: -2px;
+}
+
+/* ---- floe.one theme translation (2026-08 docs redesign) ----------------
+
+   Everything below restyles chrome, not content. The rules above this line
+   (changelog tag separators, footer logo crop, footer WCAG fixes) are load-
+   bearing and none of the selectors below intersect them. */
+
+/* The active theme-switch chip in the footer carries bg-gray-200/800, and
+   Mintlify's primary-tinted gray scale turns that chip visibly teal
+   (rgb(37,42,43) in dark) next to the neutral footer ground (user call,
+   2026-08-09). Same neutral washes as every other selected state. The
+   legacy footer colour rules earlier in this file deliberately exclude
+   [class*='bg-gray'] buttons, so this pair only touches the chip's ground
+   and text. */
+#footer button[class*='bg-gray'] {
+  background-color: rgb(17 17 17 / 0.08);
+  color: rgb(63 63 70);
+}
+
+.dark #footer button[class*='bg-gray'] {
+  background-color: rgb(255 255 255 / 0.1);
+  color: rgb(212 212 216);
+}
+
+/* Card icons, neutral in both modes.
+
+   Mintlify paints a Card's icon with the same CSS-mask pattern as the footer
+   social icon, and the mask's colour is bg-primary, which the colors config
+   turns ice. Glyphs in the accent colour read as tinted chrome rather than
+   icons (user call, 2026-08-09), so cards get the neutral treatment instead:
+   near-black on the light cards, white on the dark ones. The ice accent
+   stays reserved for the eyebrows, links, and TOC.
+
+   data-component-part="card-icon" is the same undocumented hook family as
+   the changelog update-tag rule above; if card icons ever go ice again,
+   this selector stopped matching. */
+[data-component-part="card-icon"] svg {
+  background-color: rgb(17 17 17);
+}
+
+.dark [data-component-part="card-icon"] svg {
+  background-color: #FFFFFF;
+}
+
+/* The active sidebar item, back to neutral.
+
+   Mintlify paints the active item bg-primary/10 + text-primary, which the
+   ice colors config turns into a teal-on-ice pill. The user rejected that
+   (2026-08-09) and asked for the gray it had before the redesign, so this
+   reproduces exactly what the old #111111/#ffffff primary rendered: a 10
+   percent neutral wash with near-black text in light, white text in dark.
+   The ice accent stays everywhere else it now lives (eyebrows, TOC, links).
+
+   #sidebar is a documented hook; li[data-active="true"] is the observed
+   active-item shape (2026-08-09 DOM). If the pill ever shows teal again,
+   the li shape moved; re-read the DOM before touching the colors config. */
+#sidebar li[data-active="true"] a {
+  color: rgb(17 17 17);
+  background-color: rgb(17 17 17 / 0.1);
+}
+
+.dark #sidebar li[data-active="true"] a {
+  color: rgb(255 255 255);
+  background-color: rgb(255 255 255 / 0.1);
+}
+
+/* The active TOC entry, same neutral treatment as the sidebar pill (user
+   call, 2026-08-09: selected states stay neutral, ice is for eyebrows).
+   Only the colour is overridden, so Mintlify's own emphasis on the active
+   entry is otherwise untouched; against the gray siblings, near-black (or
+   white in dark) IS the highlight. #table-of-contents and data-active are
+   the same observed hook family as the sidebar pill above. */
+#table-of-contents .toc-item[data-active="true"] > a {
+  color: rgb(17 17 17);
+}
+
+.dark #table-of-contents .toc-item[data-active="true"] > a {
+  color: rgb(255 255 255);
+}
+
+/* Inactive TOC entries hover with hover:text-primary, which flashed ice on
+   the way to the neutral active state. Same neutral treatment on hover. */
+#table-of-contents .toc-item > a:hover {
+  color: rgb(17 17 17);
+}
+
+.dark #table-of-contents .toc-item > a:hover {
+  color: rgb(255 255 255);
+}
+
+/* The Tabs component (Install pages, reverse proxy) marks its selected tab
+   with text-primary and a primary underline on the tablist border. Same
+   selected-state doctrine, same variable mechanism as the copy button and the
+   card hover below: the
+   active tab goes near-black on light and white on dark, inactive tabs keep
+   their own gray classes. tabs-list is the observed data-component-part on
+   the tablist (2026-08-09 DOM). */
+[data-component-part='tabs-list'] {
+  --primary: 17 17 17;
+  --color-primary: rgb(17 17 17);
+  --primary-light: 255 255 255;
+  --color-primary-light: rgb(255 255 255);
+}
+
+/* The theme-switcher menu's selected row, neutral like every other selected
+   state in this file: near-black on the light page, white on the dark one.
+
+   Left stock for one release and reverted on sight (user call, 2026-08-12).
+   Mintlify paints the selected row `text-primary dark:text-primary-light`,
+   which the ice colors config turns #00A3C9 on the white popover, and that is
+   both louder than the row deserves and 2.97:1, under AA for a 14px label. The
+   footer's own theme switch was neutral throughout, so leaving this one ice
+   also had two controls doing the same job disagreeing on screen. Do not take
+   it stock again without deciding both of those on purpose.
+
+   Variables, not `color`. The unselected rows hide their check marks with
+   text-primary/0, the SAME utility at alpha zero, so setting `color` reveals a
+   check on every row (tried, shipped for a minute, looked broken). Redefining
+   the variables preserves the alpha, and each mode's utility reads its own
+   variable, so no .dark split is needed. The --color-* aliases cover the
+   Tailwind v4 form, as everywhere else in this file.
+
+   The role guard matters: the html root also carries data-theme-preference to
+   store the setting, so the bare attribute selector would restyle the whole
+   document. */
+[role='menuitem'][data-theme-preference] {
+  --primary: 17 17 17;
+  --primary-light: 255 255 255;
+  --color-primary: rgb(17 17 17);
+  --color-primary-light: rgb(255 255 255);
+}
+
+/* Navbar links hover neutral, like floe.one's navbar (zinc at rest, plain
+   black or white on hover), instead of the hover:text-primary ice Mintlify
+   puts on the GitHub widget. The span selector is required because the repo
+   name carries its own group-hover colour class, which inheritance from the
+   anchor cannot beat; this stylesheet is unlayered, so it wins over the
+   layered utility on the same element. The masked star icon gets the
+   background-color variant for the same reason as the menu icons above. */
+#navbar a:hover,
+#navbar a:hover span {
+  color: rgb(17 17 17);
+}
+
+.dark #navbar a:hover,
+.dark #navbar a:hover span {
+  color: rgb(255 255 255);
+}
+
+#navbar a:hover svg[class*='forced-colors'] {
+  background-color: rgb(17 17 17);
+}
+
+.dark #navbar a:hover svg[class*='forced-colors'] {
+  background-color: rgb(255 255 255);
+}
+
+/* Card hover ring, neutral instead of ice (user call, 2026-08-09: dark ring
+   in light mode, white in dark, like the pre-redesign monochrome primary).
+   Mintlify's hover utility is hover:border-primary! with !important, and
+   important layered declarations outrank anything this unlayered sheet says
+   about border-color, so the override targets the variables the utility
+   reads instead: scoped to hover, the card resolves primary to neutral.
+   Values are raw RGB triplets because Mintlify defines --primary that way
+   (rgb(var(--primary))); the --color-* aliases cover the Tailwind v4 form. */
+.card:hover {
+  --primary: 17 17 17;
+  --color-primary: rgb(17 17 17);
+}
+
+.dark .card:hover {
+  --primary-light: 255 255 255;
+  --color-primary-light: rgb(255 255 255);
+}
+
+/* Body-link underlines in ice, light mode only (user call, 2026-08-09: text
+   stays the prose colour, the underline carries the accent). Dark mode is
+   untouched because the theme already paints .dark .link underlines in
+   primary-light, the pale ice, so both modes end up with an ice underline
+   over prose text. Two theme behaviours to know: links inside callouts keep
+   currentColor via the theme's own !important rule (accepted; an ice line
+   inside a tinted callout would clash), and a.link is the class Mintlify
+   puts on content links only; heading anchor glyphs use group/link and do
+   not match. */
+html:not(.dark) #content-area a.link {
+  border-bottom-color: #00A3C9;
+}
+
+/* The assistant bar's circular send button is bg-primary/30 (disabled) and
+   solid primary when armed, which the colors config turns ice (user call,
+   2026-08-09: black or white like every other control). The variable scope
+   keeps the 30 percent disabled alpha intact: light gets a black circle
+   with the stock white arrow, dark gets a white circle, so the arrow flips
+   to near-black there. chat-assistant-send-button is a semantic Mintlify
+   class observed on the button itself. */
+.chat-assistant-send-button {
+  --primary: 17 17 17;
+  --color-primary: rgb(17 17 17);
+  --primary-dark: 255 255 255;
+  --color-primary-dark: rgb(255 255 255);
+}
+
+.dark .chat-assistant-send-button svg {
+  color: rgb(17 17 17);
+}
+
+/* The rest of the assistant, same neutral doctrine as its send button above.
+   Black on the light page, white on the dark one, nothing ice.
+
+   Scoped to the five assistant roots rather than done globally, because
+   `primary` still legitimately paints eyebrows, link underlines and focus
+   rings everywhere else. Observed on floe.one/docs 2026-08-10, the assistant
+   surfaces that still resolved to ice were exactly three:
+
+     - the Assistant glyph in the sheet header, `text-primary
+       dark:text-primary-light`
+     - the composer's focus ring, `focus-within:border-primary
+       dark:focus-within:border-primary-light`, on both the floating bar and
+       the one docked in the sheet
+     - the mobile entry icon, which adds `hover:text-primary-dark
+       dark:hover:text-primary` on top of the same rest state
+
+   `#assistant-entry` (the desktop Ask Assistant button) and
+   `#ask-assistant-code-block-button` carry no primary utility at all and are
+   already neutral; they are listed anyway so anything Mintlify adds inside
+   them later inherits the override instead of arriving ice.
+
+   `#text-selection-tooltip` is the Add to assistant bubble that appears when
+   you select text in the page, and its sparkle is `text-primary
+   dark:text-primary-light` like the sheet's. It was missed on the first pass
+   because it does not exist in the resting DOM: Mintlify portals it straight
+   to `body` on selection, so it is outside every other root listed here and a
+   sweep of an untouched page never sees it. Reproduce it by drag-selecting a
+   paragraph, not by querying the page as loaded.
+
+   That list was taken on an IDLE sheet, and it is not the whole set. Three
+   more primary consumers only mount once a conversation has content: the
+   Retry button, the starter-question buttons, and the feedback chip. Hence
+   the override is a variable redefinition on the roots rather than a colour
+   set per element: whatever Mintlify mounts inside the assistant later
+   inherits the neutral, without this rule having to know about it first.
+
+   EVERY primary variable is set to the SAME mode's foreground, and that is
+   load bearing rather than tidiness. The base rule below carries no
+   `html:not(.dark)` guard, so in light mode it is the value of
+   `--primary-light` that is live, and Mintlify mixes prefixed and unprefixed
+   variants on one element: the Retry button is `text-primary
+   dark:text-primary-light hover:text-primary-light`, where that last one is
+   UNPREFIXED and therefore fires in light mode, at a higher specificity than
+   the rest state. Setting `--primary-light` to white here would paint that
+   hover white on the white sheet, 1:1, invisible. Whatever a variable is
+   named, inside a mode-scoped override it has to resolve to that mode's
+   foreground.
+
+   The dark block is not optional either, for the mirror-image reason. Light
+   rests on `text-primary` and hovers to `text-primary-dark`, but dark rests
+   on `text-primary-light` and hovers back to `text-primary`. Without
+   redefining `--primary` under `.dark`, that hover resolves to the near-black
+   meant for the light page and the icon vanishes into the dark ground
+   mid-hover. Same trap as the changelog version pills further down.
+
+   Two things this rule deliberately does NOT reach.
+
+   `.chat-assistant-send-button` sits inside two of these roots but is immune,
+   because an element's own custom-property declaration beats an inherited one
+   whatever the ancestor's specificity. It keeps the narrower treatment above,
+   which is what preserves its `bg-primary/30` alpha.
+
+   The focus ring stays ice. `focus-visible:outline-primary` is site-wide, and
+   ice on focus rings is inside the accent doctrine alongside eyebrows and
+   link underlines. The Ask Assistant chip in the Ctrl+K dialog is assistant
+   UI whose only primary utility is that ring, so it is left alone on purpose;
+   neutralising it would make one ring on the page differ from every other. */
+#assistant-entry,
+#assistant-entry-mobile,
+#ask-assistant-code-block-button,
+#text-selection-tooltip,
+.chat-assistant-floating-input,
+#chat-assistant-sheet {
+  --primary: 17 17 17;
+  --primary-light: 17 17 17;
+  --primary-dark: 0 0 0;
+  --color-primary: rgb(17 17 17);
+  --color-primary-light: rgb(17 17 17);
+  --color-primary-dark: rgb(0 0 0);
+}
+
+.dark #assistant-entry,
+.dark #assistant-entry-mobile,
+.dark #ask-assistant-code-block-button,
+.dark #text-selection-tooltip,
+.dark .chat-assistant-floating-input,
+.dark #chat-assistant-sheet {
+  --primary: 255 255 255;
+  --primary-light: 255 255 255;
+  --primary-dark: 255 255 255;
+  --color-primary: rgb(255 255 255);
+  --color-primary-light: rgb(255 255 255);
+  --color-primary-dark: rgb(255 255 255);
+}
+
+/* Tooltips (the Copy chip on code blocks and friends), neutral inverted
+   instead of ice (user call, 2026-08-09: black or white only, by mode).
+   Mintlify paints the chip bg-primary-dark in BOTH modes, which the colors
+   config turns saturated ice. text-tooltip-foreground is the one class
+   unique to the tooltip chip (observed 2026-08-09 via mutation capture:
+   div.z-50 > div.text-tooltip-foreground). Classic inversion: black chip
+   with white text on the light page, white chip with black text on dark. */
+.text-tooltip-foreground {
+  background-color: rgb(17 17 17);
+  color: rgb(255 255 255);
+}
+
+.dark .text-tooltip-foreground {
+  background-color: rgb(255 255 255);
+  color: rgb(17 17 17);
+}
+
+/* The copied-state check inside the copy button is text-primary, so it
+   flashed ice after every copy. Same variable trick as the tabs list and
+   the card hover: within the button, primary resolves to neutral, so the
+   check goes black on light and white on dark while the idle icon's own
+   gray classes are untouched. */
+[data-testid='copy-code-button'] {
+  --primary: 17 17 17;
+  --primary-light: 255 255 255;
+  --color-primary: rgb(17 17 17);
+  --color-primary-light: rgb(255 255 255);
+}
+
+/* The changelog version pills (v1.10.0 and friends), neutral like every
+   other selected-state chip (user call, 2026-08-09). The pill is
+   bg-primary/10 text-primary dark:text-primary-light on
+   data-component-part="update-label", the same documented hook family as
+   the update-tag rule at the top of this file. The wash reads --primary in
+   BOTH modes while the text switches variables, so dark needs its own
+   --primary value: without it the wash composites black-on-black and
+   disappears. Light gets black text on a black 10 percent wash, dark gets
+   white on white 10 percent, matching the sidebar's active pill. */
+[data-component-part='update-label'] {
+  --primary: 17 17 17;
+  --primary-light: 255 255 255;
+  --color-primary: rgb(17 17 17);
+  --color-primary-light: rgb(255 255 255);
+}
+
+.dark [data-component-part='update-label'] {
+  --primary: 255 255 255;
+  --color-primary: rgb(255 255 255);
+}
+
+/* The changelog filter chips, selected state. Unselected chips are already
+   neutral gray; selecting one turns it solid bg-primary with white text in
+   BOTH modes (no dark: variant in Mintlify's markup), so the variable trick
+   cannot work here: dark mode needs a white chip, and the baked-in white
+   text would vanish on it. Class-based override instead, scoped to the
+   panel's own id: black chip in light (the white/90 text stays), inverted
+   white chip with near-black text in dark. */
+#changelog-filters button.bg-primary {
+  background-color: rgb(17 17 17);
+}
+
+.dark #changelog-filters button.bg-primary {
+  background-color: rgb(255 255 255);
+  color: rgb(17 17 17);
+}
+
+/* Unselected filter chips, de-tinted. Mintlify derives its gray scale from
+   the primary hue, so with an ice primary its gray-100/gray-900 chips lean
+   visibly teal (rgb(22,27,28) in dark). These neutral washes match the
+   pill treatment used everywhere else; the hover variants keep the step
+   the gray utilities used to provide. The Clear control is also a
+   rounded-full button (revealed once a filter is active), so the
+   font-medium guard keeps it out; the chips themselves are font-normal.
+   Two Mintlify quirks worth knowing here: the panel renders
+   #changelog-filters on two nested divs (a duplicate id in their markup;
+   descendant selectors match either), and the whole panel only exists at
+   xl and up, so these rules have nothing to style on narrower screens. */
+#changelog-filters button.rounded-full:not(.bg-primary):not(.font-medium) {
+  background-color: rgb(17 17 17 / 0.06);
+  color: rgb(63 63 70);
+}
+
+#changelog-filters button.rounded-full:not(.bg-primary):not(.font-medium):hover {
+  background-color: rgb(17 17 17 / 0.1);
+}
+
+.dark #changelog-filters button.rounded-full:not(.bg-primary):not(.font-medium) {
+  background-color: rgb(255 255 255 / 0.08);
+  color: rgb(212 212 216);
+}
+
+.dark #changelog-filters button.rounded-full:not(.bg-primary):not(.font-medium):hover {
+  background-color: rgb(255 255 255 / 0.12);
+}
+
+/* Sidebar hover, black or white by mode (user call, 2026-08-20).
+
+   Mintlify hovers a page link to `hover:text-gray-900 dark:hover:text-gray-300`,
+   which is a near-miss rather than a plain foreground colour. These two rules
+   put it on the same near-black and white this file uses for every other
+   selected or hovered state, so the sidebar has one hover colour rather than
+   two near-misses. No !important is needed: an id plus a class plus a
+   pseudo-class outranks a single utility, and this sheet is unlayered so it
+   wins over the layered utility regardless.
+
+   The row's background wash on hover (`hover:bg-gray-600/5`) is deliberately
+   left alone. It is neutral already, and it is what makes the hover target
+   legible without colouring the text twice.
+
+   This rule used to cover the sidebar shortcut anchors and their icon chips as
+   well, including a real Mintlify defect where the masked glyph turned white
+   on white on the light sidebar at exactly the moment the pointer reached it.
+   The shortcut row (navigation.global.anchors) was removed on 2026-08-25, so
+   that half of this rule went with it. If the anchors ever come back, the
+   defect comes back with them, and the fix is in this file's history rather
+   than something to rediscover. */
+#sidebar a:hover,
+#sidebar a:hover span {
+  color: rgb(17 17 17);
+}
+
+.dark #sidebar a:hover,
+.dark #sidebar a:hover span {
+  color: rgb(255 255 255);
+}

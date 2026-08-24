@@ -1,0 +1,158 @@
+---
+title: "Security and privacy in Floe"
+sidebarTitle: "Security & privacy"
+description: "Exactly what Floe's signaling server, its relay, and floe.one itself can see, what none of them can, and every switch you have for turning the optional parts off."
+keywords: ["privacy", "security", "what data does floe collect", "telemetry", "analytics", "logs"]
+---
+
+import StatsOptOut from '/snippets/stats-optout.mdx';
+
+Your files travel directly between two devices, encrypted end to end. Floe's servers introduce the
+two devices and never see file data. That is the short version, and the rest of this page is the
+detail behind it.
+
+For the other half of an honest answer, the limits of all this, see
+[What Floe does not protect against](/how-it-works/known-limitations).
+
+## What the signaling server can see
+
+The server at `api.floe.one` exists so two devices can find each other. It never touches the file.
+
+It does:
+
+- Put two devices in a room and decide which one sends.
+- Pass the connection-setup messages between them.
+- Hand out relay credentials, valid for 24 hours, when a relay is configured. They are not tied to
+  you or to an account: on floe.one one credential set is minted from Cloudflare and served to
+  every client until the cached copy is refreshed.
+- Map a three-word code to a room id for ten minutes, when a sender asks for one.
+- Keep a single running total of bytes transferred, for the counter on the homepage.
+
+It never:
+
+- Receive, store, or inspect file data.
+- Keep room or peer information past the session. The only thing that outlives it is a short
+  code's mapping to a random room id, which stops working ten minutes after the code was made.
+- Log what you transfer, your file names, or who you sent to.
+
+Once the data channel is open, the server plays no further part.
+
+## What the relay can see
+
+When a direct path is impossible, traffic goes through a TURN relay. On floe.one that is
+Cloudflare's Realtime TURN network; a self-hosted instance can run its own coturn instead.
+
+The relay sees encrypted packets, plus the metadata that being the middle hop entails: both IP
+addresses, and the timing and size of what it forwards. Your infrastructure provider may log that
+for its own security purposes.
+
+The relay does not see the contents of those packets. Files are encrypted before they reach it and
+decrypted only on the recipient's device.
+
+Routing through a relay also changes who learns your IP address. On a direct connection the two
+devices learn each other's, which is how any peer-to-peer connection works. If you would rather
+not reveal yours, Floe Desktop's
+[Hide my IP address](/desktop/settings#hide-my-ip-address) forces the relay path so the other
+person sees the relay instead. The browser and the CLI have no equivalent.
+
+## The room secret stays out of every server log
+
+A share link keeps the room id in the URL **fragment**, after the `#`, never in the query string.
+A link from the web app or the desktop app looks like
+`https://www.floe.one/?s=a1b2c3d4#room=...`, and one from the CLI looks like
+`https://floe.one/#room=...`. The `?s=` value is a random per-link marker carrying no information;
+it exists only so each link is a distinct page, which stops a device that already has Floe open
+from reusing a stale tab.
+
+Browsers never send the fragment to a server. So the room id is not in `Referer` headers when you
+click an outbound link, not in server access logs, and not captured by pageview analytics or
+third-party trackers. The signaling server learns it only when a device explicitly joins that room
+over its own connection, and even then no file bytes ever reach it.
+
+## Aggregate statistics
+
+The homepage carries a public, all-time count of bytes moved across every Floe user. To feed it,
+the **receiving** side reports how many bytes it received after a transfer completes. The sender
+never reports. All three receivers contribute, and the total itself is only ever displayed in the
+browser.
+
+What is recorded: one cumulative integer. Nothing else.
+
+What is not recorded: file names, contents, per-transfer rows, who sent or received, or any link
+to your identity or IP address. The reported figure is a size, added to a running total.
+
+<StatsOptOut />
+
+The counter is an honest best-effort metric with lightweight guardrails, a per-IP rate limit and a
+per-report size cap. It is not a tamper-proof audited figure, and reporting never blocks or slows a
+transfer. There is no server-side switch that refuses reports, so opting out is a choice each
+receiver makes on its own device. On a self-hosted instance the counter is local to that server,
+and without a Redis database configured it lives in memory and resets on restart.
+
+## Error monitoring and analytics
+
+**The CLI and the desktop app contain no analytics, no error monitoring, and no telemetry.**
+Beyond the transfer itself they make exactly two kinds of optional request, and both have an off
+switch: the byte-count report above, and an update check.
+
+The update check runs once a day in Floe Desktop (GitHub builds 0.2.3 and later). The CLI does it
+only when you run `floe version`, and never during a transfer; `floe update` and
+`floe update --check` also reach GitHub, but those are you asking for it. It asks GitHub whether a
+newer release exists. The request
+carries nothing about you beyond what any web request reveals, and nothing downloads or installs
+by itself. Turn off **Check for updates** in the desktop
+[Settings](/desktop/settings#check-for-updates), or set `FLOE_NO_UPDATE_CHECK=1` for either
+surface, and no request is made. Microsoft Store builds never check, because the Store updates
+them.
+
+The rest of this section is about the **floe.one website only**.
+
+- **Sentry** records application errors and a 10% sample of browser performance traces. It is
+  configured to attach no cookies, no headers, and no IP address, and the room secret is stripped
+  out of every error report and breadcrumb before it is sent.
+- **Session replay is not enabled and will not be added.** A replay records the page address, and
+  on a receiver page that address contains the room link, which is the only thing protecting the
+  transfer.
+- **Umami** records cookieless, aggregate page views and transfer outcomes: file count, total
+  bytes, direct or relay, success or failure. It is configured to send neither the URL fragment
+  nor the query string, so the room secret never reaches it, and it does not follow individuals
+  across sessions or sites.
+
+Both are enabled only when their key is supplied. The published container image sets neither, so a
+self-hosted instance ships with both off unless you add your own.
+
+See the full [Privacy Policy](https://floe.one/privacy) for the site-wide detail.
+
+## Browser hardening
+
+floe.one sends a Content-Security-Policy with `frame-ancestors 'none'`, repeated as
+`X-Frame-Options: DENY` for older browsers, so no other site can put Floe in an iframe.
+
+That matters more here than on a typical site. A receiver page joins its room automatically on
+load and then answers the sender's offer with its own network addresses, so an invisible embedded
+copy pointed at an attacker's room could otherwise disclose a visitor's local and public IP
+addresses without a single click.
+
+The same header set blocks plugin content and `<base>` rewriting, restricts form submissions to
+floe.one, sends `X-Content-Type-Options: nosniff`, sets
+`Referrer-Policy: strict-origin-when-cross-origin`, denies camera, microphone, geolocation,
+payment, and USB access outright, and opts the site out of ad interest cohorts. The signaling
+server sends the standard hardening headers too.
+
+## On a self-hosted instance
+
+Everything above holds. The signaling server and the relay are architecturally incapable of
+receiving plaintext file data no matter who operates them, so running your own instance gives you
+the same encryption and puts the infrastructure under your control.
+
+It also removes the one dependency that encryption alone cannot cover, described in
+[What Floe does not protect against](/how-it-works/known-limitations#the-signaling-server-is-trusted-to-introduce-you-honestly).
+
+See [Self-hosting](/self-hosting/overview) to run one.
+
+## Reporting a vulnerability
+
+Report security issues privately through
+[GitHub Security Advisories](https://github.com/jannskiee/floe/security/advisories/new) or the
+contact in [SECURITY.md](https://github.com/jannskiee/floe/blob/main/SECURITY.md). Please do not
+open a public issue, which would expose the problem before there is a fix.

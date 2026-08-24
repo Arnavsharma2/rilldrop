@@ -1,0 +1,85 @@
+---
+title: "Self-Hosting Floe Overview"
+sidebarTitle: "Overview"
+description: "Run your own Floe signaling server, web client, and optional TURN relay on your own infrastructure for full control over peer-to-peer file transfer."
+keywords: ["self host", "run your own", "on premise", "private instance"]
+---
+
+You can self-host the entire Floe stack independently of `floe.one`. The setup uses Docker Compose so the full stack comes up with a single command.
+
+## What you are hosting
+
+The signaling server brokers WebRTC connection setup (offer, answer, ICE candidates) and issues short-lived TURN credentials. **File data never passes through it.** Transfers go peer-to-peer over encrypted WebRTC data channels. TURN is optional and only relays (still encrypted) traffic when a direct connection is not possible.
+
+## Components
+
+| Component | Description |
+|-----------|-------------|
+| `client` | Next.js web app, on container port 3000 |
+| `server` | Node.js signaling server, on container port 3001 |
+| `coturn` | Optional self-hosted TURN relay (profile-gated in Docker Compose). Alternatively, use managed Cloudflare Realtime TURN with no extra container. |
+
+Those are the ports inside the containers. In production you normally put both
+behind a single domain, so your users never see either one. See
+[Reverse Proxy](/self-hosting/reverse-proxy).
+
+## Who can connect
+
+One instance serves every Floe client. They share one wire protocol, so any two of
+them can transfer with each other on your server.
+
+| Client | How it points at your instance |
+|--------|-------------------------------|
+| Web app | Loads from your `client` container. Nothing for the user to configure. |
+| CLI | `floe send --server https://floe.example.com`. See [Use the Floe CLI with a Self-Hosted Server](/cli/self-hosted-server). |
+| Floe Desktop | Settings, **Advanced**, then **Server address**. **Test** checks the address before you rely on it, and **Use default server** returns the app to `api.floe.one`. See [Desktop Settings](/desktop/settings#server). |
+
+Both peers must be on the same server. Servers do not talk to each other.
+
+## Run one instance, not several
+
+The signaling server keeps rooms, room codes and its rate limiters in the memory of a single
+process. **Putting two replicas behind a load balancer does not scale Floe out; it breaks
+pairing**, because the two peers can land on different replicas and never find each other.
+
+One instance goes a long way. File data never passes through it, so it is brokering a handshake
+and then getting out of the way. If you need redundancy, use a failover pair rather than a
+load-balanced set, and accept that transfers in flight do not survive the switch.
+
+`CLIENT_URL` governs browser traffic only. CLI and desktop peers connect over `/ws`,
+which performs no origin check, so they reach your server regardless of that setting.
+
+## Contents
+
+<Columns cols={2}>
+  <Card title="Quick Start" href="/self-hosting/quickstart">
+    Get the stack running with Docker Compose in minutes.
+  </Card>
+  <Card title="Container Images" href="/self-hosting/images">
+    The prebuilt images on ghcr.io: tags, pinning a version or digest, and supported architectures.
+  </Card>
+  <Card title="Unraid" href="/self-hosting/unraid">
+    Install the client and signaling server from the two Unraid Community Applications templates.
+  </Card>
+  <Card title="Configuration" href="/self-hosting/configuration">
+    Environment variable reference for all settings.
+  </Card>
+  <Card title="How the Client Finds the Signaling Server" href="/self-hosting/build-time-url">
+    Runtime `SOCKET_URL` resolution, and the one value that is still baked in at build time.
+  </Card>
+  <Card title="Reverse Proxy" href="/self-hosting/reverse-proxy">
+    Serve the client and signaling server from one domain, with Caddy and nginx examples.
+  </Card>
+  <Card title="Production Deployment" href="/self-hosting/production">
+    HTTPS, custom domains, and the two-subdomain layout.
+  </Card>
+  <Card title="TURN Relay" href="/self-hosting/turn-relay">
+    Use Cloudflare's managed TURN or add coturn to support peers behind strict NAT or CGNAT.
+  </Card>
+  <Card title="Operations" href="/self-hosting/operations">
+    Day-to-day commands, updates, and health checks.
+  </Card>
+  <Card title="Without Docker" href="/self-hosting/without-docker">
+    Run the client and signaling server straight from Node.
+  </Card>
+</Columns>

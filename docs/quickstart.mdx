@@ -1,0 +1,101 @@
+---
+title: "Send your first file with Floe"
+sidebarTitle: "Quickstart"
+description: "Send a file peer-to-peer in about a minute, with no signup and nothing to install. Try it between two browser tabs, then from the desktop app or the terminal."
+keywords: ["quickstart", "get started", "send a file", "first transfer", "try it"]
+boost: 3
+---
+
+You are going to send a file and watch it arrive. The quickest way to see it work is to send to
+yourself, in two tabs, so nothing depends on anyone else being ready.
+
+<Steps>
+  <Step title="Open Floe and pick a file">
+    Go to [floe.one](https://floe.one) and drop a file onto the card, or click it to browse.
+  </Step>
+  <Step title="Create the link">
+    Click **Create secure link**. Floe shows a link, a **Copy** button, and **Show QR**.
+  </Step>
+  <Step title="Open the link in a second tab">
+    Paste it into a new tab. In real use this is where you would send the link to someone, or
+    have them scan the QR code with their phone.
+  </Step>
+  <Step title="Watch it arrive">
+    The transfer starts on its own after a couple of seconds. When the file lands, a download
+    button appears on its row in the second tab. Click it to save.
+  </Step>
+</Steps>
+
+## What just happened
+
+Your two tabs found each other through Floe's signaling server and then connected **directly**.
+The file went from one to the other without passing through any server, which is why there is no
+size limit and no upload to wait for.
+
+The badge at the top of the card said **Direct** once that path was open. On a network that
+blocks direct connections it would have said **Relay** instead, and the file would have traveled
+through an encrypted relay that cannot read it. See [How Floe connects](/how-it-works/signaling).
+
+## The same thing from the desktop app or the terminal
+
+Both do everything the browser does, plus folders, plus writing straight to disk.
+
+<CodeGroup>
+```bash CLI
+# install (macOS)
+brew install --cask jannskiee/tap/floe
+
+floe send photo.jpg
+# prints a three-word code and a link; share either
+```
+
+```powershell Desktop
+winget install --id 9NBQ8ZQ1065L --source msstore
+# then: drop files on the window, click Send,
+# and share the room code, the link, or the QR
+```
+</CodeGroup>
+
+The receiving side is `floe receive olive-tiger-castle`, or pasting the same code or link into
+Floe Desktop's **Receive** tab.
+
+## Any Floe can talk to any other {#cross-platform-transfers}
+
+The browser speaks to the signaling server one way and the desktop app and CLI another, but they
+all land in the same room, so every pairing works in both directions.
+
+| Sender | Receiver | How the receiver joins |
+|--------|----------|------------------------|
+| Browser | Browser | Opens the link or scans the QR code |
+| Browser | Desktop | Pastes the link into the Receive tab |
+| Browser | CLI | `floe receive "<link>"` |
+| Desktop | Browser | Opens the link or scans the QR code |
+| Desktop | Desktop | Pastes the code or the link into the Receive tab |
+| Desktop | CLI | `floe receive <code>` or `floe receive "<link>"` |
+| CLI | Browser | Opens the link or scans the QR code |
+| CLI | Desktop | Pastes the code or the link into the Receive tab |
+| CLI | CLI | `floe receive <code>` or `floe receive "<link>"` |
+
+One asymmetry is worth remembering. **A browser recipient always needs the link.** The web app has
+no field for a three-word code, and a browser sender never mints one. Codes come from `floe send`
+and Floe Desktop, and both of those also accept a link. When you do not know what the other person
+will use, share the link.
+
+Folders are the other difference: the CLI and the desktop app send them and rebuild the structure
+on arrival, and the browser cannot send them at all. A browser recipient of a folder can still get
+the structure back by choosing **Download ZIP**, which rebuilds it inside the archive; saving files
+one at a time flattens them.
+
+## Next
+
+<Columns cols={3}>
+  <Card title="Which Floe to use" icon="git-compare" href="/choosing-floe">
+    A feature-by-feature comparison of the three.
+  </Card>
+  <Card title="File size limits" icon="scale" href="/how-it-works/2gb-limit">
+    When a cap applies, and how to stay on the unlimited path.
+  </Card>
+  <Card title="Security and privacy" icon="shield" href="/security-privacy">
+    What each part of Floe can and cannot see.
+  </Card>
+</Columns>

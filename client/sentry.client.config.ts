@@ -1,0 +1,108 @@
+import * as Sentry from '@sentry/nextjs';
+import { BROWSER_EXTENSION_URL_PATTERNS } from './lib/browserExtensions';
+import { isStaleBundleError } from './lib/staleBundle';
+import { scrubUrl } from './lib/scrubUrl';
+
+Sentry.init({
+    // Set NEXT_PUBLIC_SENTRY_DSN in your environment to enable error tracking.
+    // Leave empty (or omit) to disable Sentry — safe for local development and forks.
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || '',
+
+    // Never attach cookies/headers/user IP by default. The room secret travels
+    // in the URL, which we additionally scrub below.
+    sendDefaultPii: false,
+
+    // Filter out non-actionable errors caused by browser extensions and restricted environments
+    ignoreErrors: [
+        // Browser extensions (Google Translate, Grammarly, ad blockers) modify the DOM
+        // directly, causing React's virtual DOM to desync. Not actionable.
+        "Failed to execute 'removeChild' on 'Node'",
+        "Failed to execute 'insertBefore' on 'Node'",
+        "The node to be removed is not a child of this node",
+        // Privacy/anti-fingerprint extensions bridge to native desktop software and
+        // reject a promise with a plain object when that bridge is not ready. Surfaces
+        // as "Object Not Found Matching Id:N, MethodName:..., ParamCount:N". Not our code.
+        'Object Not Found Matching Id',
+        // Clipboard blocked in restricted browsers (already handled with fallback)
+        'Write permission denied',
+        // Safari/iOS ResizeObserver noise
+        'ResizeObserver loop',
+    ],
+
+    // Drop errors thrown by browser extensions' injected content scripts: not
+    // Floe code, never actionable. Matched on the frame's URL scheme rather
+    // than its message, so this covers every extension without needing a
+    // per-wording entry above. It has to be denyUrls and not beforeSend:
+    // EventFilters runs first, before @sentry/nextjs rewrites every frame
+    // origin to "app://" (see lib/browserExtensions.ts). Fixes FLOE-E,
+    // MetaMask's inpage.js rejecting with "Failed to connect to MetaMask".
+    denyUrls: BROWSER_EXTENSION_URL_PATTERNS,
+
+    // Sample 10% of transactions. Tracing every page load (1.0) flooded the
+    // performance detectors with low-signal "Degraded HTTP Operation" issues on
+    // slow first/cold loads and added per-session overhead. 10% keeps enough
+    // signal to spot real regressions without the noise.
+    tracesSampleRate: 0.1,
+
+    // Stale-bundle/chunk-load errors are expected deploy churn, not bugs: an old
+    // tab requests chunks a new deploy removed. The browser auto-reloads onto the
+    // current bundle (see lib/staleBundle.ts). Collapse every wording variant into
+    // one warning-level issue instead of a flood of distinct, non-actionable errors.
+    beforeSend(event, hint) {
+        const message =
+            (hint?.originalException as Error | undefined)?.message ??
+            event.exception?.values?.[0]?.value;
+
+        if (isStaleBundleError(message)) {
+            event.level = 'warning';
+            event.fingerprint = ['stale-bundle-chunk-load'];
+            event.tags = { ...event.tags, stale_bundle: true, auto_recovered: true };
+        }
+
+        // Strip the room secret from the request URL before the event is sent.
+        if (event.request?.url) {
+            event.request.url = scrubUrl(event.request.url);
+        }
+
+        return event;
+    },
+
+    // Breadcrumbs (navigation, fetch, xhr) record URLs as they happen; scrub the
+    // room secret out of each one before it's attached to any event.
+    beforeBreadcrumb(breadcrumb) {
+        const data = breadcrumb.data;
+        if (data) {
+            if (typeof data.url === 'string') data.url = scrubUrl(data.url);
+            if (typeof data.to === 'string') data.to = scrubUrl(data.to);
+            if (typeof data.from === 'string') data.from = scrubUrl(data.from);
+        }
+        return breadcrumb;
+    },
+
+    // Session Replay is deliberately absent, and must not be added back.
+    //
+    // A replay envelope reports the page URL in `request.url`, and on a receiver
+    // page that is the whole /?s=<nonce>#room=<id> link. The room id is the only
+    // thing protecting a transfer: anyone holding it can join as the receiver.
+    // Captured envelopes confirmed it, so this was a live leak, not a theory.
+    //
+    // It cannot be scrubbed. Replay does not send through the client, so none of
+    // the hooks reach it: beforeSend is bypassed (replay uses prepareEvent and
+    // never enters _processEvent), an event processor had no effect, and
+    // beforeEnvelope is only emitted inside Client.sendEnvelope while
+    // @sentry/replay calls transport.send(envelope) directly. maskAllText does
+    // not help either, because the URL is envelope metadata rather than DOM.
+    //
+    // Omitting both `replays*SampleRate` options and the integration is
+    // sufficient and complete. Replay is NOT one of @sentry/nextjs's default
+    // client integrations (those are the browser set plus browserTracing and
+    // nextjsClientStackFrameNormalization), and nothing auto-enables it from the
+    // sample rates. Independently, the integration hard-gates itself: with both
+    // rates at 0 or absent, initializeSampling() returns before attaching any
+    // listener.
+    //
+    // Error and performance monitoring are unaffected and keep their scrubbing
+    // through beforeSend and beforeBreadcrumb above.
+
+    debug: false,
+});
