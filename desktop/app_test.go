@@ -13,7 +13,7 @@ import (
 // appearing there would leak it into access logs, Referer headers, and analytics.
 func TestShareLink(t *testing.T) {
 	const (
-		base   = "https://floe.one"
+		base   = "http://localhost:3000"
 		nonce  = "deadbeef"
 		roomID = "6f207790-92a6-4662-bb68-4c4059f75139"
 	)
@@ -44,7 +44,7 @@ func TestShareLink(t *testing.T) {
 // the fixed message.txt name the receiver will see, and cleanup removing the
 // temp directory.
 func TestWriteTextTemp(t *testing.T) {
-	const text = "hello floe\nline two · unicode ✓"
+	const text = "hello rilldrop\nline two · unicode ✓"
 
 	path, cleanup, err := writeTextTemp(text)
 	if err != nil {
@@ -207,11 +207,11 @@ func TestFailureToastsOnce(t *testing.T) {
 	var got []string
 	a := &App{notifyFn: func(title, body string) { got = append(got, title+"|"+body) }}
 	g := a.beginTransfer()
-	a.notifyTransferFailed(g, "Floe - receive failed")
+	a.notifyTransferFailed(g, "Rilldrop - receive failed")
 	if len(got) != 1 {
 		t.Fatalf("notified %d times, want 1: %v", len(got), got)
 	}
-	want := "Floe - receive failed|The transfer did not complete. Open Floe to see what happened."
+	want := "Rilldrop - receive failed|The transfer did not complete. Open Rilldrop to see what happened."
 	if got[0] != want {
 		t.Fatalf("notification = %q, want %q", got[0], want)
 	}
@@ -224,7 +224,7 @@ func TestCancelSuppressesFailureToast(t *testing.T) {
 	a := &App{notifyFn: func(string, string) { calls++ }}
 	g := a.beginTransfer()
 	a.CancelTransfer()
-	a.notifyTransferFailed(g, "Floe - receive failed")
+	a.notifyTransferFailed(g, "Rilldrop - receive failed")
 	if calls != 0 {
 		t.Fatalf("cancelled transfer toasted %d times, want 0", calls)
 	}
@@ -237,7 +237,7 @@ func TestSupersededTransferDoesNotToast(t *testing.T) {
 	a := &App{notifyFn: func(string, string) { calls++ }}
 	g1 := a.beginTransfer()
 	_ = a.beginTransfer()
-	a.notifyTransferFailed(g1, "Floe - send failed")
+	a.notifyTransferFailed(g1, "Rilldrop - send failed")
 	if calls != 0 {
 		t.Fatalf("superseded transfer toasted %d times, want 0", calls)
 	}
@@ -328,7 +328,7 @@ func TestConfirmCloseIdle(t *testing.T) {
 }
 
 // TestSecondInstanceFilesStageUntilFirstPull pins the multi-select "Send with
-// Floe" fix. Explorer launches one process per selected file; before the
+// Rilldrop" fix. Explorer launches one process per selected file; before the
 // frontend's first pull every forward must be staged (an emit would be
 // silently discarded by the JS event bus, which is how five selected files
 // used to arrive as one), and after the pull forwards are emitted.

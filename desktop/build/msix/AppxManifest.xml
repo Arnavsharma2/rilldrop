@@ -14,7 +14,7 @@
   0.x.y string stays in wails.json and the exe's version resource.
 
   No file-type associations, protocols, or context-menu extensions are
-  declared: Floe registers none, and the runtime HKCU context-menu verb is
+  declared: Rilldrop registers none, and the runtime HKCU context-menu verb is
   deliberately hidden in packaged builds (see desktop/packaged_windows.go).
 -->
 <Package
@@ -25,14 +25,14 @@
   IgnorableNamespaces="uap uap10 rescap">
 
   <Identity
-    Name="JanCarloParedes.FloeDesktop"
-    Publisher="CN=5D497A40-D927-4850-8A83-E21F677E80E3"
+    Name="Arnavsharma2.RilldropDesktop"
+    Publisher="CN=Arnav Sharma"
     Version="__IDENTITY_VERSION__"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>Floe Desktop</DisplayName>
-    <PublisherDisplayName>Jan Carlo Paredes</PublisherDisplayName>
+    <DisplayName>Rilldrop Desktop</DisplayName>
+    <PublisherDisplayName>Arnav Sharma</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -49,15 +49,15 @@
   </Capabilities>
 
   <Applications>
-    <Application Id="FloeDesktop" Executable="floe-desktop.exe" EntryPoint="Windows.FullTrustApplication"
+    <Application Id="RilldropDesktop" Executable="rilldrop-desktop.exe" EntryPoint="Windows.FullTrustApplication"
                  uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
       <uap:VisualElements
-        DisplayName="Floe Desktop"
+        DisplayName="Rilldrop Desktop"
         Description="Secure, encrypted peer-to-peer file transfer"
         BackgroundColor="#18181B"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Floe" />
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Rilldrop" />
       </uap:VisualElements>
     </Application>
   </Applications>

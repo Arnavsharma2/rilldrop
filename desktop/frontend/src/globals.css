@@ -7,8 +7,8 @@
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
   --color-ring: oklch(0.556 0 0);
-  /* Glacial ice-blue accent, matching the floe.one --color-ice token. */
-  --color-ice: oklch(0.87 0.05 220);
+  /* Stream-teal accent shared with the Rilldrop drop mark. */
+  --color-rill: oklch(0.87 0.05 220);
 }
 
 @layer base {
@@ -46,7 +46,7 @@
     @apply bg-zinc-600;
   }
 
-  @keyframes floe-in {
+  @keyframes rilldrop-in {
     from {
       opacity: 0;
       transform: translateY(4px);
@@ -57,15 +57,15 @@
     }
   }
 
-  .animate-floe-in {
-    animation: floe-in 0.2s ease-out both;
+  .animate-rilldrop-in {
+    animation: rilldrop-in 0.2s ease-out both;
   }
 
   /* The update notice's entrance: drops in from the edge it lives on and
-     settles fast (fast arrival, gentle landing), unlike the generic floe-in
+     settles fast (fast arrival, gentle landing), unlike the generic rilldrop-in
      rise. Entrance only - dismissal also unmounts via the busy/dialog paths,
      which cannot animate a conditional render. */
-  @keyframes floe-notice-in {
+  @keyframes rilldrop-notice-in {
     from {
       opacity: 0;
       transform: translate3d(0, -10px, 0) scale(0.97);
@@ -76,8 +76,8 @@
     }
   }
 
-  .animate-floe-notice-in {
-    animation: floe-notice-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  .animate-rilldrop-notice-in {
+    animation: rilldrop-notice-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   /* The undo toast's entrance. Same decelerate family as the notice, but its
@@ -97,7 +97,7 @@
      toast in any surveyed system overshoots, and Apple's own default spring is
      critically damped. Entrance only, like everything else here: a conditional
      render cannot animate out. */
-  @keyframes floe-toast-in {
+  @keyframes rilldrop-toast-in {
     from {
       opacity: 0;
       transform: translate3d(0, 24px, 0) scale(0.97);
@@ -108,18 +108,18 @@
     }
   }
 
-  .animate-floe-toast-in {
-    animation: floe-toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  .animate-rilldrop-toast-in {
+    animation: rilldrop-toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* The notice's one accent: a 1px ice rim in the bar's border, catching
+  /* The notice's one accent: a 1px teal rim in the bar's border, catching
      light at the top left and dissolving toward the bottom right, drawn with
      the double-mask trick so it stays transparent-safe under backdrop-blur.
      A top-edge-only strip was tried and rejected: the wrapped rim is the
      look the owner chose. No position on the class itself: the notice is
      already position:fixed, and a same-layer `position: relative` here would
      override Tailwind's `fixed` utility and drop the card into document flow. */
-  .floe-notice-edge::before {
+  .rilldrop-notice-edge::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -127,7 +127,7 @@
     padding: 1px;
     background: linear-gradient(
       155deg,
-      color-mix(in oklab, var(--color-ice) 32%, transparent) 0%,
+      color-mix(in oklab, var(--color-rill) 32%, transparent) 0%,
       rgb(255 255 255 / 0.09) 38%,
       transparent 62%
     );
@@ -141,7 +141,7 @@
   /* Wails adds this class to the element carrying `--wails-drop-target: drop`
      while an OS file drag hovers it (WebView2 does not emit HTML drag events). */
   .wails-drop-target-active {
-    border-color: var(--color-ice) !important;
+    border-color: var(--color-rill) !important;
     background-color: rgb(255 255 255 / 0.05) !important;
   }
 }
@@ -163,9 +163,9 @@
    had hung. That is the "essential" exception WCAG 2.2.2 names, and it is the
    one animation here that carries information rather than polish. */
 @media (prefers-reduced-motion: reduce) {
-  .animate-floe-in,
-  .animate-floe-notice-in,
-  .animate-floe-toast-in,
+  .animate-rilldrop-in,
+  .animate-rilldrop-notice-in,
+  .animate-rilldrop-toast-in,
   .animate-pulse {
     animation: none;
   }

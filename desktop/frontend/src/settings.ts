@@ -33,16 +33,16 @@ export function hostOf(raw: string): string {
  *  names both the value in effect and what that value costs them.
  *
  *  There are THREE states, not two, and the third is the one that gets lost.
- *  Overriding only the share link address leaves the app signaling against Floe's
- *  own server, so telling that user "people on Floe's server cannot connect to
+ *  Overriding only the share link address leaves the app signaling against Rilldrop's
+ *  own server, so telling that user "people on Rilldrop's server cannot connect to
  *  you" would be flatly false. Collapsing this to a boolean is the single most
  *  likely regression here, which is why it has its own test. */
 export function advancedSummary(server: string, web: string): string {
     if (server.trim() !== '') {
-        return `This app uses ${hostOf(server)}, so people on floe.one cannot connect to you.`;
+        return `This app uses ${hostOf(server)}, so people on localhost:3000 cannot connect to you.`;
     }
     if (web.trim() !== '') {
-        return `Share links point to ${hostOf(web)}, but this app still uses Floe's server.`;
+        return `Share links point to ${hostOf(web)}, but this app still uses Rilldrop's server.`;
     }
-    return "This app uses Floe's server. You can point it at your own instead.";
+    return "This app uses Rilldrop's server. You can point it at your own instead.";
 }

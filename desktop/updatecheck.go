@@ -16,7 +16,7 @@ import (
 // The check lives on the Go side because the webview's CSP is connect-src
 // 'self'. It deliberately reimplements ~80 lines of cli/internal/selfupdate
 // rather than sharing them: that package is internal to the cli module and
-// stays CLI-private on purpose (`floe update` has no meaning for the desktop
+// stays CLI-private on purpose (`rilldrop update` has no meaning for the desktop
 // app), and the desktop's tag scheme needs its own prefix handling anyway.
 //
 // The endpoint lists /releases instead of /releases/latest: desktop releases
@@ -29,7 +29,7 @@ const (
 	// per_page=100, not a smaller page: the CLI releases often enough that a
 	// dormant desktop tag could fall off a short first page within months, and
 	// the failure mode would be a silent "no update" cached daily.
-	defaultReleasesURL = "https://api.github.com/repos/jannskiee/floe/releases?per_page=100"
+	defaultReleasesURL = "https://api.github.com/repos/Arnavsharma2/rilldrop/releases?per_page=100"
 	updateCheckTimeout = 10 * time.Second
 	updateCacheTTL     = 24 * time.Hour
 )
@@ -70,14 +70,14 @@ type updateCacheEntry struct {
 //
 // The check never runs at all for dev builds, Store (MSIX) installs (the Store
 // updates them itself), or when the user opted out via the Settings toggle or
-// FLOE_NO_UPDATE_CHECK=1 (the CLI's documented env var). All four gates sit
+// RILLDROP_NO_UPDATE_CHECK=1 (the CLI's documented env var). All four gates sit
 // here, before any network I/O, so "turn it off and no request is made at all"
 // is literally true.
 func (a *App) CheckForUpdate() UpdateInfo {
 	a.mu.Lock()
 	optedOut := a.cfg.NoUpdateCheck
 	a.mu.Unlock()
-	optedOut = optedOut || os.Getenv("FLOE_NO_UPDATE_CHECK") == "1"
+	optedOut = optedOut || os.Getenv("RILLDROP_NO_UPDATE_CHECK") == "1"
 	return checkForUpdate(version, optedOut, isPackaged(), releasesURL(), updateCachePath())
 }
 
@@ -195,7 +195,7 @@ func compareVersionParts(a, b string) int {
 }
 
 // updateCachePath returns the check's cache file, a sibling of desktop.json
-// and the CLI's update-check.json in the same floe/ directory. The cache does
+// and the CLI's update-check.json in the same rilldrop/ directory. The cache does
 // not live in desktop.json: that file is rewritten on every settings change
 // and is documented as the wrong home for churn data. "" disables caching but
 // never the check itself.
@@ -204,7 +204,7 @@ func updateCachePath() string {
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(dir, "floe", "desktop-update-check.json")
+	return filepath.Join(dir, "rilldrop", "desktop-update-check.json")
 }
 
 // readUpdateCache returns the cached latest tag when the entry is fresh.
@@ -253,12 +253,12 @@ func writeUpdateCache(path, latest string, now time.Time) {
 	}
 }
 
-// releasesURL returns the endpoint to list releases from. FLOE_UPDATE_API is a
+// releasesURL returns the endpoint to list releases from. RILLDROP_UPDATE_API is a
 // test seam: it lets a local simulation point the checker at a mock server
 // without recompiling. It can only influence which version STRING is shown;
 // the notice's click target is compiled into the frontend.
 func releasesURL() string {
-	if u := os.Getenv("FLOE_UPDATE_API"); u != "" {
+	if u := os.Getenv("RILLDROP_UPDATE_API"); u != "" {
 		return u
 	}
 	return defaultReleasesURL

@@ -92,15 +92,15 @@ func TestWriteImageTemp(t *testing.T) {
 	}
 }
 
-// TestSweepPasteTemps checks the startup sweep removes floe-paste-* directories
-// and leaves the text-send staging (floe-text-*) alone.
+// TestSweepPasteTemps checks the startup sweep removes rilldrop-paste-* directories
+// and leaves the text-send staging (rilldrop-text-*) alone.
 func TestSweepPasteTemps(t *testing.T) {
-	pasteDir, err := os.MkdirTemp("", "floe-paste-")
+	pasteDir, err := os.MkdirTemp("", "rilldrop-paste-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { os.RemoveAll(pasteDir) })
-	textDir, err := os.MkdirTemp("", "floe-text-")
+	textDir, err := os.MkdirTemp("", "rilldrop-text-")
 	if err != nil {
 		t.Fatal(err)
 	}

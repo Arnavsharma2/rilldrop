@@ -1,4 +1,4 @@
-# Floe Desktop
+# Rilldrop Desktop
 
 The Windows desktop app: a Wails v2 (Go) shell around the shared `cli/engine`
 transfer core, with a React + TypeScript + Tailwind frontend in `frontend/`.
@@ -19,7 +19,7 @@ npm test
 cd ..
 go test ./...
 wails dev      # live development window with hot reload
-wails build    # production build -> build/bin/floe-desktop.exe
+wails build    # production build -> build/bin/rilldrop-desktop.exe
 ```
 
 `wails dev` also serves the app at http://localhost:34115, where a normal

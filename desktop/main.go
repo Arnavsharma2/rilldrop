@@ -21,13 +21,13 @@ var assets embed.FS
 // build time via -ldflags "-X main.version=v1.0.0"; "dev" for local builds.
 var version = "dev"
 
-const fatalTitle = "Floe"
+const fatalTitle = "Rilldrop"
 
 // The one startup failure a user can actually fix themselves, so it is worth
 // naming explicitly rather than showing them a nil pointer dereference.
-const webview2Hint = "Floe needs the Microsoft WebView2 runtime. " +
+const webview2Hint = "Rilldrop needs the Microsoft WebView2 runtime. " +
 	"If this PC is offline or behind a filtering proxy, install WebView2 from " +
-	"https://developer.microsoft.com/microsoft-edge/webview2/ and start Floe again."
+	"https://developer.microsoft.com/microsoft-edge/webview2/ and start Rilldrop again."
 
 // fatalMessage turns a panic value or an error into text a user can act on.
 //
@@ -40,7 +40,7 @@ func fatalMessage(cause any, hint string) string {
 	if detail == "" {
 		detail = "unknown error"
 	}
-	msg := "Floe could not start.\n\n" + detail
+	msg := "Rilldrop could not start.\n\n" + detail
 	// Joined with a newline rather than concatenated: a bare join could match
 	// across the seam, on a cause ending "webview" and a hint starting "2".
 	if strings.Contains(strings.ToLower(detail+"\n"+hint), "webview2") {
@@ -74,7 +74,7 @@ func main() {
 	webviewData := webviewDataPath()
 	if appData := os.Getenv("APPDATA"); appData != "" {
 		migrateWebviewProfile(webviewData,
-			filepath.Join(appData, "floe-desktop.exe"),
+			filepath.Join(appData, "rilldrop-desktop.exe"),
 			filepath.Join(appData, "desktop.exe"))
 	}
 
@@ -83,7 +83,7 @@ func main() {
 		Windows: &windows.Options{
 			WebviewUserDataPath: webviewData,
 		},
-		Title:     "Floe",
+		Title:     "Rilldrop",
 		Width:     1140,
 		Height:    720,
 		MinWidth:  1000,
@@ -97,7 +97,7 @@ func main() {
 		OnShutdown:       app.shutdown,
 		OnBeforeClose:    app.onBeforeClose,
 		SingleInstanceLock: &options.SingleInstanceLock{
-			UniqueId:               "one.floe.desktop",
+			UniqueId:               "one.rilldrop.desktop",
 			OnSecondInstanceLaunch: app.onSecondInstanceLaunch,
 		},
 		DragAndDrop: &options.DragAndDrop{

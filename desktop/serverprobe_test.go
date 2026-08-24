@@ -13,9 +13,9 @@ import (
 // HTTP stages.
 func okWS(string) error { return nil }
 
-// floeServer serves the endpoints a healthy signaling server exposes. Individual
+// rilldropServer serves the endpoints a healthy signaling server exposes. Individual
 // tests drop one to simulate a reverse proxy that forgot to forward it.
-func floeServer(withHealth, withAPI bool) *httptest.Server {
+func rilldropServer(withHealth, withAPI bool) *httptest.Server {
 	mux := http.NewServeMux()
 	if withHealth {
 		mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
@@ -34,7 +34,7 @@ func floeServer(withHealth, withAPI bool) *httptest.Server {
 
 // TestProbeServerAcceptsAHealthyServer is the happy path: all three stages pass.
 func TestProbeServerAcceptsAHealthyServer(t *testing.T) {
-	srv := floeServer(true, true)
+	srv := rilldropServer(true, true)
 	defer srv.Close()
 
 	if got := probeServer(srv.URL, okWS); !got.OK {
@@ -45,7 +45,7 @@ func TestProbeServerAcceptsAHealthyServer(t *testing.T) {
 // TestProbeServerNormalizesInput proves the trim reaches every stage, not just
 // the first. An untrimmed base would request //health, which does not route.
 func TestProbeServerNormalizesInput(t *testing.T) {
-	srv := floeServer(true, true)
+	srv := rilldropServer(true, true)
 	defer srv.Close()
 
 	for _, in := range []string{srv.URL + "/", srv.URL + "//", "  " + srv.URL + "  "} {
@@ -60,7 +60,7 @@ func TestProbeServerNormalizesInput(t *testing.T) {
 // and the resulting breakage is silent: ice.Fetch falls back to public STUN and a
 // failed code registration is discarded, so the user sees a link with no code.
 func TestProbeServerCatchesMissingAPI(t *testing.T) {
-	srv := floeServer(true, false) // /ws is stubbed as working by okWS
+	srv := rilldropServer(true, false) // /ws is stubbed as working by okWS
 	defer srv.Close()
 
 	got := probeServer(srv.URL, okWS)
@@ -74,7 +74,7 @@ func TestProbeServerCatchesMissingAPI(t *testing.T) {
 
 // TestProbeServerCatchesMissingWebSocket covers the other proxy misconfiguration.
 func TestProbeServerCatchesMissingWebSocket(t *testing.T) {
-	srv := floeServer(true, true)
+	srv := rilldropServer(true, true)
 	defer srv.Close()
 
 	got := probeServer(srv.URL, func(string) error { return errors.New("upgrade refused") })
@@ -86,20 +86,20 @@ func TestProbeServerCatchesMissingWebSocket(t *testing.T) {
 	}
 }
 
-// TestProbeServerRejectsNonFloeEndpoints separates "nothing is there" from
-// "something is there but it is not Floe", because the fixes differ.
-func TestProbeServerRejectsNonFloeEndpoints(t *testing.T) {
+// TestProbeServerRejectsNonRilldropEndpoints separates "nothing is there" from
+// "something is there but it is not Rilldrop", because the fixes differ.
+func TestProbeServerRejectsNonRilldropEndpoints(t *testing.T) {
 	// 200 with a body that is not the health payload: a different service.
-	notFloe := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	notRilldrop := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("<html>hello</html>"))
 	}))
-	defer notFloe.Close()
-	if got := probeServer(notFloe.URL, okWS); got.OK || !strings.Contains(got.Message, "not a Floe") {
-		t.Errorf("non-Floe 200: got %+v, want a not-a-Floe-server message", got)
+	defer notRilldrop.Close()
+	if got := probeServer(notRilldrop.URL, okWS); got.OK || !strings.Contains(got.Message, "not a Rilldrop") {
+		t.Errorf("non-Rilldrop 200: got %+v, want a not-a-Rilldrop-server message", got)
 	}
 
 	// 404 everywhere: most often the web app pasted instead of the server.
-	empty := floeServer(false, false)
+	empty := rilldropServer(false, false)
 	defer empty.Close()
 	if got := probeServer(empty.URL, okWS); got.OK || !strings.Contains(got.Message, "web app") {
 		t.Errorf("404 health: got %+v, want the web-app hint", got)
@@ -110,7 +110,7 @@ func TestProbeServerRejectsNonFloeEndpoints(t *testing.T) {
 // its own message so the user knows whether to fix the address or the server.
 func TestProbeServerRejectsUnreachableHosts(t *testing.T) {
 	for _, tc := range []struct{ name, addr, want string }{
-		{"unresolvable host", "https://floe-probe-test.invalid", "could not be found"},
+		{"unresolvable host", "https://rilldrop-probe-test.invalid", "could not be found"},
 		{"connection refused", "http://127.0.0.1:59999", "Could not connect"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -132,8 +132,8 @@ func TestProbeServerRejectsMalformedInput(t *testing.T) {
 	for _, tc := range []struct{ name, addr, want string }{
 		{"empty", "", "Enter a server address"},
 		{"only slashes", "///", "Enter a server address"},
-		{"no scheme", "floe.example.com", "does not look like an address"},
-		{"wrong scheme", "ftp://floe.example.com", "must start with"},
+		{"no scheme", "rilldrop.example.com", "does not look like an address"},
+		{"wrong scheme", "ftp://rilldrop.example.com", "must start with"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got := probeServer(tc.addr, failWS)
@@ -150,15 +150,15 @@ func TestProbeServerRejectsMalformedInput(t *testing.T) {
 // TestProbeServerAgainstLiveServer runs the real probe, including the real
 // signaling dial, against an actual server. Opt-in because it needs one running:
 //
-//	FLOE_TEST_SERVER=http://localhost:3001 go test ./... -run LiveServer
+//	RILLDROP_TEST_SERVER=http://localhost:3001 go test ./... -run LiveServer
 //
 // The other probe tests stub the WebSocket stage, so this is the only place
 // dialSignaling itself is exercised. It doubles as the check a self-hoster can
 // run against their own deployment.
 func TestProbeServerAgainstLiveServer(t *testing.T) {
-	base := os.Getenv("FLOE_TEST_SERVER")
+	base := os.Getenv("RILLDROP_TEST_SERVER")
 	if base == "" {
-		t.Skip("set FLOE_TEST_SERVER to a running signaling server to run this")
+		t.Skip("set RILLDROP_TEST_SERVER to a running signaling server to run this")
 	}
 
 	if got := probeServer(base, dialSignaling); !got.OK {
@@ -174,7 +174,7 @@ func TestProbeServerAgainstLiveServer(t *testing.T) {
 // TestProbeServerRefusesRedirects stops a catch-all rewrite or captive portal
 // from passing as a healthy server.
 func TestProbeServerRefusesRedirects(t *testing.T) {
-	real := floeServer(true, true)
+	real := rilldropServer(true, true)
 	defer real.Close()
 
 	redirector := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

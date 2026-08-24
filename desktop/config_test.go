@@ -11,9 +11,9 @@ import (
 // whole point of keeping this outside localStorage: the setting has to survive a
 // relaunch and an exe rename.
 func TestConfigRoundTrip(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "floe", "desktop.json")
+	path := filepath.Join(t.TempDir(), "rilldrop", "desktop.json")
 
-	want := appConfig{Server: "https://floe.example.com", Web: "https://app.example.com"}
+	want := appConfig{Server: "https://rilldrop.example.com", Web: "https://app.example.com"}
 	if err := saveConfigTo(path, want); err != nil {
 		t.Fatalf("saveConfigTo: %v", err)
 	}
@@ -29,26 +29,26 @@ func TestConfigNormalizesOnSaveAndLoad(t *testing.T) {
 	dir := t.TempDir()
 
 	saved := filepath.Join(dir, "saved.json")
-	if err := saveConfigTo(saved, appConfig{Server: " https://floe.example.com// ", Web: "https://app.example.com/"}); err != nil {
+	if err := saveConfigTo(saved, appConfig{Server: " https://rilldrop.example.com// ", Web: "https://app.example.com/"}); err != nil {
 		t.Fatalf("saveConfigTo: %v", err)
 	}
 	got := loadConfigFrom(saved)
-	if got.Server != "https://floe.example.com" || got.Web != "https://app.example.com" {
+	if got.Server != "https://rilldrop.example.com" || got.Web != "https://app.example.com" {
 		t.Errorf("after save, config = %+v, want both origins trimmed", got)
 	}
 
 	// A file hand-edited outside the app must be normalized on the way in too.
 	handEdited := filepath.Join(dir, "hand.json")
-	if err := os.WriteFile(handEdited, []byte(`{"server":"https://floe.example.com/","web":""}`), 0o600); err != nil {
+	if err := os.WriteFile(handEdited, []byte(`{"server":"https://rilldrop.example.com/","web":""}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if got := loadConfigFrom(handEdited); got.Server != "https://floe.example.com" {
+	if got := loadConfigFrom(handEdited); got.Server != "https://rilldrop.example.com" {
 		t.Errorf("hand-edited server = %q, want it trimmed", got.Server)
 	}
 }
 
 // TestLoadConfigFallsBackToDefaults covers every way the file can be unusable.
-// None of them is worth an error dialog: the app just runs against Floe's servers.
+// None of them is worth an error dialog: the app just runs against Rilldrop's servers.
 func TestLoadConfigFallsBackToDefaults(t *testing.T) {
 	dir := t.TempDir()
 
@@ -81,7 +81,7 @@ func TestSaveConfigIsAtomic(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "desktop.json")
 
-	if err := saveConfigTo(path, appConfig{Server: "https://floe.example.com"}); err != nil {
+	if err := saveConfigTo(path, appConfig{Server: "https://rilldrop.example.com"}); err != nil {
 		t.Fatalf("saveConfigTo: %v", err)
 	}
 	if _, err := os.Stat(path + ".tmp"); !os.IsNotExist(err) {
@@ -100,7 +100,7 @@ func TestSaveConfigIsAtomic(t *testing.T) {
 // TestSaveConfigWithoutPath is the counterpart to the "no config dir" load case:
 // it must report a real error rather than writing into the process's cwd.
 func TestSaveConfigWithoutPath(t *testing.T) {
-	if err := saveConfigTo("", appConfig{Server: "https://floe.example.com"}); err == nil {
+	if err := saveConfigTo("", appConfig{Server: "https://rilldrop.example.com"}); err == nil {
 		t.Error("saveConfigTo(\"\") = nil, want an error")
 	}
 }
@@ -112,7 +112,7 @@ func TestSaveConfigWithoutPath(t *testing.T) {
 // would have been preferences that reset themselves.
 func TestNormalizeConfigPreservesToggles(t *testing.T) {
 	in := appConfig{
-		Server:        " https://floe.example.com/ ",
+		Server:        " https://rilldrop.example.com/ ",
 		Web:           "https://app.example.com/",
 		HideIP:        true,
 		ReportStats:   false,
@@ -121,7 +121,7 @@ func TestNormalizeConfigPreservesToggles(t *testing.T) {
 	}
 	got := normalizeConfig(in)
 
-	if got.Server != "https://floe.example.com" || got.Web != "https://app.example.com" {
+	if got.Server != "https://rilldrop.example.com" || got.Web != "https://app.example.com" {
 		t.Errorf("addresses not normalized: %+v", got)
 	}
 	if !got.HideIP || got.ReportStats || !got.NoUpdateCheck || !got.Migrated {
@@ -132,7 +132,7 @@ func TestNormalizeConfigPreservesToggles(t *testing.T) {
 // TestUpdateCheckFieldRoundTrip pins the opted-out state: NoUpdateCheck true is
 // the non-default choice, so it is the one a widening bug would silently drop.
 func TestUpdateCheckFieldRoundTrip(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "floe", "desktop.json")
+	path := filepath.Join(t.TempDir(), "rilldrop", "desktop.json")
 
 	want := appConfig{ReportStats: true, NoUpdateCheck: true, Migrated: true}
 	if err := saveConfigTo(path, want); err != nil {
@@ -166,7 +166,7 @@ func TestAbsentUpdateCheckFieldDefaultsOn(t *testing.T) {
 // the update toggle, so the current record's value must carry over verbatim.
 func TestSettingsFromArgsPreservesUpdateCheck(t *testing.T) {
 	cur := appConfig{NoUpdateCheck: true, Migrated: true}
-	got := settingsFromArgs(cur, "https://floe.example.com/", "", true, false)
+	got := settingsFromArgs(cur, "https://rilldrop.example.com/", "", true, false)
 
 	if !got.NoUpdateCheck {
 		t.Error("settingsFromArgs dropped NoUpdateCheck; every settings save would re-enable the check")
@@ -174,7 +174,7 @@ func TestSettingsFromArgsPreservesUpdateCheck(t *testing.T) {
 	if !got.Migrated {
 		t.Error("settingsFromArgs must always mark the record migrated")
 	}
-	if got.Server != "https://floe.example.com" || !got.HideIP || got.ReportStats {
+	if got.Server != "https://rilldrop.example.com" || !got.HideIP || got.ReportStats {
 		t.Errorf("argument fields wrong: %+v", got)
 	}
 }
@@ -182,7 +182,7 @@ func TestSettingsFromArgsPreservesUpdateCheck(t *testing.T) {
 // TestTogglesRoundTrip is the reason these settings moved out of localStorage at
 // all: they have to survive a relaunch under a different executable name.
 func TestTogglesRoundTrip(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "floe", "desktop.json")
+	path := filepath.Join(t.TempDir(), "rilldrop", "desktop.json")
 
 	// ReportStats false is the interesting case. It is the non-zero-value choice,
 	// so it is the one a bug would silently discard.
@@ -206,7 +206,7 @@ func TestUnmigratedConfigIsDetectable(t *testing.T) {
 
 	// A file from before the toggles existed.
 	old := filepath.Join(dir, "old.json")
-	if err := os.WriteFile(old, []byte(`{"server":"https://floe.example.com","web":""}`), 0o600); err != nil {
+	if err := os.WriteFile(old, []byte(`{"server":"https://rilldrop.example.com","web":""}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if got := loadConfigFrom(old); got.Migrated {
@@ -235,7 +235,7 @@ func TestUnmigratedConfigIsDetectable(t *testing.T) {
 // ever wrote it false, the next launch would re-run the one-time localStorage
 // import and resurrect the very values the user just cleared.
 func TestResetWritesDefaults(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "floe", "desktop.json")
+	path := filepath.Join(t.TempDir(), "rilldrop", "desktop.json")
 
 	// A thoroughly customised install: both addresses set, both toggles flipped
 	// away from their defaults.
@@ -274,8 +274,8 @@ func TestWebviewDataPathIsStable(t *testing.T) {
 	if p == "" {
 		t.Skip("no user config dir on this system")
 	}
-	if filepath.Base(p) != "webview" || filepath.Base(filepath.Dir(p)) != "floe" {
-		t.Errorf("webviewDataPath() = %q, want .../floe/webview", p)
+	if filepath.Base(p) != "webview" || filepath.Base(filepath.Dir(p)) != "rilldrop" {
+		t.Errorf("webviewDataPath() = %q, want .../rilldrop/webview", p)
 	}
 	if p != webviewDataPath() {
 		t.Error("webviewDataPath is not deterministic")
@@ -284,7 +284,7 @@ func TestWebviewDataPathIsStable(t *testing.T) {
 
 func TestMigrateWebviewProfileAdoptsOldDir(t *testing.T) {
 	root := t.TempDir()
-	old := filepath.Join(root, "floe-desktop.exe")
+	old := filepath.Join(root, "rilldrop-desktop.exe")
 	if err := os.MkdirAll(filepath.Join(old, "EBWebView"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -293,7 +293,7 @@ func TestMigrateWebviewProfileAdoptsOldDir(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	newPath := filepath.Join(root, "floe", "webview")
+	newPath := filepath.Join(root, "rilldrop", "webview")
 	migrateWebviewProfile(newPath, filepath.Join(root, "missing"), old)
 
 	got, err := os.ReadFile(filepath.Join(newPath, "EBWebView", "marker.txt"))
@@ -345,13 +345,13 @@ func TestMigrateWebviewProfileHandlesNothingToDo(t *testing.T) {
 
 func TestMigrateWebviewProfileAdoptsOverEmptyHusk(t *testing.T) {
 	root := t.TempDir()
-	newPath := filepath.Join(root, "floe", "webview")
+	newPath := filepath.Join(root, "rilldrop", "webview")
 	// A fileless husk exactly like the 2026-06-28 scaffold left behind:
 	// nested directories, zero files.
 	if err := os.MkdirAll(filepath.Join(newPath, "EBWebView", "Default"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	old := filepath.Join(root, "floe-desktop.exe")
+	old := filepath.Join(root, "rilldrop-desktop.exe")
 	if err := os.MkdirAll(old, 0o755); err != nil {
 		t.Fatal(err)
 	}

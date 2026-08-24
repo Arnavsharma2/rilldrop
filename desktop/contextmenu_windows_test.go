@@ -12,14 +12,14 @@ import (
 // (not under Software\Classes, so it never appears in Explorer), cleaning up
 // the whole test subtree afterwards.
 func TestContextMenuRoundTrip(t *testing.T) {
-	const base = `Software\FloeTest\shell\Send`
+	const base = `Software\RilldropTest\shell\Send`
 	t.Cleanup(func() {
 		_ = unregisterContextMenu(base)
-		_ = registry.DeleteKey(registry.CURRENT_USER, `Software\FloeTest\shell`)
-		_ = registry.DeleteKey(registry.CURRENT_USER, `Software\FloeTest`)
+		_ = registry.DeleteKey(registry.CURRENT_USER, `Software\RilldropTest\shell`)
+		_ = registry.DeleteKey(registry.CURRENT_USER, `Software\RilldropTest`)
 	})
 
-	const exe = `C:\fake\floe-desktop.exe`
+	const exe = `C:\fake\rilldrop-desktop.exe`
 	if err := registerContextMenu(base, exe); err != nil {
 		t.Fatalf("register: %v", err)
 	}

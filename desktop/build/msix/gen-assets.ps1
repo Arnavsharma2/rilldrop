@@ -3,7 +3,7 @@
 # Why this exists: Windows draws a solid "icon plate" behind Square44x44Logo on
 # the taskbar, Start, search and Alt+Tab unless the package ships targetsize
 # variants WITH altform-unplated twins. Shipping only the four unqualified
-# logos is what put a coloured square behind the Floe icon in the Store build.
+# logos is what put a coloured square behind the Rilldrop icon in the Store build.
 # The variants are inert on their own; pack.ps1 indexes them into a
 # resources.pri, without which Windows only ever sees the literal manifest
 # paths.

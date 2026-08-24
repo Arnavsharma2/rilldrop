@@ -11,7 +11,7 @@ import (
 // MSIX package-identity detection. A Microsoft Store install runs with a
 // package identity, and two things change under it: the process's HKCU writes
 // land in a private per-package registry view that Explorer never reads (so
-// the "Send with Floe" verb cannot work), and a Store uninstall runs no
+// the "Send with Rilldrop" verb cannot work), and a Store uninstall runs no
 // cleanup code that could remove a verb pointing at the versioned WindowsApps
 // exe path. The context-menu feature is therefore hidden when packaged; see
 // the guards in app.go.

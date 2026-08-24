@@ -5,13 +5,13 @@
 !include "FileFunc.nsh"
 
 !ifndef INFO_PROJECTNAME
-    !define INFO_PROJECTNAME "floe-desktop"
+    !define INFO_PROJECTNAME "rilldrop-desktop"
 !endif
 !ifndef INFO_COMPANYNAME
     !define INFO_COMPANYNAME "Jc Paredes"
 !endif
 !ifndef INFO_PRODUCTNAME
-    !define INFO_PRODUCTNAME "Floe"
+    !define INFO_PRODUCTNAME "Rilldrop"
 !endif
 !ifndef INFO_PRODUCTVERSION
     !define INFO_PRODUCTVERSION "0.1.0"

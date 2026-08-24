@@ -5,7 +5,7 @@
 /** histKey identifies a history entry independently of its list position, so
  *  removing an entry above an expanded row cannot shift which row is open.
  *  `at` alone is near-unique (transfers are busy-gated, one at a time), but
- *  localStorage['floe:history'] is loaded verbatim and user-editable, so the
+ *  localStorage['rilldrop:history'] is loaded verbatim and user-editable, so the
  *  first name and the count are folded in as free tiebreakers. Byte-identical
  *  entries still collide; that is accepted for a 50-entry local list. */
 export function histKey(h: {at: number; names: string[]; count: number}): string {

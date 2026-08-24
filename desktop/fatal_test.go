@@ -71,7 +71,7 @@ func TestFatalMessage(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			got := fatalMessage(c.cause, "")
 
-			if !strings.HasPrefix(got, "Floe could not start.") {
+			if !strings.HasPrefix(got, "Rilldrop could not start.") {
 				t.Errorf("every fatal message should open by saying so, got:\n%s", got)
 			}
 			if hasHint := strings.Contains(got, webview2Hint); hasHint != c.wantHint {

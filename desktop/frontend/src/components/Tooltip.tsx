@@ -70,7 +70,7 @@ export function Tooltip({label, keys, align = 'center', className, children}: {
         if (!b) return;
         const {width, height} = b.getBoundingClientRect();
         // Edge-align to the trigger's CONTENT box, not its border box. A padded
-        // trigger (the Floe lockup carries px-2) would otherwise place the bubble
+        // trigger (the Rilldrop lockup carries px-2) would otherwise place the bubble
         // level with an invisible edge, leaving it looking shifted outward against
         // the glyph the eye actually aligns to.
         const trigger = ref.current?.firstElementChild;
@@ -79,7 +79,7 @@ export function Tooltip({label, keys, align = 'center', className, children}: {
         const padR = ts ? parseFloat(ts.paddingRight) || 0 : 0;
 
         // Centre on the trigger (or hang from one of its content edges), then clamp
-        // inside the viewport so a control flush with a window edge (Close, the Floe
+        // inside the viewport so a control flush with a window edge (Close, the Rilldrop
         // lockup) still renders its bubble on screen.
         let left;
         if (align === 'end') left = anchor.right - padR - width;
@@ -148,7 +148,7 @@ export function Tooltip({label, keys, align = 'center', className, children}: {
                         visibility: coords ? 'visible' : 'hidden',
                     }}
                     className={cn(
-                        'animate-floe-in pointer-events-none fixed z-40 flex max-w-[240px] items-center gap-2',
+                        'animate-rilldrop-in pointer-events-none fixed z-40 flex max-w-[240px] items-center gap-2',
                         'rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 py-1.5 shadow-2xl',
                         'text-xs leading-snug text-zinc-100 motion-reduce:animate-none',
                     )}

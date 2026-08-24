@@ -31,14 +31,14 @@ Unicode true
 ## !define REQUEST_EXECUTION_LEVEL "admin"            # Default "admin"  see also https://nsis.sourceforge.io/Docs/Chapter4.html
 ####
 
-# Floe installs per-user: no UAC elevation (an unsigned installer's elevation
+# Rilldrop installs per-user: no UAC elevation (an unsigned installer's elevation
 # prompt is the scariest possible first impression), user-scoped shell folders,
 # and the per-user WebView2 runtime probe in wails_tools.nsh keys off this too.
 # These defines must sit ABOVE the include: wails_tools.nsh wraps its own
 # defaults in !ifndef, and that file is regenerated on every build, so this
 # file is the only durable home for installer policy.
 !define REQUEST_EXECUTION_LEVEL "user"
-!define UNINST_KEY_NAME "Floe"
+!define UNINST_KEY_NAME "Rilldrop"
 
 ####
 ## Include the wails tools
@@ -127,7 +127,7 @@ Section "uninstall"
     !insertmacro wails.setShellContext
 
     # Deliberately NOT removed: user data. The pinned webview profile (history,
-    # preferences) and %APPDATA%\floe\desktop.json survive an uninstall, so a
+    # preferences) and %APPDATA%\rilldrop\desktop.json survive an uninstall, so a
     # reinstall picks up where the user left off, like a browser. The stock
     # template's RMDir of $AppData\<exe> was a no-op anyway (admin shell context
     # resolved it to ProgramData, where no profile ever exists).
@@ -137,11 +137,11 @@ Section "uninstall"
     Delete "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk"
     Delete "$DESKTOP\${INFO_PRODUCTNAME}.lnk"
 
-    # The Explorer "Send with Floe" verb points into $INSTDIR; without this a
+    # The Explorer "Send with Rilldrop" verb points into $INSTDIR; without this a
     # dead menu entry survives the app (DeleteRegKey is recursive, so the
     # command subkey goes too). The app re-creates it on next launch if the
     # user reinstalls.
-    DeleteRegKey HKCU "Software\Classes\*\shell\Floe"
+    DeleteRegKey HKCU "Software\Classes\*\shell\Rilldrop"
 
     !insertmacro wails.unassociateFiles
     !insertmacro wails.unassociateCustomProtocols

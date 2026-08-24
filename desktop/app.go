@@ -12,32 +12,30 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Arnavsharma2/rilldrop/cli/engine/code"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/ice"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/peer"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/serverurl"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/signaling"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/transfer"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/verify"
 	"github.com/google/uuid"
-	"github.com/jannskiee/floe/cli/engine/code"
-	"github.com/jannskiee/floe/cli/engine/ice"
-	"github.com/jannskiee/floe/cli/engine/peer"
-	"github.com/jannskiee/floe/cli/engine/serverurl"
-	"github.com/jannskiee/floe/cli/engine/signaling"
-	"github.com/jannskiee/floe/cli/engine/transfer"
-	"github.com/jannskiee/floe/cli/engine/verify"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// defaultServer is the production Floe signaling server, used unless Settings
-// names another one. On the default the desktop app talks to the same
-// infrastructure as the browser and CLI, so transfers interoperate; point it at
-// a self-hosted server and it interoperates with peers on that server instead.
-const defaultServer = "https://api.floe.one"
+// defaultServer is the local Rilldrop signaling server, used unless Settings
+// names another one. Point it at a self-hosted server to transfer across networks.
+const defaultServer = "http://localhost:3001"
 
-const desktopUpdateHint = "Update Floe from the Microsoft Store or floe.one/download."
+const desktopUpdateHint = "Download the latest Rilldrop build from GitHub Releases."
 
 // The share-link origin is no longer a constant here. It is derived from the
 // signaling origin by engine/serverurl, which the CLI uses too, so both surfaces
 // emit identical links. See App.endpoints.
 
 // contextMenuBase is the per-user Explorer context-menu key for all file types.
-const contextMenuBase = `Software\Classes\*\shell\Floe`
+const contextMenuBase = `Software\Classes\*\shell\Rilldrop`
 
 // expectedCommand is the context-menu launch command for the given executable.
 func expectedCommand(exe string) string {
@@ -48,7 +46,7 @@ func expectedCommand(exe string) string {
 // secret, so it goes in the URL fragment: browsers never send a fragment to a
 // server, strip it from the Referer header, and ignore it in analytics. The nonce
 // goes in the query instead. It carries no information, and it makes every link a
-// distinct document so a phone that already has Floe open joins the new room rather
+// distinct document so a phone that already has Rilldrop open joins the new room rather
 // than reusing a stale tab. Mirrors client/components/P2PTransfer.tsx.
 func shareLink(base, nonce, roomID string) string {
 	return base + "/?s=" + nonce + "#room=" + roomID
@@ -105,13 +103,13 @@ type App struct {
 	wake *wakeGuard
 
 	// pendingFiles holds file paths passed on the command line (Explorer's
-	// "Send with Floe", drag-onto-exe) until the frontend pulls them.
+	// "Send with Rilldrop", drag-onto-exe) until the frontend pulls them.
 	// frontendReady flips true, once and forever, the moment the frontend
 	// pulls: from then on second-instance files are emitted as events instead
 	// of staged, because the pull proves the 'files:open' listener exists (the
 	// frontend registers it in the same synchronous effect, just before the
 	// pull). Before that flip the JS event bus silently discards emits, which
-	// is how a multi-select "Send with Floe" used to deliver one file of five.
+	// is how a multi-select "Send with Rilldrop" used to deliver one file of five.
 	pendingFiles  []string
 	frontendReady bool
 
@@ -133,7 +131,7 @@ type App struct {
 func NewApp() *App {
 	// Loaded here rather than in startup: startup runs on a goroutine after the
 	// window exists, which would leave a window where a transfer could begin
-	// against the wrong server. Failures fall back to the Floe defaults.
+	// against the wrong server. Failures fall back to the Rilldrop defaults.
 	return &App{wake: newWakeGuard(), cfg: loadConfig()}
 }
 
@@ -162,7 +160,7 @@ func (a *App) endpoints() (server, web string) {
 }
 
 // GetSettings returns every persisted setting for the Settings screen. Empty
-// address fields mean "using the Floe defaults" and render as placeholders.
+// address fields mean "using the Rilldrop defaults" and render as placeholders.
 //
 // When Migrated is false the toggles have never been written here, and the
 // frontend imports them once from the localStorage keys they used to live in.
@@ -273,7 +271,7 @@ func (a *App) shutdown(ctx context.Context) {
 	transfer.AbandonPartials()
 }
 
-// onSecondInstanceLaunch fires when Floe is launched again while already running.
+// onSecondInstanceLaunch fires when Rilldrop is launched again while already running.
 // Rather than open a second window, bring the existing one to the front and
 // forward any file arguments (the Explorer context menu launches one process
 // per selected file; each lands here).
@@ -357,7 +355,7 @@ func (a *App) IsPackaged() bool {
 	return isPackaged()
 }
 
-// EnableContextMenu adds the "Send with Floe" entry to the Explorer right-click
+// EnableContextMenu adds the "Send with Rilldrop" entry to the Explorer right-click
 // menu for the current user (Windows only, unpackaged builds only).
 func (a *App) EnableContextMenu() error {
 	if isPackaged() {
@@ -415,7 +413,7 @@ func (a *App) notifyTransferFailed(g uint64, title string) {
 	if !a.transferActive(g) {
 		return
 	}
-	a.notify(title, "The transfer did not complete. Open Floe to see what happened.")
+	a.notify(title, "The transfer did not complete. Open Rilldrop to see what happened.")
 }
 
 // EngineProtocolVersion returns the wire protocol version of the embedded engine.
@@ -752,7 +750,7 @@ func (a *App) StartSend(paths []string, hideIP bool) error {
 // plus a cleanup that removes the directory. The fixed inner name is what the
 // receiver sees; the random temp-dir name never crosses the wire.
 func writeTextTemp(text string) (string, func(), error) {
-	dir, err := os.MkdirTemp("", "floe-text-")
+	dir, err := os.MkdirTemp("", "rilldrop-text-")
 	if err != nil {
 		return "", nil, err
 	}
@@ -765,7 +763,7 @@ func writeTextTemp(text string) (string, func(), error) {
 }
 
 // StartSendText sends a text note as a message.txt file through the normal send
-// flow. Zero protocol change, so any Floe peer (browser, CLI, desktop) can
+// flow. Zero protocol change, so any Rilldrop peer (browser, CLI, desktop) can
 // receive it. The temp file is removed when the transfer goroutine ends,
 // whether it completed, failed, or was cancelled.
 func (a *App) StartSendText(text string, hideIP bool) error {
@@ -809,7 +807,7 @@ func (a *App) runSend(g uint64, paths []string, hideIP bool) {
 		runtime.EventsEmit(a.ctx, "send:error", err.Error())
 		// The status line above carries the detail; the toast stays generic
 		// because raw engine errors read like stack traces in a notification.
-		a.notifyTransferFailed(g, "Floe - send failed")
+		a.notifyTransferFailed(g, "Rilldrop - send failed")
 	}
 
 	roomID := uuid.New().String()
@@ -945,11 +943,11 @@ func (a *App) runSend(g uint64, paths []string, hideIP bool) {
 	}
 	emit("send:done", "Files sent successfully.")
 	if a.transferActive(g) {
-		a.notify("Floe", "Files sent successfully.")
+		a.notify("Rilldrop", "Files sent successfully.")
 	}
 }
 
-// ReceiveByCode connects to a peer using a Floe room code (or link) and receives
+// ReceiveByCode connects to a peer using a Rilldrop room code (or link) and receives
 // the incoming files into outputDir. It reuses the exact same engine the CLI uses
 // (signaling, Pion WebRTC, the transfer protocol), so it interoperates with both
 // browser senders and CLI senders. WebRTC and all file bytes run in Go here; the
@@ -963,7 +961,7 @@ func (a *App) ReceiveByCode(codeOrLink string, outputDir string, hideIP bool, re
 		// Receive failures used to be completely silent behind a minimized
 		// window; mirror the send path's toast. Suppressed on user cancel and
 		// when a newer attempt has taken over.
-		a.notifyTransferFailed(g, "Floe - receive failed")
+		a.notifyTransferFailed(g, "Rilldrop - receive failed")
 		return "", err
 	}
 	return dir, nil
@@ -1100,7 +1098,7 @@ func (a *App) receiveByCode(g uint64, codeOrLink string, outputDir string, hideI
 	}
 
 	if a.transferActive(g) {
-		a.notify("Floe", "Files received.")
+		a.notify("Rilldrop", "Files received.")
 	}
 	return absOutput, nil
 }

@@ -6,7 +6,7 @@
 // The notice's click target. Compiled in on purpose: the Go checker returns
 // only a version string, so neither a tampered API response nor a hand-edited
 // cache file can steer the user's browser anywhere else.
-export const DOWNLOAD_URL = 'https://www.floe.one/download';
+export const DOWNLOAD_URL = 'https://github.com/Arnavsharma2/rilldrop/releases';
 
 // bareVersion strips the tag prefixes for display: "desktop-v0.2.3" -> "0.2.3".
 export function bareVersion(tag: string): string {

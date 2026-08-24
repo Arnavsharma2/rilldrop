@@ -6,16 +6,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jannskiee/floe/cli/engine/serverurl"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/serverurl"
 )
 
 // appConfig is every persisted setting the app keeps outside the WebView.
 //
 // It lives in a Go-owned file rather than localStorage because settings must
 // survive the webview profile. Historically the binary shipped under two names
-// (desktop.exe from wails build, floe-desktop.exe from the installer) and the
+// (desktop.exe from wails build, rilldrop-desktop.exe from the installer) and the
 // profile was keyed to the exe basename, so localStorage values silently
-// reverted to the Floe defaults when the user moved between builds, and because
+// reverted to the Rilldrop defaults when the user moved between builds, and because
 // ice.Fetch fails open nothing would report the fallback. The name is unified
 // and the profile pinned now (webviewDataPath), but the Go-owned file keeps two
 // properties localStorage cannot offer: atomic writes, and readability before
@@ -54,13 +54,13 @@ type appConfig struct {
 
 // configPath returns the settings file, or "" if the OS config directory cannot
 // be determined. Mirrors the CLI's update-check cache, which already writes into
-// the same floe/ directory.
+// the same rilldrop/ directory.
 func configPath() string {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(dir, "floe", "desktop.json")
+	return filepath.Join(dir, "rilldrop", "desktop.json")
 }
 
 // webviewDataPath returns the pinned WebView2 user-data directory, or "" if the
@@ -76,7 +76,7 @@ func webviewDataPath() string {
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(dir, "floe", "webview")
+	return filepath.Join(dir, "rilldrop", "webview")
 }
 
 // migrateWebviewProfile adopts a profile from the old exe-basename location the
@@ -137,7 +137,7 @@ func dirHasFiles(root string) bool {
 
 // loadConfig reads the settings file, falling back to defaults on any problem.
 // A missing, empty, unreadable, or malformed file is not an error the user needs
-// to see: the app simply runs against Floe's own servers.
+// to see: the app simply runs against Rilldrop's own servers.
 func loadConfig() appConfig { return loadConfigFrom(configPath()) }
 
 func loadConfigFrom(path string) appConfig {

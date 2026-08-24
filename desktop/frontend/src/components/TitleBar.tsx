@@ -1,7 +1,7 @@
 import type {CSSProperties} from 'react';
 import {Minus, Settings, Square, X} from 'lucide-react';
 import {WindowMinimise, WindowToggleMaximise, Quit} from '../../wailsjs/runtime/runtime';
-import {BoltMark, cn} from './ui';
+import {RilldropMark, cn} from './ui';
 import {Tooltip} from './Tooltip';
 
 // Wails turns any element with `--wails-draggable: drag` into a window drag
@@ -31,15 +31,15 @@ export default function TitleBar({onSettings, settingsActive, onStartOver}: {
                     // what makes it the app's fallback when focus would otherwise
                     // be orphaned. App.tsx looks it up by this id; do not remove
                     // it without giving that lookup somewhere else to land.
-                    id="floe-lockup"
+                    id="rilldrop-lockup"
                     style={noDrag}
                     onClick={onStartOver}
                     onDoubleClick={(e) => e.stopPropagation()}
                     aria-label="Start over"
-                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-ice"
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-white/[0.06] focus-visible:outline-2 focus-visible:outline-rill"
                 >
-                    <BoltMark className="size-3.5 text-white"/>
-                    <span className="text-[13px] font-semibold tracking-tight text-white">Floe</span>
+                    <RilldropMark className="size-4 text-teal-300"/>
+                    <span className="text-[13px] font-semibold tracking-tight text-white">Rilldrop</span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">desktop</span>
                 </button>
             </Tooltip>

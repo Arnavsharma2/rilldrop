@@ -19,7 +19,7 @@ var procSetThreadExecutionState = kernel32.NewProc("SetThreadExecutionState")
 
 // wakeStop signals the parked inhibitor goroutine to release its wake request.
 // It is written only during wakeGuard's mu-protected state transition and, since
-// Floe runs one transfer at a time, never concurrently. If concurrent transfers
+// Rilldrop runs one transfer at a time, never concurrently. If concurrent transfers
 // are ever added, replace this parked-goroutine model with a ticker + refcount:
 // N parked threads each holding ES_CONTINUOUS do not compose.
 var wakeStop chan struct{}

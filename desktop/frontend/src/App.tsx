@@ -49,7 +49,7 @@ import {
     X,
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
-import {BoltMark, Button, Eyebrow, Input, StatusDot, cn} from './components/ui';
+import {RilldropMark, Button, Eyebrow, Input, StatusDot, cn} from './components/ui';
 import {advancedSummary, hostOf} from './settings';
 import {histKey} from './history';
 import {UNDO_WINDOW_MS, clearLabel, clearedAnnouncement, clearedLabel, restorable, restoredAnnouncement, stagedSnapshot, supersededBy, undoLabel, type Cleared} from './clear';
@@ -63,7 +63,7 @@ import {Tooltip} from './components/Tooltip';
 
 type Mode = 'send' | 'receive' | 'history';
 
-// One completed transfer, persisted locally in localStorage['floe:history'].
+// One completed transfer, persisted locally in localStorage['rilldrop:history'].
 interface HistEntry {
     kind: 'send' | 'recv';
     names: string[];
@@ -83,7 +83,7 @@ const INITIAL_RECV_STATUS = 'Enter a code or link, then click Receive.';
 function loadHistory(): HistEntry[] {
     // A corrupted store must never break the app; fall back to empty.
     try {
-        const raw = JSON.parse(localStorage.getItem('floe:history') || '[]');
+        const raw = JSON.parse(localStorage.getItem('rilldrop:history') || '[]');
         return Array.isArray(raw) ? raw : [];
     } catch {
         return [];
@@ -156,7 +156,7 @@ function track(ref: MutableRefObject<Marker>, p: Prog): {pct: number; label: str
 
 function ProgressRow({prog}: {prog: {pct: number; label: string}}) {
     return (
-        <div className="animate-floe-in space-y-2">
+        <div className="animate-rilldrop-in space-y-2">
             <div className="flex items-baseline justify-between gap-3 font-mono text-[11px] text-zinc-400">
                 <span className="truncate">{prog.label}</span>
                 <span className="shrink-0 text-zinc-500">{prog.pct}%</span>
@@ -176,8 +176,7 @@ function ProgressRow({prog}: {prog: {pct: number; label: string}}) {
  *  which is what actually builds the link; keep the two in step. */
 function webPlaceholder(server: string): string {
     const s = server.trim().replace(/\/+$/, '');
-    if (s === '' || s === 'https://api.floe.one') return 'https://floe.one';
-    if (s === 'http://localhost:3001') return 'http://localhost:3000';
+    if (s === '' || s === 'http://localhost:3001') return 'http://localhost:3000';
     return s;
 }
 
@@ -223,10 +222,10 @@ function UpdateNotice({version, onDismiss}: {version: string; onDismiss: () => v
             aria-label="Update available"
             onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); onDismiss(); } }}
             className={cn(
-                'floe-notice-edge fixed right-4 top-[52px] z-30 isolate flex h-12 items-center gap-3 rounded-xl pl-4 pr-1.5',
+                'rilldrop-notice-edge fixed right-4 top-[52px] z-30 isolate flex h-12 items-center gap-3 rounded-xl pl-4 pr-1.5',
                 'bg-zinc-900/80 ring-1 ring-inset ring-white/10 backdrop-blur-xl backdrop-saturate-150',
                 'shadow-[0_1px_1px_rgba(0,0,0,0.06),0_4px_8px_-4px_rgba(0,0,0,0.28),0_16px_32px_-12px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.07)]',
-                'animate-floe-notice-in motion-reduce:animate-none',
+                'animate-rilldrop-notice-in motion-reduce:animate-none',
             )}
         >
             {/* strokeWidth 3 on a 16px lucide renders a whole 2.0 device px, so
@@ -255,7 +254,7 @@ function UpdateNotice({version, onDismiss}: {version: string; onDismiss: () => v
                 <button
                     aria-label="Dismiss update notice"
                     onClick={onDismiss}
-                    className="grid size-7 shrink-0 place-items-center rounded-md text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-ice"
+                    className="grid size-7 shrink-0 place-items-center rounded-md text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-rill"
                 >
                     <X className="size-3.5"/>
                 </button>
@@ -295,8 +294,8 @@ function mergePaths(prev: string[], add: string[]): string[] {
  *  standing task.
  *
  *  Same material as the notice (blurred zinc, an inset hairline, the layered
- *  shadow) so they read as one family, but deliberately WITHOUT the ice rim:
- *  that is the notice's one accent, and ice otherwise belongs to focus rings
+ *  shadow) so they read as one family, but deliberately WITHOUT the teal rim:
+ *  that is the notice's one accent, and teal otherwise belongs to focus rings
  *  and the OS drag highlight.
  *
  *  The full-width positioner is pointer-events-none so this cannot swallow a
@@ -333,13 +332,13 @@ function UndoToast({label, action, onUndo, onHold, onArm}: {
                     // the full width of the card read as a second card.
                     'pointer-events-auto flex h-12 max-w-full items-center gap-3 rounded-xl border border-white/10 bg-zinc-900/60 pl-4 pr-2.5',
                     'shadow-2xl ring-1 ring-white/5 backdrop-blur-xl backdrop-saturate-150',
-                    'animate-floe-toast-in motion-reduce:animate-none',
+                    'animate-rilldrop-toast-in motion-reduce:animate-none',
                 )}
             >
                 <Undo2 className="size-4 shrink-0 text-zinc-400" strokeWidth={2.5} aria-hidden/>
                 <span className="truncate text-[13px] leading-none tracking-[-0.005em] text-zinc-200">{label}</span>
                 <button
-                    id="floe-undo-clear"
+                    id="rilldrop-undo-clear"
                     aria-label={action}
                     onClick={onUndo}
                     // Hold the countdown only for a keyboard landing. The focus
@@ -349,7 +348,7 @@ function UndoToast({label, action, onUndo, onHold, onArm}: {
                     // distinction, and Tooltip.tsx already leans on it.
                     onFocus={(e) => { if (e.currentTarget.matches(':focus-visible')) onHold(); }}
                     onBlur={onArm}
-                    className="ml-1 h-8 shrink-0 rounded-md border border-white/10 bg-white/[0.06] px-3 text-[13px] font-medium leading-none text-zinc-100 transition-colors hover:border-white/20 hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ice/60"
+                    className="ml-1 h-8 shrink-0 rounded-md border border-white/10 bg-white/[0.06] px-3 text-[13px] font-medium leading-none text-zinc-100 transition-colors hover:border-white/20 hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rill/60"
                 >
                     Undo
                 </button>
@@ -375,7 +374,7 @@ function Switch({checked, onChange}: {checked: boolean; onChange: (v: boolean) =
             />
             <span
                 className={cn(
-                    'relative h-[18px] w-8 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ice/60',
+                    'relative h-[18px] w-8 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-rill/60',
                     checked ? 'bg-white' : 'bg-white/10 ring-1 ring-inset ring-white/15',
                 )}
             >
@@ -609,10 +608,10 @@ function SharePanel({code, link}: {code: string; link: string}) {
     // Small centered action buttons mirroring the browser ShareLinkPanel's row;
     // raw buttons because their py-1.5/text-xs sizing conflicts with Button's.
     const actionBtn =
-        'inline-flex items-center justify-center gap-1.5 rounded-md border py-1.5 text-xs font-medium transition-all focus-visible:outline-2 focus-visible:outline-ice';
+        'inline-flex items-center justify-center gap-1.5 rounded-md border py-1.5 text-xs font-medium transition-all focus-visible:outline-2 focus-visible:outline-rill';
     const actionIdle = 'border-white/10 bg-white/[0.04] text-zinc-400 hover:bg-white/10 hover:text-zinc-100';
     return (
-        <div className="animate-floe-in space-y-3 rounded-xl border border-white/[0.08] bg-black/40 p-4">
+        <div className="animate-rilldrop-in space-y-3 rounded-xl border border-white/[0.08] bg-black/40 p-4">
             {code && (
                 <div>
                     <Eyebrow className="mb-2">Room code</Eyebrow>
@@ -666,7 +665,7 @@ function SharePanel({code, link}: {code: string; link: string}) {
                 )}
             </div>
             {qrOpen && (
-                <div className="animate-floe-in flex flex-col items-center gap-2 pt-1">
+                <div className="animate-rilldrop-in flex flex-col items-center gap-2 pt-1">
                     <div className="rounded-2xl bg-white p-3 shadow-lg ring-1 ring-white/10">
                         <QRCode value={link} size={128} style={{height: 128, width: 128}} fgColor="#09090b" bgColor="#ffffff" level="M"/>
                     </div>
@@ -681,7 +680,7 @@ function App() {
     // Only the transfer tabs are ever persisted; anything else in the store
     // (stale or hand-edited) falls back to Send.
     const [mode, setMode] = useState<Mode>(() => {
-        const m = localStorage.getItem('floe:mode');
+        const m = localStorage.getItem('rilldrop:mode');
         return m === 'send' || m === 'receive' ? m : 'send';
     });
     // Where the header clock button returns to when leaving the history view.
@@ -694,7 +693,7 @@ function App() {
     // The sentence the Start over dialog is showing, captured when it opens. See
     // startOver for why this is not read live.
     const [resetMsg, setResetMsg] = useState('');
-    // Whether the "close Floe?" confirm overlay is showing. Raised by the Go
+    // Whether the "close Rilldrop?" confirm overlay is showing. Raised by the Go
     // side's close hook when a transfer is running; every close path (titlebar
     // X, Alt+F4, taskbar) funnels through that hook, which is why the guard
     // lives in Go and this is only the dialog.
@@ -714,10 +713,10 @@ function App() {
     const [resetDone, setResetDone] = useState('');
     // Seeded from the key this used to live in, then replaced by the Go-owned
     // record on mount. See the GetSettings effect for why both steps exist.
-    const [hideIP, setHideIP] = useState(() => localStorage.getItem('floe:hideIP') === '1');
+    const [hideIP, setHideIP] = useState(() => localStorage.getItem('rilldrop:hideIP') === '1');
 
     // Self-hosting: the signaling server this app talks to, and the web app its
-    // share links point at. Both empty means Floe's own servers. These are read
+    // share links point at. Both empty means Rilldrop's own servers. These are read
     // from Go on mount rather than seeded from localStorage, because Go owns them.
     const [serverAddr, setServerAddr] = useState('');
     const [webAddr, setWebAddr] = useState('');
@@ -798,10 +797,10 @@ function App() {
 
     // Receive state
     const [code, setCode] = useState('');
-    const [output, setOutput] = useState(() => localStorage.getItem('floe:saveDir') || '');
+    const [output, setOutput] = useState(() => localStorage.getItem('rilldrop:saveDir') || '');
     // Opt-OUT model like the browser: report unless explicitly disabled. Seeded
     // from localStorage, then replaced by the Go-owned record on mount.
-    const [reportStats, setReportStats] = useState(() => localStorage.getItem('floe:report-stats') !== '0');
+    const [reportStats, setReportStats] = useState(() => localStorage.getItem('rilldrop:report-stats') !== '0');
     const reportStatsRef = useRef(true);
     reportStatsRef.current = reportStats;
     const [recvStatus, setRecvStatus] = useState(INITIAL_RECV_STATUS);
@@ -884,7 +883,7 @@ function App() {
         try {
             if (v) await EnableContextMenu();
             else await DisableContextMenu();
-            localStorage.setItem('floe:ctx-menu', v ? '1' : '0');
+            localStorage.setItem('rilldrop:ctx-menu', v ? '1' : '0');
         } catch {
             setCtxMenu(!v); // revert on failure, marker untouched
         }
@@ -969,10 +968,10 @@ function App() {
     // people being on different servers, and that is invisible in a screenshot.
     async function copyAbout() {
         const lines = [
-            'Floe desktop',
+            'Rilldrop desktop',
             `App version: ${appVer || 'dev'}`,
             `Transfer protocol: ${proto == null ? 'unknown' : proto}`,
-            `Server: ${serverAddrRef.current.trim() || 'api.floe.one (default)'}`,
+            `Server: ${serverAddrRef.current.trim() || 'localhost:3001 (default)'}`,
         ];
         if (webAddrRef.current.trim()) lines.push(`Share links: ${webAddrRef.current.trim()}`);
         try {
@@ -986,7 +985,7 @@ function App() {
 
     // Clears both addresses and persists immediately. It cannot rely on the blur
     // path, because no input was focused when the button was pressed.
-    async function useFloeServer() {
+    async function useRilldropServer() {
         setServerAddr('');
         setWebAddr('');
         setTestStatus('');
@@ -995,7 +994,7 @@ function App() {
         await saveSettings();
     }
 
-    // Puts every setting this screen owns back to the value Floe ships with.
+    // Puts every setting this screen owns back to the value Rilldrop ships with.
     //
     // Writes FIRST, then updates React state, so a failed write leaves the screen
     // showing what is actually still on disk. There is nothing to roll back.
@@ -1009,7 +1008,7 @@ function App() {
     // It deliberately does NOT call EnableContextMenu. The Windows right-click
     // entry is registry state, not a setting this screen owns: enabling it writes
     // the running executable's path (and this binary ships under two names), and
-    // clearing the 'floe:ctx-menu' marker alone would make the auto-enable branch
+    // clearing the 'rilldrop:ctx-menu' marker alone would make the auto-enable branch
     // in the mount effect write the registry silently on the NEXT launch. Touch
     // both or neither, and the answer is neither. The dialog says so out loud.
     // Do not "fix" this by wiring the context menu in.
@@ -1051,7 +1050,7 @@ function App() {
     // Returns focus to the Settings "Reset" button after the defaults dialog
     // closes, so a keyboard user is not dropped at the top of the document.
     //
-    // #floe-reset-trigger lives INSIDE the settings screen, which is exactly
+    // #rilldrop-reset-trigger lives INSIDE the settings screen, which is exactly
     // right here (the defaults dialog can only be raised from there) and exactly
     // wrong anywhere else. It was briefly used as a general fallback, which was a
     // no-op on every screen but Settings.
@@ -1061,7 +1060,7 @@ function App() {
     // mean wrapping it in forwardRef, and this is not worth widening that surface.
     // The rAF waits for the dialog to unmount before moving focus.
     function focusResetTrigger() {
-        requestAnimationFrame(() => document.getElementById('floe-reset-trigger')?.focus());
+        requestAnimationFrame(() => document.getElementById('rilldrop-reset-trigger')?.focus());
     }
 
     // The app's last-resort focus home: the titlebar lockup, which is the only
@@ -1069,7 +1068,7 @@ function App() {
     // over control. Use this wherever focus would otherwise be orphaned on a
     // screen you cannot predict.
     function focusLockup() {
-        requestAnimationFrame(() => document.getElementById('floe-lockup')?.focus());
+        requestAnimationFrame(() => document.getElementById('rilldrop-lockup')?.focus());
     }
 
     useEffect(() => {
@@ -1157,7 +1156,7 @@ function App() {
         // Files passed on the command line before the frontend mounted.
         GetPendingFiles().then((paths) => { if (paths && paths.length) addFiles(paths); }).catch(() => {});
         // Whether the Explorer entry is registered (and points at this exe).
-        // First run defaults it ON; an explicit user OFF (floe:ctx-menu = '0')
+        // First run defaults it ON; an explicit user OFF (rilldrop:ctx-menu = '0')
         // stays off. The auto-enable never writes the marker, so it records
         // user choice only and the default self-heals if the key vanishes.
         //
@@ -1174,7 +1173,7 @@ function App() {
                         setCtxMenu(true);
                         return;
                     }
-                    if (localStorage.getItem('floe:ctx-menu') === null) {
+                    if (localStorage.getItem('rilldrop:ctx-menu') === null) {
                         EnableContextMenu().then(() => setCtxMenu(true)).catch(() => {});
                     }
                 }).catch(() => {});
@@ -1242,8 +1241,8 @@ function App() {
                     setReportStats(c.reportStats);
                     return;
                 }
-                const hip = localStorage.getItem('floe:hideIP') === '1';
-                const rep = localStorage.getItem('floe:report-stats') !== '0';
+                const hip = localStorage.getItem('rilldrop:hideIP') === '1';
+                const rep = localStorage.getItem('rilldrop:report-stats') !== '0';
                 setHideIP(hip);
                 setReportStats(rep);
                 void SetSettings(c.server || '', c.web || '', hip, rep);
@@ -1252,9 +1251,9 @@ function App() {
     }, []);
 
     // Persist only the transfer tabs; relaunching into History would be odd.
-    useEffect(() => { if (mode !== 'history') localStorage.setItem('floe:mode', mode); }, [mode]);
-    useEffect(() => { localStorage.setItem('floe:history', JSON.stringify(history)); }, [history]);
-    useEffect(() => { localStorage.setItem('floe:saveDir', output); }, [output]);
+    useEffect(() => { if (mode !== 'history') localStorage.setItem('rilldrop:mode', mode); }, [mode]);
+    useEffect(() => { localStorage.setItem('rilldrop:history', JSON.stringify(history)); }, [history]);
+    useEffect(() => { localStorage.setItem('rilldrop:saveDir', output); }, [output]);
 
     // Per-visit settings-screen state, forgotten when Settings closes by ANY route.
     // Collapsing Advanced is a per-visit choice, so reopening Settings with a
@@ -1332,10 +1331,10 @@ function App() {
     // point: previously two routes were handled and the rest were not.
     //
     // Two targets, because the first does not exist everywhere the bar can leave
-    // from: #floe-send-kind lives inside the send view, so Ctrl+, and Ctrl+H
-    // unmount it in the same commit and the lookup finds nothing. #floe-lockup is
+    // from: #rilldrop-send-kind lives inside the send view, so Ctrl+, and Ctrl+H
+    // unmount it in the same commit and the lookup finds nothing. #rilldrop-lockup is
     // the titlebar brand button, the only focusable element rendered on every
-    // screen. An earlier attempt used #floe-reset-trigger for this, which is
+    // screen. An earlier attempt used #rilldrop-reset-trigger for this, which is
     // inside the SETTINGS screen and therefore absent on exactly the routes that
     // needed it.
     //
@@ -1349,7 +1348,7 @@ function App() {
         if (!leaving) return;
         if (document.activeElement && document.activeElement !== document.body) return;
         requestAnimationFrame(() => {
-            const target = document.getElementById('floe-send-kind') ?? document.getElementById('floe-lockup');
+            const target = document.getElementById('rilldrop-send-kind') ?? document.getElementById('rilldrop-lockup');
             target?.focus();
         });
     }, [barUp]);
@@ -1464,7 +1463,7 @@ function App() {
                 // specific: macOS gets Cmd+Y, the Safari/Chrome/Edge/Firefox
                 // convention, because Cmd+H is the "Hide <App>" item in the default
                 // macOS app menu Wails installs when main.go sets no Menu. Binding
-                // it there would hide Floe instead of showing History.
+                // it there would hide Rilldrop instead of showing History.
                 case 'h':
                     if (isMac || typing) return; // leave Cmd+H to the Hide menu item
                     e.preventDefault();
@@ -1624,7 +1623,7 @@ function App() {
         // synchronous product of a click on a button that destroyed itself, so
         // the choice is a destination or nowhere. Same id lookup as
         // focusResetTrigger, for the same reason.
-        requestAnimationFrame(() => document.getElementById('floe-undo-clear')?.focus());
+        requestAnimationFrame(() => document.getElementById('rilldrop-undo-clear')?.focus());
     }
 
     // Undo replaces rather than merges, because it cannot collide: new content on
@@ -1798,7 +1797,7 @@ function App() {
         CancelTransfer().catch(() => {});
 
         setSettingsOpen(false);
-        const stored = localStorage.getItem('floe:mode');
+        const stored = localStorage.getItem('rilldrop:mode');
         const fresh = stored === 'send' || stored === 'receive' ? stored : 'send';
         setMode(fresh);
         prevModeRef.current = fresh;
@@ -1840,7 +1839,7 @@ function App() {
         setRoute('');
     }
 
-    // startOver is the Floe-lockup / Ctrl+R action. It confirms first when the
+    // startOver is the Rilldrop-lockup / Ctrl+R action. It confirms first when the
     // reset would destroy something the user cannot get back: bytes actually
     // moving, or a note in the box that has not gone out. Everything else resets
     // on the first click or keypress, so escaping a stuck (connecting/idle)
@@ -1993,7 +1992,7 @@ function App() {
 
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-zinc-950 text-zinc-100 selection:bg-ice/20">
+        <div className="flex h-screen flex-col overflow-hidden bg-zinc-950 text-zinc-100 selection:bg-rill/20">
             <TitleBar onSettings={() => setSettingsOpen((o) => !o)} settingsActive={settingsOpen} onStartOver={startOver}/>
 
             {/* App-scoped, so it renders on both screens: Settings is where
@@ -2003,7 +2002,7 @@ function App() {
                 silent (the StatusLine comment explains the same trap). This
                 span exists from first paint and its text arrives later. */}
             <span className="sr-only" role="status" aria-live="polite">
-                {updateAvailable ? `Update available: Floe ${bareVersion(updateVer)}. See Settings.` : ''}
+                {updateAvailable ? `Update available: Rilldrop ${bareVersion(updateVer)}. See Settings.` : ''}
             </span>
             {showUpdate && <UpdateNotice version={updateVer} onDismiss={() => setUpdateDismissed(true)}/>}
 
@@ -2039,7 +2038,7 @@ function App() {
                         {/* The one entry animation: the whole column rises once. No
                             per-section stagger, nothing else on this screen animates
                             on mount. */}
-                        <div className="mx-auto w-full max-w-lg px-8 py-8 animate-floe-in motion-reduce:animate-none">
+                        <div className="mx-auto w-full max-w-lg px-8 py-8 animate-rilldrop-in motion-reduce:animate-none">
                             <div className="flex items-center gap-3">
                                 <Tooltip label="Back" keys="Esc">
                                     <button
@@ -2066,9 +2065,9 @@ function App() {
                                     align="end" keeps the bubble on the panel edge. */}
                                 <Tooltip label="Reset all settings" align="end" className="ml-auto">
                                     <button
-                                        id="floe-reset-trigger"
+                                        id="rilldrop-reset-trigger"
                                         onClick={() => { setResetDone(''); setResetErr(''); setConfirmDefaults(true); }}
-                                        className="rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ice/60"
+                                        className="rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rill/60"
                                     >
                                         Reset
                                     </button>
@@ -2087,7 +2086,7 @@ function App() {
                                             blank value saves to ~/Downloads, it does NOT prompt.
                                             An earlier "Ask every time" here was simply false. */}
                                         <SettingField
-                                            htmlFor="floe-save-folder"
+                                            htmlFor="rilldrop-save-folder"
                                             label="Save received files to"
                                             description="Everything you receive is saved here. Leave it blank to use your Downloads folder."
                                             className="px-3.5 py-3"
@@ -2130,7 +2129,7 @@ function App() {
                                             checked={reportStats}
                                             onChange={(v) => { setReportStats(v); void saveSettings({reportStats: v}); }}
                                             label="Contribute to global stats"
-                                            description="Each transfer you receive adds its size to a public total. Floe never sends file names or contents."
+                                            description="Each transfer you receive adds its size to a public total. Rilldrop never sends file names or contents."
                                         />
                                         {/* Hidden for Store installs: the Store updates the app
                                             itself and the Go side never checks there, so the
@@ -2152,7 +2151,7 @@ function App() {
                                         <div className={cardClass}>
                                             {/* The wording of this description is tied to contextmenu_windows.go:
                                                 the entry is a legacy per-user verb under
-                                                Software\Classes\*\shell\Floe, which Windows 11 files under
+                                                Software\Classes\*\shell\Rilldrop, which Windows 11 files under
                                                 "Show more options", and the `*` means files only. If that
                                                 registration ever moves to IExplorerCommand, this text becomes
                                                 wrong and has to change with it. The per-user/no-admin detail
@@ -2161,7 +2160,7 @@ function App() {
                                                 checked={ctxMenu}
                                                 onChange={toggleCtxMenu}
                                                 label="Show in right-click menu"
-                                                description="Right-click any file in File Explorer and pick Send with Floe. On Windows 11 it sits under Show more options."
+                                                description="Right-click any file in File Explorer and pick Send with Rilldrop. On Windows 11 it sits under Show more options."
                                             />
                                         </div>
                                     </section>
@@ -2182,8 +2181,8 @@ function App() {
                                             type="button"
                                             onClick={() => setAdvOpen(!advExpanded)}
                                             aria-expanded={advExpanded}
-                                            aria-controls="floe-advanced-panel"
-                                            className="flex w-full items-center justify-between gap-4 px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ice/60"
+                                            aria-controls="rilldrop-advanced-panel"
+                                            className="flex w-full items-center justify-between gap-4 px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rill/60"
                                         >
                                             <span className="min-w-0">
                                                 <span className={rowLabelClass}>Server</span>
@@ -2201,7 +2200,7 @@ function App() {
                                             snap open, fully functional. Nothing may ever depend on
                                             transitionend. */}
                                         <div
-                                            id="floe-advanced-panel"
+                                            id="rilldrop-advanced-panel"
                                             className={cn(
                                                 'grid transition-[grid-template-rows,visibility] duration-200 ease-out motion-reduce:transition-none',
                                                 advExpanded ? 'visible grid-rows-[1fr]' : 'invisible grid-rows-[0fr]',
@@ -2214,7 +2213,7 @@ function App() {
                                                     the separators between the fields. */}
                                                 <div className={cn('relative before:absolute before:inset-x-3.5 before:top-0 before:h-px before:bg-white/[0.05]', insetHairline)}>
                                                     <SettingField
-                                                        htmlFor="floe-server-address"
+                                                        htmlFor="rilldrop-server-address"
                                                         label="Server address"
                                                         description="This server introduces the two devices and never touches your files. Both people need to be on the same one."
                                                         className="px-3.5 py-3"
@@ -2224,7 +2223,7 @@ function App() {
                                                                 <Input
                                                                     {...ids}
                                                                     className="h-8 min-w-0 flex-1 font-mono text-xs"
-                                                                    placeholder="https://api.floe.one"
+                                                                    placeholder="http://localhost:3001"
                                                                     value={serverAddr}
                                                                     onChange={(e) => { setServerAddr(e.target.value); setTestStatus(''); }}
                                                                     onBlur={saveOnBlur}
@@ -2243,9 +2242,9 @@ function App() {
                                                         )}
                                                     </SettingField>
                                                     <SettingField
-                                                        htmlFor="floe-share-link-address"
+                                                        htmlFor="rilldrop-share-link-address"
                                                         label="Share link address"
-                                                        description="Set this only if your web app has its own address. Leave it blank and Floe uses the server address."
+                                                        description="Set this only if your web app has its own address. Leave it blank and Rilldrop uses the server address."
                                                         className="px-3.5 py-3"
                                                     >
                                                         {(ids) => (
@@ -2262,9 +2261,9 @@ function App() {
                                                         )}
                                                     </SettingField>
                                                     {usingCustomServer && (
-                                                        <div className="flex items-center justify-between gap-4 px-3.5 py-2.5 animate-floe-in motion-reduce:animate-none">
-                                                            <span className="text-xs leading-4 text-zinc-500">This removes both addresses and returns the app to api.floe.one.</span>
-                                                            <Button variant="outline" className="h-7 shrink-0 text-xs" onClick={useFloeServer}>
+                                                        <div className="flex items-center justify-between gap-4 px-3.5 py-2.5 animate-rilldrop-in motion-reduce:animate-none">
+                                                            <span className="text-xs leading-4 text-zinc-500">This removes both addresses and returns the app to localhost:3001.</span>
+                                                            <Button variant="outline" className="h-7 shrink-0 text-xs" onClick={useRilldropServer}>
                                                                 Use default server
                                                             </Button>
                                                         </div>
@@ -2330,7 +2329,7 @@ function App() {
                                         <div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
                                             <span className={aboutLabelClass}>Server</span>
                                             <span className="min-w-0 break-all text-right font-mono text-xs text-zinc-300">
-                                                {usingCustomServer ? hostOf(serverAddr) : 'api.floe.one (default)'}
+                                                {usingCustomServer ? hostOf(serverAddr) : 'localhost:3001 (default)'}
                                             </span>
                                         </div>
                                         {usingCustomWeb && (
@@ -2363,20 +2362,20 @@ function App() {
 
                 {/* ── LEFT RAIL: editorial hero ───────────────────────────────── */}
                 <aside className="relative flex w-[42%] max-w-[460px] shrink-0 flex-col overflow-hidden border-r border-white/[0.06] bg-zinc-950">
-                    {/* ambient ice glow */}
+                    {/* ambient teal glow */}
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute left-1/4 top-1/3 h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ice/[0.05] blur-3xl"
+                        className="pointer-events-none absolute left-1/4 top-1/3 h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-rill/[0.05] blur-3xl"
                     />
                     {/* faint watermark bolt */}
-                    <BoltMark
+                    <RilldropMark
                         aria-hidden
                         className="pointer-events-none absolute -bottom-10 -right-10 size-72 rotate-12 text-white/[0.02]"
                     />
 
                     {/* hero — vertically centered */}
                     <div className="relative flex flex-1 flex-col justify-center px-9 py-8">
-                        <Eyebrow tone="ice">Peer to peer</Eyebrow>
+                        <Eyebrow tone="rill">Peer to peer</Eyebrow>
                         <h1 className="mt-4 text-[28px] font-semibold leading-[1.1] tracking-tight text-white">
                             Send anything,<br/>peer to peer.
                         </h1>
@@ -2392,7 +2391,7 @@ function App() {
                             {[
                                 {n: '01', title: 'Direct & unlimited', note: 'Direct transfers stream device to device with no size cap. Relay fallback is capped at 2 GB.'},
                                 // DTLS alone: data channels are SCTP over DTLS. SRTP carries
-                                // media, which Floe never sends.
+                                // media, which Rilldrop never sends.
                                 {n: '02', title: 'End-to-end encrypted', note: 'DTLS, the same as a video call.'},
                                 {n: '03', title: 'Nothing is stored', note: 'The server only brokers the handshake.'},
                             ].map(({n, title, note}) => (
@@ -2408,14 +2407,14 @@ function App() {
                     {/* footer links */}
                     <div className="relative flex items-center gap-4 px-9 pb-8">
                         <button
-                            onClick={() => BrowserOpenURL('https://github.com/jannskiee/floe')}
+                            onClick={() => BrowserOpenURL('https://github.com/Arnavsharma2/rilldrop')}
                             className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 transition-colors hover:text-zinc-300"
                         >
                             GitHub
                         </button>
                         <span aria-hidden className="h-3 w-px bg-white/10"/>
                         <button
-                            onClick={() => BrowserOpenURL('https://www.floe.one/docs')}
+                            onClick={() => BrowserOpenURL('https://github.com/Arnavsharma2/rilldrop/tree/main/docs')}
                             className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 transition-colors hover:text-zinc-300"
                         >
                             Docs
@@ -2478,7 +2477,7 @@ function App() {
                                                         // The active tab is where focus lands if the undo
                                                         // bar goes while the keyboard is on it, so exactly
                                                         // one of the two carries the id at a time.
-                                                        id={sendKind === k ? 'floe-send-kind' : undefined}
+                                                        id={sendKind === k ? 'rilldrop-send-kind' : undefined}
                                                         // No retire: switching tabs only puts the bar away.
                                                         // An unsent note survives a tab switch when it sits
                                                         // in the box, and it has to survive one when it sits
@@ -2509,13 +2508,13 @@ function App() {
                                                 onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && sendText.trim() && !busy) send(); }}
                                                 placeholder="Type or paste text to send"
                                                 rows={4}
-                                                className="custom-scrollbar w-full resize-none rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 outline-none transition-[color,box-shadow] placeholder:text-zinc-500 focus-visible:border-ice/50 focus-visible:ring-[3px] focus-visible:ring-ice/25"
+                                                className="custom-scrollbar w-full resize-none rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 outline-none transition-[color,box-shadow] placeholder:text-zinc-500 focus-visible:border-rill/50 focus-visible:ring-[3px] focus-visible:ring-rill/25"
                                             />
                                         )}
 
                                         {/* selection: editable list while idle, one-row summary while sending */}
                                         {sendKind === 'files' && files.length > 0 && !sending && (
-                                            <div className="animate-floe-in space-y-2">
+                                            <div className="animate-rilldrop-in space-y-2">
                                                 <div className="flex items-baseline justify-between px-0.5">
                                                     <Eyebrow>Files</Eyebrow>
                                                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
@@ -2602,7 +2601,7 @@ function App() {
 
                                         {sendProg && <ProgressRow prog={sendProg}/>}
                                         {sendDone && !sending && (
-                                            <div className="animate-floe-in flex items-center justify-center gap-2 text-sm text-zinc-300">
+                                            <div className="animate-rilldrop-in flex items-center justify-center gap-2 text-sm text-zinc-300">
                                                 <Check className="size-4 shrink-0 text-green-500"/>
                                                 <span>Sent {sentCount} {sentCount === 1 ? 'item' : 'items'}</span>
                                             </div>
@@ -2653,11 +2652,11 @@ function App() {
                                         )}
 
                                         {receiving && incoming && (
-                                            <p className="animate-floe-in text-center text-xs text-zinc-400">{incoming}</p>
+                                            <p className="animate-rilldrop-in text-center text-xs text-zinc-400">{incoming}</p>
                                         )}
                                         {recvProg && <ProgressRow prog={recvProg}/>}
                                         {recvDone && !receiving && (
-                                            <div className="animate-floe-in flex items-center gap-2 text-sm text-zinc-300">
+                                            <div className="animate-rilldrop-in flex items-center gap-2 text-sm text-zinc-300">
                                                 <Check className="size-4 shrink-0 text-green-500"/>
                                                 <span className="truncate">Saved to {recvDir}</span>
                                             </div>
@@ -2667,7 +2666,7 @@ function App() {
                                             // receive() completes, so the names are fully populated by this render.
                                             const only = recvNamesRef.current.size === 1 ? [...recvNamesRef.current.values()][0] : '';
                                             return only ? (
-                                                <div className="animate-floe-in flex gap-2">
+                                                <div className="animate-rilldrop-in flex gap-2">
                                                     <Button variant="outline" className="flex-1" onClick={() => { OpenFile(recvDir, only).catch(() => {}); }}>
                                                         <SquareArrowOutUpRight/> Open
                                                     </Button>
@@ -2676,7 +2675,7 @@ function App() {
                                                     </Button>
                                                 </div>
                                             ) : (
-                                                <Button variant="outline" className="animate-floe-in w-full" onClick={() => { OpenFolder(recvDir).catch(() => {}); }}>
+                                                <Button variant="outline" className="animate-rilldrop-in w-full" onClick={() => { OpenFolder(recvDir).catch(() => {}); }}>
                                                     <FolderOpen/> Show in folder
                                                 </Button>
                                             );
@@ -2698,7 +2697,7 @@ function App() {
                                                 </button>
                                             )}
                                             {confirmClear && (
-                                                <span className="animate-floe-in flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em]">
+                                                <span className="animate-rilldrop-in flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em]">
                                                     <span className="text-zinc-500">Clear all?</span>
                                                     <button
                                                         onClick={() => { setHistory([]); setConfirmClear(false); }}
@@ -2723,7 +2722,7 @@ function App() {
                                                     const key = histKey(h);
                                                     const multi = h.count > 1;
                                                     const expanded = expandedRow === key;
-                                                    const panelId = `floe-hist-panel-${i}`;
+                                                    const panelId = `rilldrop-hist-panel-${i}`;
                                                     return (
                                                         <li key={key} className="transition-colors hover:bg-white/[0.03]">
                                                             {/* The whole row is one disclosure button, the same idiom as the
@@ -2735,7 +2734,7 @@ function App() {
                                                                 onClick={() => setExpandedRow(expanded ? null : key)}
                                                                 aria-expanded={expanded}
                                                                 aria-controls={expanded ? panelId : undefined}
-                                                                className="group flex w-full items-center gap-3 px-3.5 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ice/60"
+                                                                className="group flex w-full items-center gap-3 px-3.5 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rill/60"
                                                             >
                                                                 {h.kind === 'send'
                                                                     ? <ArrowUpRight className="size-4 shrink-0 text-zinc-500"/>
@@ -2753,7 +2752,7 @@ function App() {
                                                                 <ChevronDown className={cn('size-3.5 shrink-0 text-zinc-600 transition-[color,transform] duration-200 group-hover:text-zinc-400 motion-reduce:transition-none', expanded && 'rotate-180')}/>
                                                             </button>
                                                             {expanded && (
-                                                                <div id={panelId} className="animate-floe-in space-y-2 px-3.5 pb-2.5 motion-reduce:animate-none">
+                                                                <div id={panelId} className="animate-rilldrop-in space-y-2 px-3.5 pb-2.5 motion-reduce:animate-none">
                                                                     {multi ? (
                                                                         <ul className="custom-scrollbar max-h-32 space-y-1 overflow-y-auto pl-7">
                                                                             {h.names.map((n, j) => (
@@ -2782,7 +2781,7 @@ function App() {
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => { (h.count === 1 ? RevealFile(h.dir!, h.names[0] || '') : OpenFolder(h.dir!)).catch(() => {}); }}
-                                                                                className="rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ice/60"
+                                                                                className="rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rill/60"
                                                                             >
                                                                                 Show in folder
                                                                             </button>
@@ -2790,7 +2789,7 @@ function App() {
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => { setHistory((prev) => prev.filter((_, idx) => idx !== i)); setExpandedRow(null); }}
-                                                                            className="-mr-2 rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-red-400/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ice/60"
+                                                                            className="-mr-2 rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-red-400/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rill/60"
                                                                         >
                                                                             Remove
                                                                         </button>
@@ -2825,12 +2824,12 @@ function App() {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="floe-reset-title"
-                        className="animate-floe-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
+                        aria-labelledby="rilldrop-reset-title"
+                        className="animate-rilldrop-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
                     >
-                        <h2 id="floe-reset-title" className="text-sm font-semibold text-white">Reset all settings?</h2>
+                        <h2 id="rilldrop-reset-title" className="text-sm font-semibold text-white">Reset all settings?</h2>
                         <p className="mt-1.5 text-xs leading-relaxed text-zinc-400">
-                            Your save folder, the privacy switches and the server addresses go back to the way Floe shipped.
+                            Your save folder, the privacy switches and the server addresses go back to the way Rilldrop shipped.
                         </p>
                         {/* Names what the user will actually notice. The path is the
                             thing they cannot retype from memory, so it is shown in
@@ -2838,18 +2837,18 @@ function App() {
                         {(output.trim() !== '' || !reportStats) && (
                             <p className="mt-2 text-xs leading-relaxed text-zinc-400">
                                 {output.trim() !== '' && (
-                                    <>Floe will forget <span className="break-all font-mono text-zinc-300">{output.trim()}</span> and save to your Downloads folder again.</>
+                                    <>Rilldrop will forget <span className="break-all font-mono text-zinc-300">{output.trim()}</span> and save to your Downloads folder again.</>
                                 )}
                                 {output.trim() !== '' && !reportStats && ' '}
                                 {!reportStats && (
-                                    <>Floe will {output.trim() !== '' ? 'also ' : ''}start adding the size of transfers you receive to the public total again.</>
+                                    <>Rilldrop will {output.trim() !== '' ? 'also ' : ''}start adding the size of transfers you receive to the public total again.</>
                                 )}
                             </p>
                         )}
                         {/* The exclusions, stated rather than left to be discovered.
                             An unstated exclusion is what makes a reset feel dishonest. */}
                         <p className="mt-2 text-xs leading-relaxed text-zinc-500">
-                            Your transfer history and the files you have already received are left alone{isWindows ? ', and so is your right-click menu, because that entry lives in Windows rather than in Floe' : ''}.
+                            Your transfer history and the files you have already received are left alone{isWindows ? ', and so is your right-click menu, because that entry lives in Windows rather than in Rilldrop' : ''}.
                         </p>
                         <StatusLine text={resetErr} busy={false}/>
                         <div className="mt-4 flex justify-end gap-2">
@@ -2870,10 +2869,10 @@ function App() {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="floe-startover-title"
-                        className="animate-floe-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
+                        aria-labelledby="rilldrop-startover-title"
+                        className="animate-rilldrop-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
                     >
-                        <h2 id="floe-startover-title" className="text-sm font-semibold text-white">Start over?</h2>
+                        <h2 id="rilldrop-startover-title" className="text-sm font-semibold text-white">Start over?</h2>
                         {/* resetWarning decided to open this dialog, so it also
                             supplies the sentence. One source, so the guard and
                             the copy cannot disagree about why you were stopped.
@@ -2900,16 +2899,16 @@ function App() {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="floe-close-title"
-                        className="animate-floe-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
+                        aria-labelledby="rilldrop-close-title"
+                        className="animate-rilldrop-in mx-4 w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-2xl"
                     >
-                        <h2 id="floe-close-title" className="text-sm font-semibold text-white">Close Floe?</h2>
+                        <h2 id="rilldrop-close-title" className="text-sm font-semibold text-white">Close Rilldrop?</h2>
                         <p className="mt-1.5 text-xs leading-relaxed text-zinc-400">
                             {sending
                                 ? "You're still sending. If you close now, the transfer stops and the other side gets nothing."
                                 : receiving
                                     ? "You're still receiving. If you close now, the transfer stops before the files finish."
-                                    : 'A transfer is still running. Closing Floe will stop it.'}
+                                    : 'A transfer is still running. Closing Rilldrop will stop it.'}
                         </p>
                         <div className="mt-4 flex justify-end gap-2">
                             <Button variant="outline" autoFocus onClick={() => { setCloseGuard(false); focusLockup(); }}>Keep going</Button>

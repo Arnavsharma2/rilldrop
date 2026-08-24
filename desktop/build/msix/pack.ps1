@@ -1,4 +1,4 @@
-# Packs the built floe-desktop.exe into an UNSIGNED .msix for Microsoft Store
+# Packs the built rilldrop-desktop.exe into an UNSIGNED .msix for Microsoft Store
 # submission. The Store re-signs the package with a Microsoft certificate on
 # publication, so no local signing step exists on purpose. The output cannot
 # be installed directly by end users (Windows refuses unsigned exe-activation
@@ -9,7 +9,7 @@
 # Usage: pack.ps1 -Version 0.2.0 [-ExePath ...] [-OutDir ...]
 param(
     [Parameter(Mandatory = $true)][string]$Version,
-    [string]$ExePath = (Join-Path $PSScriptRoot '..\bin\floe-desktop.exe'),
+    [string]$ExePath = (Join-Path $PSScriptRoot '..\bin\rilldrop-desktop.exe'),
     [string]$OutDir = 'dist-msix'
 )
 
@@ -43,7 +43,7 @@ $layout = Join-Path $OutDir 'layout'
 if (Test-Path $layout) { Remove-Item $layout -Recurse -Force }
 New-Item -ItemType Directory ($layout + '\Assets') -Force | Out-Null
 
-Copy-Item $ExePath (Join-Path $layout 'floe-desktop.exe')
+Copy-Item $ExePath (Join-Path $layout 'rilldrop-desktop.exe')
 Copy-Item (Join-Path $PSScriptRoot 'assets\*.png') (Join-Path $layout 'Assets')
 $manifest = Get-Content (Join-Path $PSScriptRoot 'AppxManifest.xml') -Raw
 $manifest = $manifest.Replace('__IDENTITY_VERSION__', $identityVersion)
@@ -76,7 +76,7 @@ if ($LASTEXITCODE -ne 0) { throw "makepri createconfig failed with exit code $LA
 
 # createconfig emits <autoResourcePackage> rules that split scale-qualified
 # candidates out into sibling resources.scale-*.pri files, which only mean
-# something inside a bundle's resource packages. Floe ships one flat .msix, so
+# something inside a bundle's resource packages. Rilldrop ships one flat .msix, so
 # those siblings are never packed and every scale-* asset silently drops out of
 # the index (makepri reports "Scale Qualifiers: 125,150,200,400" while the
 # resources.pri it hands back contains none of them). Drop the packaging block
@@ -114,7 +114,7 @@ foreach ($needle in @('AlternateForm-UNPLATED', 'AlternateForm-LIGHTUNPLATED', '
 }
 Write-Output ("indexed: " + ([regex]::Matches($dump, 'qualifiers=')).Count + " qualified resource candidates")
 
-$msix = Join-Path $OutDir ("FloeDesktop_" + $identityVersion + "_x64.msix")
+$msix = Join-Path $OutDir ("RilldropDesktop_" + $identityVersion + "_x64.msix")
 if (Test-Path $msix) { Remove-Item $msix -Force }
 & $makeappx pack /o /d $layout /p $msix
 if ($LASTEXITCODE -ne 0) { throw "makeappx failed with exit code $LASTEXITCODE" }

@@ -3,11 +3,12 @@ import type {ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SVGProps} fro
 /** cn joins truthy class strings. A one-liner replaces clsx/tailwind-merge for this small app. */
 export const cn = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
 
-/** BoltMark is the real Floe lightning-bolt logo mark as an inline SVG. */
-export function BoltMark({className, ...props}: SVGProps<SVGSVGElement>) {
+/** RilldropMark mirrors the stream-in-a-drop artwork used by the app icons. */
+export function RilldropMark({className, ...props}: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden {...props}>
-            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/>
+        <svg viewBox="0 0 64 64" className={className} aria-hidden {...props}>
+            <path d="M32 5C28 14 15 24 15 39a17 17 0 0 0 34 0C49 24 36 14 32 5Z" fill="currentColor"/>
+            <path d="M20 40c7-6 17-6 24 0M22 47c6-4 14-4 20 0" fill="none" stroke="#134e4a" strokeWidth="4" strokeLinecap="round"/>
         </svg>
     );
 }
@@ -15,7 +16,7 @@ export function BoltMark({className, ...props}: SVGProps<SVGSVGElement>) {
 /** Eyebrow is the site's mono all-caps label ("SEND", "SHARE LINK", ...).
  *
  *  `as` is opt-in and defaults to <p> on purpose. Most Eyebrows label a control or
- *  a panel region, not a document section: the ice "Peer to peer" hero label,
+ *  a panel region, not a document section: the teal "Peer to peer" hero label,
  *  "Code or link", "Save to", "Files", "Room code", "Share link". Promoting all of
  *  them to headings would litter the accessibility tree with a dozen same-level
  *  headings that mean nothing to someone navigating by heading. Only the Settings
@@ -27,7 +28,7 @@ export function Eyebrow({
     as: Tag = 'p',
 }: {
     children: ReactNode;
-    tone?: 'ice' | 'muted';
+    tone?: 'rill' | 'muted';
     className?: string;
     as?: 'p' | 'h3';
 }) {
@@ -35,7 +36,7 @@ export function Eyebrow({
         <Tag
             className={cn(
                 'font-mono text-[10px] font-medium uppercase tracking-[0.2em]',
-                tone === 'ice' ? 'text-ice' : 'text-zinc-500',
+                tone === 'rill' ? 'text-rill' : 'text-zinc-500',
                 className,
             )}
         >
@@ -45,7 +46,7 @@ export function Eyebrow({
 }
 
 /** StatusDot renders the site's halo dot (soft blur glow + solid core). Pass a
- *  Tailwind background class (e.g. "bg-green-500", "bg-ice") to color it.
+ *  Tailwind background class (e.g. "bg-green-500", "bg-rill") to color it.
  *  `pulse` animates the halo only — pulsing the solid core reads as flicker. */
 export function StatusDot({className, pulse}: {className?: string; pulse?: boolean}) {
     return (
@@ -102,11 +103,11 @@ export function Button({
             className={cn(
                 'inline-flex items-center justify-center gap-2 text-sm transition-colors',
                 buttonSizes[size],
-                // ice/60, not /40: measured from rendered pixels, /40 paints
+                // teal/60, not /40: measured from rendered pixels, /40 paints
                 // #516269 for 2.96:1 against the card and fails 1.4.11's 3:1,
                 // while /60 measures 5.23:1. Every hand-rolled focusable in the
                 // app already uses /60; this shared component was the outlier.
-                'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ice/60',
+                'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rill/60',
                 'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
                 buttonVariants[variant],
                 className,
@@ -124,7 +125,7 @@ export function Input({className, ...props}: InputHTMLAttributes<HTMLInputElemen
             className={cn(
                 'w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100',
                 'outline-none transition-[color,box-shadow] placeholder:text-zinc-500',
-                'focus-visible:border-ice/50 focus-visible:ring-[3px] focus-visible:ring-ice/25',
+                'focus-visible:border-rill/50 focus-visible:ring-[3px] focus-visible:ring-rill/25',
                 'disabled:opacity-50',
                 className,
             )}

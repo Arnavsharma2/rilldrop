@@ -75,7 +75,7 @@ func pastedImageName(t time.Time) string {
 // list until the user sends it), so there is no cleanup here; sweepPasteTemps
 // reclaims the directory on the next launch.
 func writeImageTemp(png []byte) (string, error) {
-	dir, err := os.MkdirTemp("", "floe-paste-")
+	dir, err := os.MkdirTemp("", "rilldrop-paste-")
 	if err != nil {
 		return "", err
 	}
@@ -89,10 +89,10 @@ func writeImageTemp(png []byte) (string, error) {
 
 // sweepPasteTemps removes leftover pasted-image staging directories from prior
 // runs. Called once at startup: the single-instance lock means no transfer is in
-// flight yet, so every floe-paste-* directory is an orphan safe to delete. The
-// text-send staging (floe-text-*) is left untouched.
+// flight yet, so every rilldrop-paste-* directory is an orphan safe to delete. The
+// text-send staging (rilldrop-text-*) is left untouched.
 func sweepPasteTemps() {
-	matches, err := filepath.Glob(filepath.Join(os.TempDir(), "floe-paste-*"))
+	matches, err := filepath.Glob(filepath.Join(os.TempDir(), "rilldrop-paste-*"))
 	if err != nil {
 		return
 	}

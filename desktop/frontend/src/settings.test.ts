@@ -23,7 +23,7 @@ describe('hostOf', () => {
 describe('advancedSummary', () => {
     it('offers the capability when nothing is overridden', () => {
         const s = advancedSummary('', '');
-        expect(s).toBe("This app uses Floe's server. You can point it at your own instead.");
+        expect(s).toBe("This app uses Rilldrop's server. You can point it at your own instead.");
         expect(s).not.toMatch(/custom/i);
     });
 
@@ -34,14 +34,14 @@ describe('advancedSummary', () => {
     });
 
     // The branch that matters. Overriding only the share link address leaves the
-    // app signaling against Floe's own server, so the "people cannot connect to
+    // app signaling against Rilldrop's own server, so the "people cannot connect to
     // you" warning would be false. Two of three independent designs for this
     // screen flattened these three states into a boolean and shipped that lie,
     // which is the entire reason this test exists.
     it('does not claim peers are unreachable when only the share link is custom', () => {
         const s = advancedSummary('', 'https://app.example.com');
         expect(s).toContain('app.example.com');
-        expect(s).toContain("still uses Floe's server");
+        expect(s).toContain("still uses Rilldrop's server");
         expect(s).not.toContain('cannot connect to you');
     });
 

@@ -1,4 +1,4 @@
-module github.com/jannskiee/floe/desktop
+module github.com/Arnavsharma2/rilldrop/desktop
 
 go 1.25.0
 
@@ -11,9 +11,9 @@ require (
 // The shared transfer engine lives in the cli module (cli/engine/...). A local
 // replace keeps the desktop buildable standalone (CI) without publishing the
 // engine and without breaking `go install` of the CLI.
-require github.com/jannskiee/floe/cli v0.0.0
+require github.com/Arnavsharma2/rilldrop/cli v0.0.0
 
-replace github.com/jannskiee/floe/cli => ../cli
+replace github.com/Arnavsharma2/rilldrop/cli => ../cli
 
 require (
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect

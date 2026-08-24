@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestEndpointsDefaults proves an untouched install still talks to Floe's own
+// TestEndpointsDefaults proves an untouched install still talks to Rilldrop's own
 // servers, so adding the setting cannot regress the out-of-the-box experience.
 func TestEndpointsDefaults(t *testing.T) {
 	server, web := (&App{}).endpoints()
@@ -13,7 +13,7 @@ func TestEndpointsDefaults(t *testing.T) {
 	if server != defaultServer {
 		t.Errorf("server = %q, want %q", server, defaultServer)
 	}
-	if want := "https://floe.one"; web != want {
+	if want := "http://localhost:3000"; web != want {
 		t.Errorf("web = %q, want %q", web, want)
 	}
 }
@@ -30,9 +30,9 @@ func TestEndpointsSelfHosted(t *testing.T) {
 	}{
 		{
 			name:       "one domain derives the web origin",
-			cfg:        appConfig{Server: "https://floe.example.com"},
-			wantServer: "https://floe.example.com",
-			wantWeb:    "https://floe.example.com",
+			cfg:        appConfig{Server: "https://rilldrop.example.com"},
+			wantServer: "https://rilldrop.example.com",
+			wantWeb:    "https://rilldrop.example.com",
 		},
 		{
 			name:       "split hosts need the override",
@@ -71,7 +71,7 @@ func TestEndpointsSelfHosted(t *testing.T) {
 // slipped through would produce "//?s=" and a link that does not open.
 func TestEndpointsFeedShareLinkCleanly(t *testing.T) {
 	for _, cfg := range []appConfig{
-		{Server: "https://floe.example.com/"},
+		{Server: "https://rilldrop.example.com/"},
 		{Server: "https://api.example.com//", Web: "https://app.example.com///"},
 		{Server: " http://localhost:3001/ "},
 	} {

@@ -10,7 +10,7 @@ import "golang.org/x/sys/windows"
 // app silently refusing to start.
 //
 // MB_SETFOREGROUND and MB_TOPMOST both matter here. The failure happens before
-// any Floe window exists, so the dialog has no parent to sit in front of and
+// any Rilldrop window exists, so the dialog has no parent to sit in front of and
 // would otherwise be free to open behind whatever the user was looking at.
 func showFatal(title, body string) {
 	caption, err := windows.UTF16PtrFromString(title)

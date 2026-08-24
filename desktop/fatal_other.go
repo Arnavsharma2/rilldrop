@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// showFatal reports a startup failure on stderr. Floe Desktop ships on Windows
+// showFatal reports a startup failure on stderr. Rilldrop Desktop ships on Windows
 // only, but the module has to build elsewhere (see contextmenu_other.go), and a
 // non-Windows build is run from a terminal, so stderr is the visible channel
 // there and no dialog is needed.

@@ -1,12 +1,12 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "floe-desktop",
-  "outputfilename": "floe-desktop",
+  "name": "rilldrop-desktop",
+  "outputfilename": "rilldrop-desktop",
   "info": {
-    "companyName": "Jan Carlo Paredes",
-    "productName": "Floe",
+    "companyName": "Arnav Sharma",
+    "productName": "Rilldrop",
     "productVersion": "0.2.7",
-    "copyright": "(c) 2026 Jan Carlo Paredes",
+    "copyright": "(c) 2026 Arnav Sharma; derived from Floe under the MIT License",
     "comments": "Peer-to-peer file transfer"
   },
   "frontend:install": "npm install",

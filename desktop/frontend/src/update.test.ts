@@ -51,7 +51,7 @@ describe('bareVersion', () => {
 });
 
 describe('DOWNLOAD_URL', () => {
-    it('points at the canonical download page', () => {
-        expect(DOWNLOAD_URL).toBe('https://www.floe.one/download');
+    it('points at the standalone repository releases', () => {
+        expect(DOWNLOAD_URL).toBe('https://github.com/Arnavsharma2/rilldrop/releases');
     });
 });

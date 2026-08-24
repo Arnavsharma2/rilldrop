@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jannskiee/floe/cli/engine/serverurl"
-	"github.com/jannskiee/floe/cli/engine/signaling"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/serverurl"
+	"github.com/Arnavsharma2/rilldrop/cli/engine/signaling"
 )
 
 // probeTimeout bounds each stage separately. Long enough for a cold container to
@@ -30,7 +30,7 @@ type ProbeResult struct {
 	Message string `json:"message"`
 }
 
-// TestServer checks that an address is a reachable Floe signaling server.
+// TestServer checks that an address is a reachable Rilldrop signaling server.
 func (a *App) TestServer(raw string) ProbeResult {
 	return probeServer(raw, dialSignaling)
 }
@@ -50,7 +50,7 @@ func dialSignaling(base string) error {
 // probeServer runs three stages against base. Each one catches a failure the
 // others cannot:
 //
-//	/health   the address is reachable and is a Floe signaling server
+//	/health   the address is reachable and is a Rilldrop signaling server
 //	/ws       a reverse proxy is forwarding the WebSocket upgrade
 //	/api/     a reverse proxy is forwarding the REST endpoints
 //
@@ -84,7 +84,7 @@ func probeServer(raw string, dialWS func(string) error) ProbeResult {
 	return probeAPI(base)
 }
 
-// probeHealth is stage one: reachable, and answering as a Floe server.
+// probeHealth is stage one: reachable, and answering as a Rilldrop server.
 func probeHealth(base string) ProbeResult {
 	resp, err := probeClient().Get(base + "/health")
 	if err != nil {
@@ -100,7 +100,7 @@ func probeHealth(base string) ProbeResult {
 		Status string `json:"status"`
 	}
 	if json.NewDecoder(resp.Body).Decode(&body) != nil || body.Status != "healthy" {
-		return ProbeResult{Message: "Something answered at that address, but it is not a Floe signaling server."}
+		return ProbeResult{Message: "Something answered at that address, but it is not a Rilldrop signaling server."}
 	}
 	return ProbeResult{OK: true}
 }

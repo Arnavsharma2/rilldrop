@@ -258,13 +258,13 @@ func TestCheckForUpdateSurvivesCorruptCache(t *testing.T) {
 }
 
 // TestUpdateCachePathIsSiblingOfSettings guards the file placement contract:
-// same floe/ dir as desktop.json and the CLI's update-check.json, distinct name.
+// same rilldrop/ dir as desktop.json and the CLI's update-check.json, distinct name.
 func TestUpdateCachePathIsSiblingOfSettings(t *testing.T) {
 	p := updateCachePath()
 	if p == "" {
 		t.Skip("no user config dir on this system")
 	}
-	if filepath.Base(p) != "desktop-update-check.json" || filepath.Base(filepath.Dir(p)) != "floe" {
-		t.Errorf("updateCachePath() = %q, want .../floe/desktop-update-check.json", p)
+	if filepath.Base(p) != "desktop-update-check.json" || filepath.Base(filepath.Dir(p)) != "rilldrop" {
+		t.Errorf("updateCachePath() = %q, want .../rilldrop/desktop-update-check.json", p)
 	}
 }
