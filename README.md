@@ -88,9 +88,7 @@ Set `RILLDROP_SERVER` and, for split deployments, `RILLDROP_WEB` to avoid repeat
 
 ## Upstream credit
 
-Rilldrop is derived from [Floe](https://github.com/jannskiee/floe), created by [Jan Carlo Paredes (@jannskiee)](https://github.com/jannskiee). The source was imported from upstream commit [`6d1e629`](https://github.com/jannskiee/floe/commit/6d1e629) and then rebranded and modified independently.
-
-Thank you to Jan Carlo Paredes and the Floe contributors for publishing the original work as open source. This repository preserves the original copyright notice and MIT license in [LICENSE](LICENSE).
+Rilldrop is derived from [Floe](https://github.com/jannskiee/floe).
 
 ## License
 
