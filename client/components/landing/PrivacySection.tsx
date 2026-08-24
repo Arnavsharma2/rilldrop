@@ -60,7 +60,7 @@ export function PrivacySection() {
             <SectionHeader
                 eyebrow="Privacy"
                 headline="The server can't read what it never receives."
-                lede="Floe's signaling server exists to introduce two devices, and that is all it does. This is the complete list."
+                lede="Rilldrop's signaling server exists to introduce two devices, and that is all it does. This is the complete list."
             />
             <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-12">
                 <LedgerColumn
@@ -72,19 +72,19 @@ export function PrivacySection() {
                 <LedgerColumn
                     label="It never sees"
                     marker="&#10005;"
-                    markerClass="text-ice/60"
+                    markerClass="text-rill/60"
                     items={neverSees}
                 />
             </div>
             <div className="mt-10">
                 <a
-                    href="https://www.floe.one/docs/security-privacy"
+                    href="https://github.com/Arnavsharma2/rilldrop/tree/main/docs"
                     target="_blank"
                     rel="noreferrer"
-                    className="group inline-flex items-center gap-1.5 text-sm text-zinc-300 transition hover:text-ice"
+                    className="group inline-flex items-center gap-1.5 text-sm text-zinc-300 transition hover:text-rill"
                 >
                     Read the security model
-                    <ArrowUpRight className="h-3.5 w-3.5 text-zinc-500 transition group-hover:text-ice" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-zinc-500 transition group-hover:text-rill" />
                 </a>
             </div>
         </section>

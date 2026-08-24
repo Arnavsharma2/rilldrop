@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Navbar } from '@/components/layout/Navbar';
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection';
 import { PrivacySection } from '@/components/landing/PrivacySection';
@@ -20,11 +21,19 @@ export default function Home() {
                 fold as the scroll cue, while its content stays below it */}
             <section className="relative flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center justify-center pb-14 pt-24 sm:pt-28">
                 <div className="mx-auto max-w-3xl text-center mb-8 space-y-4">
+                    <Image
+                        src="/icon.svg"
+                        alt=""
+                        width={72}
+                        height={72}
+                        priority
+                        className="mx-auto h-16 w-16 sm:h-[72px] sm:w-[72px]"
+                    />
                     <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tighter text-white lg:text-9xl drop-shadow-2xl">
-                        Floe
+                        Rilldrop
                     </h1>
                     <p className="mt-4 text-lg leading-8 text-zinc-300 max-w-lg mx-auto">
-                        Secure, encrypted P2P file transfer.
+                        Private peer-to-peer file transfer.
                         <span className="block text-zinc-500">
                             No accounts, no file storage, and no registration required.
                         </span>

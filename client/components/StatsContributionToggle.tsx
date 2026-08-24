@@ -33,7 +33,7 @@ export function StatsContributionToggle({ enabled, onChange }: StatsContribution
                 <div className="min-w-0 space-y-1">
                     <p className="text-sm font-medium text-zinc-200 leading-none">Contribute to global stats</p>
                     <p className="text-xs text-zinc-500 leading-relaxed">
-                        Adds only this transfer&apos;s byte count to Floe&apos;s public total. File names and contents are never sent.{' '}
+                        Adds only this transfer&apos;s byte count to Rilldrop&apos;s public total. File names and contents are never sent.{' '}
                         <a
                             href="/privacy"
                             target="_blank"

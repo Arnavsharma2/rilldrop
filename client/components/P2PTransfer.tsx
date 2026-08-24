@@ -486,7 +486,7 @@ export function P2PTransfer() {
     // The room id lives in the URL fragment (#room=<id>). Swapping only the
     // fragment is a same-document navigation, so opening a new room link in an
     // existing tab (e.g. scanning a second QR code on a phone that already has
-    // Floe open) changes the hash without reloading, so the mount effect above
+    // Rilldrop open) changes the hash without reloading, so the mount effect above
     // never re-runs and the tab stays stuck on the previous transfer. Detect
     // that here and reload so the receiver joins the new room from a clean slate.
     useEffect(() => {
@@ -520,7 +520,7 @@ export function P2PTransfer() {
                 connectionType === 'relay' ? 'relay' :
                     isConnected ? 'connected' :
                         'offline';
-        window.dispatchEvent(new CustomEvent('floe-connection-status', { detail: status }));
+        window.dispatchEvent(new CustomEvent('rilldrop-connection-status', { detail: status }));
     }, [isConnected, connectionType]);
 
     const handleCreateLink = () => {
@@ -528,7 +528,7 @@ export function P2PTransfer() {
         // A unique per-link nonce in the query string (not the fragment) makes
         // every transfer link a distinct document. Without it, two links differ
         // only in the fragment, which browsers treat as the same page, so a phone
-        // that already has Floe open can reuse a stale tab when a new QR is
+        // that already has Rilldrop open can reuse a stale tab when a new QR is
         // scanned instead of joining the new room. The secret room id stays in
         // the fragment (never sent to the server); the nonce carries no info.
         const nonce = uuidv4().slice(0, 8);
@@ -875,15 +875,15 @@ export function P2PTransfer() {
                                     // second line hangs left under a centred first one.
                                     // It wraps below about 430px, which is most phones.
                                     className={`group relative mt-2 flex flex-col items-center justify-center rounded-xl border border-dashed p-10 text-center transition-all sm:p-14 ${isDragging
-                                        ? 'border-ice bg-ice/[0.04]'
-                                        : 'border-white/15 hover:border-ice/40 hover:bg-white/[0.02]'
+                                        ? 'border-rill bg-rill/[0.04]'
+                                        : 'border-white/15 hover:border-rill/40 hover:bg-white/[0.02]'
                                         }`}
                                 >
                                     <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full border transition ${isDragging
-                                        ? 'border-ice/60 bg-ice/10'
-                                        : 'border-white/10 bg-white/[0.03] group-hover:border-ice/30'
+                                        ? 'border-rill/60 bg-rill/10'
+                                        : 'border-white/10 bg-white/[0.03] group-hover:border-rill/30'
                                         }`}>
-                                        <UploadCloud className={`h-5 w-5 transition ${isDragging ? 'text-ice' : 'text-zinc-400 group-hover:text-zinc-200'
+                                        <UploadCloud className={`h-5 w-5 transition ${isDragging ? 'text-rill' : 'text-zinc-400 group-hover:text-zinc-200'
                                             }`} />
                                     </div>
                                     <p className="mb-1.5 text-sm font-medium text-zinc-200">
@@ -912,11 +912,11 @@ export function P2PTransfer() {
                                     onDragLeave={handleDragLeave}
                                     onDrop={handleDrop}
                                     className={`group relative mt-2 flex items-center justify-center gap-2 rounded-lg border border-dashed py-3 transition-all ${isDragging
-                                        ? 'border-ice bg-ice/[0.04]'
-                                        : 'border-white/15 hover:border-ice/40 hover:bg-white/[0.02]'
+                                        ? 'border-rill bg-rill/[0.04]'
+                                        : 'border-white/15 hover:border-rill/40 hover:bg-white/[0.02]'
                                         }`}
                                 >
-                                    <Plus className={`h-3.5 w-3.5 transition ${isDragging ? 'text-ice' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                    <Plus className={`h-3.5 w-3.5 transition ${isDragging ? 'text-rill' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                     <span className="text-xs font-medium text-zinc-400 transition group-hover:text-zinc-200">
                                         {isDragging ? 'Release to add files' : 'Add more files'}
                                     </span>

@@ -41,13 +41,13 @@ const items: {
         icon: Server,
         title: 'Self-hostable',
         body: 'Run your own signaling server and relay with Docker. The docs cover production setup.',
-        href: 'https://www.floe.one/docs/self-hosting/overview',
+        href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs',
     },
     {
         icon: Scale,
         title: 'Open source, MIT',
         body: 'Client, server, and CLI. Every line is on GitHub.',
-        href: 'https://github.com/jannskiee/floe',
+        href: 'https://github.com/Arnavsharma2/rilldrop',
     },
 ];
 
@@ -75,10 +75,10 @@ export function CapabilitiesSection() {
                             href={item.href}
                             target="_blank"
                             rel="noreferrer"
-                            className={`group relative block transition-colors hover:bg-white/[0.02] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ice ${cellClass}`}
+                            className={`group relative block transition-colors hover:bg-white/[0.02] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-rill ${cellClass}`}
                         >
                             <ArrowUpRight
-                                className="absolute right-5 top-5 h-3.5 w-3.5 text-zinc-600 transition group-hover:text-ice"
+                                className="absolute right-5 top-5 h-3.5 w-3.5 text-zinc-600 transition group-hover:text-rill"
                                 aria-hidden="true"
                             />
                             {content}

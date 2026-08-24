@@ -5,15 +5,11 @@ import { Check, Copy } from 'lucide-react';
 
 // Install commands are copied verbatim from README.md; keep them in sync.
 //
-// Windows leads on purpose, against the usual dev-tools habit of putting the
-// brew one-liner first: it is the majority desktop platform and the only one
-// the desktop app ships on today, so it matches where the rest of the site
-// points. The first entry is also what every visitor sees before touching a
-// tab, since the active tab defaults to index 0.
+// Install scripts resolve release assets from this standalone repository.
 export const CLI_INSTALL_TABS = [
-    { label: 'Windows', prompt: '>', command: 'winget install jannskiee.floe' },
-    { label: 'macOS', prompt: '$', command: 'brew install --cask jannskiee/tap/floe' },
-    { label: 'Linux', prompt: '$', command: 'curl -fsSL https://floe.one/install.sh | sh' },
+    { label: 'Windows', prompt: '>', command: 'irm https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.ps1 | iex' },
+    { label: 'macOS', prompt: '$', command: 'curl -fsSL https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.sh | sh' },
+    { label: 'Linux', prompt: '$', command: 'curl -fsSL https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/install.sh | sh' },
 ];
 
 export function InstallTabs() {
@@ -43,9 +39,9 @@ export function InstallTabs() {
                             setActive(i);
                             setCopied(false);
                         }}
-                        className={`-mb-px border-b px-3 py-2 font-mono text-xs transition focus-visible:outline-2 focus-visible:outline-ice ${
+                        className={`-mb-px border-b px-3 py-2 font-mono text-xs transition focus-visible:outline-2 focus-visible:outline-rill ${
                             i === active
-                                ? 'border-ice text-zinc-100'
+                                ? 'border-rill text-zinc-100'
                                 : 'border-transparent text-zinc-500 hover:text-zinc-300'
                         }`}
                     >
@@ -64,7 +60,7 @@ export function InstallTabs() {
                     type="button"
                     onClick={copy}
                     aria-label={copied ? 'Copied' : 'Copy install command'}
-                    className="relative before:absolute before:-inset-2 shrink-0 rounded p-1.5 text-zinc-500 transition hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-ice"
+                    className="relative before:absolute before:-inset-2 shrink-0 rounded p-1.5 text-zinc-500 transition hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-rill"
                 >
                     {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
                 </button>

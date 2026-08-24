@@ -8,9 +8,9 @@ import {
 } from '@/components/legal/LegalShell';
 
 export const metadata: Metadata = {
-    title: 'Terms of Use · Floe',
+    title: 'Terms of Use · Rilldrop',
     description:
-        'The terms for using Floe: acceptable use, your responsibility for what you send, the MIT license, and relay usage limits.',
+        'The terms for using Rilldrop: acceptable use, your responsibility for what you send, the MIT license, and relay usage limits.',
     alternates: {
         canonical: '/terms',
     },
@@ -34,7 +34,7 @@ export default function TermsOfUse() {
             intro={
                 <LegalCallout label="Disclaimer" tone="caution">
                     <p>
-                        Floe is provided &quot;as is&quot; without any warranties. As an open-source
+                        Rilldrop is provided &quot;as is&quot; without any warranties. As an open-source
                         project, we do not guarantee uptime, data integrity, or fitness for a
                         particular purpose. Use this service at your own risk.
                     </p>
@@ -42,7 +42,7 @@ export default function TermsOfUse() {
             }
         >
             <LegalSection id="acceptable-use" index="01" title="Acceptable use">
-                <p>By using Floe, you agree not to:</p>
+                <p>By using Rilldrop, you agree not to:</p>
                 <LegalList
                     marker="&#10005;"
                     items={[
@@ -55,15 +55,15 @@ export default function TermsOfUse() {
 
             <LegalSection id="responsibility" index="02" title="User responsibility">
                 <p>
-                    Since Floe is a peer-to-peer service, you are solely responsible for the content
+                    Since Rilldrop is a peer-to-peer service, you are solely responsible for the content
                     you send. We do not (and cannot) moderate file contents. You agree to indemnify the
-                    developers of Floe against any legal claims arising from your use of the service.
+                    developers of Rilldrop against any legal claims arising from your use of the service.
                 </p>
             </LegalSection>
 
             <LegalSection id="license" index="03" title="Copyright & license">
                 <p>
-                    The source code for Floe is available under the{' '}
+                    The source code for Rilldrop is available under the{' '}
                     <strong className="font-semibold text-zinc-200">MIT License</strong>. You are free
                     to inspect, modify, and host your own version of this software, subject to the
                     terms of the license.
@@ -74,7 +74,7 @@ export default function TermsOfUse() {
                 <p>
                     When your connection uses the TURN relay server, transfers are limited to 2 GB per
                     session. Excessive or automated abuse of relay bandwidth may result in rate
-                    limiting or temporary access restrictions. These limits exist to keep Floe free for
+                    limiting or temporary access restrictions. These limits exist to keep Rilldrop free for
                     all users.
                 </p>
             </LegalSection>
@@ -84,12 +84,12 @@ export default function TermsOfUse() {
                     Questions about these terms, bug reports, and abuse reports all go to our public
                     issue tracker:{' '}
                     <a
-                        href="https://github.com/jannskiee/floe/issues"
+                        href="https://github.com/Arnavsharma2/rilldrop/issues"
                         target="_blank"
                         rel="noreferrer"
-                        className="text-zinc-300 underline decoration-white/20 underline-offset-4 transition hover:text-ice"
+                        className="text-zinc-300 underline decoration-white/20 underline-offset-4 transition hover:text-rill"
                     >
-                        github.com/jannskiee/floe/issues
+                        github.com/Arnavsharma2/rilldrop/issues
                     </a>
                     . Because transfers are peer-to-peer, we cannot inspect or remove content sent
                     between users; reports of misuse are acted on by restricting access to the

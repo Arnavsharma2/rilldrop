@@ -11,7 +11,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: ReactNode }) 
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left text-[15px] font-medium text-zinc-100 transition hover:text-white focus-visible:outline-2 focus-visible:outline-ice"
+                className="flex w-full items-center justify-between gap-4 py-5 text-left text-[15px] font-medium text-zinc-100 transition hover:text-white focus-visible:outline-2 focus-visible:outline-rill"
             >
                 {question}
                 <ChevronDown
@@ -40,15 +40,15 @@ export const FAQSection = () => {
             <SectionHeader eyebrow="FAQ" headline="Questions, answered plainly." />
             <div className="mt-10 max-w-3xl border-t border-white/[0.06]">
                 <FAQItem
-                    question="What is Floe?"
-                    answer="Floe is a free file-sharing tool that lets you send files directly to another person: no sign-up, no files stored on any server, and nothing to install: it runs right in your browser, with an optional desktop app and CLI if you want them. Think of it like handing a USB drive to someone, but over the internet. Direct connections have no size limit; relay connections are capped at 2 GB per session."
+                    question="What is Rilldrop?"
+                    answer="Rilldrop is a free file-sharing tool that lets you send files directly to another person: no sign-up, no files stored on any server, and nothing to install: it runs right in your browser, with an optional desktop app and CLI if you want them. Think of it like handing a USB drive to someone, but over the internet. Direct connections have no size limit; relay connections are capped at 2 GB per session."
                 />
                 <FAQItem
                     question="What does 'Peer-to-Peer' (P2P) mean?"
                     answer="Normally when you share a file online, it gets uploaded to a company's server first, then the other person downloads it from there. With peer-to-peer (P2P), your file travels straight from your device to the recipient's device. In some network environments, a secure relay server acts as a bridge, but your files remain encrypted end-to-end and are never stored."
                 />
                 <FAQItem
-                    question="How do I use Floe? (Step-by-step)"
+                    question="How do I use Rilldrop? (Step-by-step)"
                     answer={
                         <div className="space-y-4">
                             <p>It&apos;s simple! Here&apos;s how it works:</p>
@@ -77,21 +77,21 @@ export const FAQSection = () => {
                     }
                 />
                 <FAQItem
-                    question="Can I use Floe from the terminal?"
-                    answer="Yes. The floe CLI installs as a single binary and talks to the same infrastructure as the web app, so browser-to-terminal transfers work in every direction. Run floe send with a file or folder, share the printed code or link, and the other side receives it in a browser or with floe receive."
+                    question="Can I use Rilldrop from the terminal?"
+                    answer="Yes. The rilldrop CLI installs as a single binary and talks to the same infrastructure as the web app, so browser-to-terminal transfers work in every direction. Run rilldrop send with a file or folder, share the printed code or link, and the other side receives it in a browser or with rilldrop receive."
                 />
                 <FAQItem
                     question="Is there a desktop app?"
                     answer={
                         <p>
-                            Yes, in beta. Floe Desktop is a small native app for Windows that speaks
+                            Yes, in beta. Rilldrop Desktop is a small native app for Windows that speaks
                             the same protocol as the web app and the CLI, so any two can transfer to
                             each other. It sends folders without zipping, pastes screenshots and
                             copied files straight from the clipboard, and shows a notification when
-                            a transfer finishes. Install it from the Microsoft Store via the{' '}
+                            a transfer finishes. Get the latest development build from the{' '}
                             <a
                                 href="/download"
-                                className="text-zinc-300 underline decoration-white/20 underline-offset-2 transition hover:text-ice"
+                                className="text-zinc-300 underline decoration-white/20 underline-offset-2 transition hover:text-rill"
                             >
                                 download page
                             </a>
@@ -101,7 +101,7 @@ export const FAQSection = () => {
                 />
                 <FAQItem
                     question="Where are my files stored?"
-                    answer="Your files are never stored on any server. In direct connections, data flows straight between devices. In relay connections, encrypted data passes through our TURN relay server in transit but is never saved or inspected. Once the transfer is complete and both tabs are closed, nothing is retained."
+                    answer="Your files are never stored on the signaling server. In direct connections, data flows straight between devices. In relay connections, encrypted data passes through the deployment's TURN relay in transit but is never saved or inspected. Once the transfer is complete and both clients are closed, Rilldrop retains no file data."
                 />
                 <FAQItem
                     question="Is there a file size limit?"

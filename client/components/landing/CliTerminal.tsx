@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { RotateCcw } from 'lucide-react';
 
-// Mirrors the real `floe send` output format (cli/cmd/floe): keep this session
+// Mirrors the real `rilldrop send` output format (cli/cmd/rilldrop): keep this session
 // consistent with what the CLI actually prints.
-const COMMAND = 'floe send vacation-photos/';
+const COMMAND = 'rilldrop send vacation-photos/';
 const DIVIDER = '─'.repeat(49);
 // Narrower than the real CLI's bar so the widest progress line stays ~50ch:
 // phones scroll the session horizontally, and every column narrower than the
@@ -132,7 +132,7 @@ export function CliTerminal() {
                         tabIndex={done && !reduced ? 0 : -1}
                         // Hidden from AT while it is invisible and pointer-events:none.
                         aria-hidden={!(done && !reduced)}
-                        className={`relative before:absolute before:-inset-3 rounded p-1 text-zinc-600 transition hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-ice ${
+                        className={`relative before:absolute before:-inset-3 rounded p-1 text-zinc-600 transition hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-rill ${
                             done && !reduced ? 'opacity-100' : 'pointer-events-none opacity-0'
                         }`}
                     >
@@ -155,13 +155,13 @@ export function CliTerminal() {
                     tabIndex={0}
                     role="group"
                     aria-label="Example terminal session, scrollable"
-                    className="custom-scrollbar [@media(min-height:481px)]:min-h-[480px] overflow-x-auto px-4 py-4 focus-visible:outline-2 focus-visible:outline-ice max-sm:[mask-image:linear-gradient(to_right,black_calc(100%_-_24px),transparent)]"
+                    className="custom-scrollbar [@media(min-height:481px)]:min-h-[480px] overflow-x-auto px-4 py-4 focus-visible:outline-2 focus-visible:outline-rill max-sm:[mask-image:linear-gradient(to_right,black_calc(100%_-_24px),transparent)]"
                 >
                     <div className="min-w-max whitespace-pre font-mono text-[12.5px] leading-[1.7] text-zinc-300" aria-hidden="true">
                         <div>
-                            <span className="text-ice">$ </span>
+                            <span className="text-rill">$ </span>
                             <span className="text-zinc-100">{shownTyped}</span>
-                            {!isDone && <span className="animate-blink text-ice">▍</span>}
+                            {!isDone && <span className="animate-blink text-rill">▍</span>}
                         </div>
                         {shownStage >= 1 && (
                             <>
@@ -177,13 +177,13 @@ export function CliTerminal() {
                             <div>
                                 <span className="text-zinc-500">{'  Code'}</span>
                                 {'   '}
-                                <span className="text-ice">olive-tiger-castle</span>
+                                <span className="text-rill">olive-tiger-castle</span>
                             </div>
                         )}
                         {shownStage >= 4 && (
                             <div>
                                 <span className="text-zinc-500">{'  Link'}</span>
-                                {'   https://floe.one/#room=7f3a…'}
+                                {'   http://localhost:3000/#room=7f3a…'}
                             </div>
                         )}
                         {shownStage >= 5 && (
@@ -231,15 +231,15 @@ export function CliTerminal() {
                         )}
                         {isDone && (
                             <div>
-                                <span className="text-ice">$ </span>
-                                {!reduced && <span className="animate-blink text-ice">▍</span>}
+                                <span className="text-rill">$ </span>
+                                {!reduced && <span className="animate-blink text-rill">▍</span>}
                             </div>
                         )}
                     </div>
                 </div>
             </div>
             <p className="sr-only">
-                Example terminal session: floe send shares three files totaling 10.1 MB, prints the
+                Example terminal session: rilldrop send shares three files totaling 10.1 MB, prints the
                 short code olive-tiger-castle and a link, connects to the peer, and completes the
                 transfer in 8 seconds at an average of 1.3 MB per second.
             </p>

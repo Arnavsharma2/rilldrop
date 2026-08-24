@@ -19,7 +19,7 @@ export function SectionHeader({
     return (
         <div className="grid gap-6 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-5">
-                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ice">{eyebrow}</p>
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-rill">{eyebrow}</p>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight text-balance text-zinc-100 sm:text-4xl">
                     {headline}
                 </h2>

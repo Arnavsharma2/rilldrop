@@ -6,7 +6,7 @@ import { RotateCcw } from 'lucide-react';
 import { DESKTOP_VERSION } from '@/lib/desktopRelease';
 
 /**
- * The desktop counterpart of CliTerminal: real screenshots of Floe Desktop
+ * The desktop counterpart of CliTerminal: real screenshots of Rilldrop Desktop
  * performing a send, sequenced inside the house chrome frame. Only a real
  * capture can prove the app's actual pitch (the same design, native), so
  * this is the one place the site ships raster imagery. The captures' own
@@ -127,7 +127,7 @@ export function AppWindow({
             <div className={`overflow-hidden rounded-xl border border-white/10 bg-black/60 ${className}`}>
                 <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
                     <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
-                        floe desktop · {DESKTOP_VERSION}
+                        rilldrop desktop · {DESKTOP_VERSION}
                     </span>
                     <button
                         type="button"
@@ -137,7 +137,7 @@ export function AppWindow({
                         // Hidden from AT while it is invisible and pointer-events:none,
                         // otherwise screen readers offer a button nothing can activate.
                         aria-hidden={!(isDone && !reduced)}
-                        className={`relative before:absolute before:-inset-3 rounded p-1 text-zinc-600 transition hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-ice ${
+                        className={`relative before:absolute before:-inset-3 rounded p-1 text-zinc-600 transition hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-rill ${
                             isDone && !reduced ? 'opacity-100' : 'pointer-events-none opacity-0'
                         }`}
                     >
@@ -185,7 +185,7 @@ export function AppWindow({
                         <>
                             <span className="text-zinc-700">·</span>
                             <span className="whitespace-nowrap">
-                                code <span className="text-ice">frost-tint-ulnar</span>
+                                code <span className="text-rill">frost-tint-ulnar</span>
                             </span>
                         </>
                     )}
@@ -196,7 +196,7 @@ export function AppWindow({
                 the caption row is aria-hidden. The QR is one click away in the
                 app but is not visible in the shot, so it is not claimed here. */}
             <p className="sr-only">
-                Demo of the Floe desktop app: three files are pasted and staged, then a share panel
+                Demo of the Rilldrop desktop app: three files are pasted and staged, then a share panel
                 opens a live room with the code frost-tint-ulnar and a share link, waiting for the
                 receiver.
             </p>

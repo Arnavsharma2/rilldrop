@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart } from 'lucide-react';
 
 // The four columns mirror the docs footer in docs/docs.json exactly (same
 // headers, same labels, same destinations), so the two surfaces never drift.
@@ -13,7 +12,7 @@ const columns: {
     {
         label: 'Product',
         links: [
-            { name: 'Floe', href: '/' },
+            { name: 'Rilldrop', href: '/' },
             { name: 'Download', href: '/download' },
             { name: 'How It Works', href: '/how-it-works' },
         ],
@@ -21,23 +20,20 @@ const columns: {
     {
         label: 'Documentation',
         links: [
-            { name: 'Quickstart', href: 'https://www.floe.one/docs/quickstart', external: true },
-            { name: 'Web App', href: 'https://www.floe.one/docs/web-app/sending', external: true },
-            { name: 'CLI', href: 'https://www.floe.one/docs/cli/installation', external: true },
-            { name: 'Desktop App', href: 'https://www.floe.one/docs/desktop/installation', external: true },
-            { name: 'Self-Hosting', href: 'https://www.floe.one/docs/self-hosting/overview', external: true },
-            { name: 'FAQ', href: 'https://www.floe.one/docs/faq', external: true },
-            { name: 'Changelog', href: 'https://www.floe.one/docs/changelog', external: true },
+            { name: 'Browse Docs', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs', external: true },
+            { name: 'Quickstart', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/docs/quickstart.mdx', external: true },
+            { name: 'Web App', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/docs/web-app/sending.mdx', external: true },
+            { name: 'CLI', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/docs/cli/installation.mdx', external: true },
+            { name: 'Self-Hosting', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/SELF_HOSTING.md', external: true },
         ],
     },
     {
         label: 'Project',
         links: [
-            { name: 'GitHub', href: 'https://github.com/jannskiee/floe', external: true },
-            { name: 'Releases', href: 'https://github.com/jannskiee/floe/releases', external: true },
-            { name: 'Report an Issue', href: 'https://github.com/jannskiee/floe/issues', external: true },
-            { name: 'Contributing', href: 'https://github.com/jannskiee/floe/blob/main/CONTRIBUTING.md', external: true },
-            { name: 'Sponsor', href: 'https://github.com/sponsors/jannskiee', external: true },
+            { name: 'GitHub', href: 'https://github.com/Arnavsharma2/rilldrop', external: true },
+            { name: 'Releases', href: 'https://github.com/Arnavsharma2/rilldrop/releases', external: true },
+            { name: 'Report an Issue', href: 'https://github.com/Arnavsharma2/rilldrop/issues', external: true },
+            { name: 'Contributing', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/CONTRIBUTING.md', external: true },
         ],
     },
     {
@@ -45,8 +41,8 @@ const columns: {
         links: [
             { name: 'Privacy Policy', href: '/privacy' },
             { name: 'Terms of Use', href: '/terms' },
-            { name: 'Security Policy', href: 'https://github.com/jannskiee/floe/security/policy', external: true },
-            { name: 'License (MIT)', href: 'https://github.com/jannskiee/floe/blob/main/LICENSE', external: true },
+            { name: 'Security Policy', href: 'https://github.com/Arnavsharma2/rilldrop/security/policy', external: true },
+            { name: 'License (MIT)', href: 'https://github.com/Arnavsharma2/rilldrop/blob/main/LICENSE', external: true },
         ],
     },
 ];
@@ -60,16 +56,16 @@ export function Footer() {
                 identity block stacks above a full-width link row instead. */}
             <div className="grid gap-12 lg:grid-cols-12">
                 <div className="lg:col-span-4">
-                    <p className="text-lg font-extrabold tracking-tighter text-white">Floe</p>
+                    <p className="text-lg font-extrabold tracking-tighter text-white">Rilldrop</p>
                     <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-500">
                         Open-source, peer-to-peer file transfer. <span className="whitespace-nowrap">MIT licensed.</span>
                     </p>
                     <div className="mt-6 flex items-center gap-6">
                         <a
-                            href="https://github.com/jannskiee/floe"
+                            href="https://github.com/Arnavsharma2/rilldrop"
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-ice"
+                            className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-rill"
                         >
                             <Image
                                 src="/github-mark-white.png"
@@ -79,15 +75,6 @@ export function Footer() {
                                 className="opacity-80"
                             />
                             <span className="font-medium">GitHub</span>
-                        </a>
-                        <a
-                            href="https://ko-fi.com/jannskiee"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-2 text-sm text-zinc-400 hover:text-[#FF5E5B] transition-colors focus-visible:outline-2 focus-visible:outline-ice"
-                        >
-                            <Heart className="h-4 w-4" />
-                            <span className="font-medium">Support on Ko-fi</span>
                         </a>
                     </div>
                 </div>
@@ -110,14 +97,14 @@ export function Footer() {
                                                 href={link.href}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="text-sm text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-ice"
+                                                className="text-sm text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-rill"
                                             >
                                                 {link.name}
                                             </a>
                                         ) : (
                                             <Link
                                                 href={link.href}
-                                                className="text-sm text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-ice"
+                                                className="text-sm text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-rill"
                                             >
                                                 {link.name}
                                             </Link>
@@ -132,7 +119,7 @@ export function Footer() {
             {/* The Legal column above owns Privacy/Terms now, so the bar keeps
                 only the copyright line. */}
             <div className="mt-12 border-t border-white/[0.06] pt-6 text-center text-xs text-zinc-600 sm:text-left">
-                <p>&copy; {new Date().getFullYear()} Floe. Built on WebRTC.</p>
+                <p>&copy; {new Date().getFullYear()} Rilldrop. Built on WebRTC.</p>
             </div>
         </footer>
     );

@@ -15,16 +15,14 @@ import {
     ALL_RELEASES_URL,
 } from '@/lib/desktopRelease';
 
-// Utility-index download page: one Store badge CTA, one artifact, one quiet
+// Utility-index download page: one GitHub CTA, one artifact, one quiet
 // table, global chrome. The version, date, and every asset URL derive from
 // lib/desktopRelease so a release bump touches exactly one file.
 export const metadata: Metadata = {
-    title: 'Download | Floe',
-    // No "or use Floe in your browser" clause: the page's only CTA is the Store
-    // badge and its body carries no route to "/", so promising a browser option
-    // here would be advertising something this page does not offer.
+    title: 'Download | Rilldrop',
+    // Keep this description scoped to artifacts available from this repository.
     description:
-        'Get Floe Desktop for Windows from the Microsoft Store (beta), or install the floe CLI: free, encrypted, peer-to-peer file transfer.',
+        'Get Rilldrop Desktop for Windows from GitHub, or build the rilldrop CLI: private, encrypted, peer-to-peer file transfer.',
     alternates: { canonical: '/download' },
 };
 
@@ -34,11 +32,11 @@ const OTHER_WAYS: {
     actions: { name: string; href: string; external?: boolean; umami?: Record<string, string> }[];
 }[] = [
     {
-        label: 'GitHub release',
+        label: 'Desktop release',
         desc: (
             <>
-                For machines without Store access: the installer and a portable zip (unzip and
-                run <span className="font-mono text-[13px] text-zinc-400">floe-desktop.exe</span>).
+                The installer and a portable zip (unzip and
+                run <span className="font-mono text-[13px] text-zinc-400">rilldrop-desktop.exe</span>).
                 These builds are unsigned, so SmartScreen warns on first run: choose &quot;More
                 info&quot;, then &quot;Run anyway&quot;.
             </>
@@ -70,7 +68,7 @@ const OTHER_WAYS: {
         actions: [
             {
                 name: 'Install guide',
-                href: 'https://www.floe.one/docs/cli/installation',
+                href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs',
                 external: true,
                 umami: { 'data-umami-event': 'download-page-cli' },
             },
@@ -91,7 +89,7 @@ const OTHER_WAYS: {
         actions: [
             {
                 name: 'Open an issue',
-                href: 'https://github.com/jannskiee/floe/issues',
+                href: 'https://github.com/Arnavsharma2/rilldrop/issues',
                 external: true,
             },
         ],
@@ -111,8 +109,8 @@ export default function Download() {
                 {/* pt-24/28, not 28/32: the fixed navbar ends around 74px, so the old
                     values left ~55px of dead space before the first word. */}
                 <div className="flex flex-col items-center pt-24 text-center sm:pt-28">
-                    {/* text-ice, not zinc-100: every other eyebrow on the site is either the
-                        ice accent (SectionHeader, and the privacy/terms page hero) or quiet
+                    {/* text-rill, not zinc-100: every other eyebrow on the site is either the
+                        teal accent (SectionHeader, and the privacy/terms page hero) or quiet
                         zinc-500. At zinc-100 this one rendered the exact same value as the h1
                         four pixels below it, so the eye met two headlines instead of a label
                         and its subject, and the hero carried no accent at all.
@@ -121,7 +119,7 @@ export default function Download() {
                         true centre (measured 2.25px off the headline's ink). */}
                     {/* leading-none: an 11px label otherwise sits in a 16.5px line box, and
                         that dead half-leading reads as extra gap under the label. */}
-                    <p className="pl-[0.2em] font-mono text-[11px] leading-none uppercase tracking-[0.2em] text-ice">
+                    <p className="pl-[0.2em] font-mono text-[11px] leading-none uppercase tracking-[0.2em] text-rill">
                         Download
                     </p>
                     {/* lg:text-6xl only: 320-1023px renders exactly as before, while on the
@@ -130,7 +128,7 @@ export default function Download() {
                     {/* mt-3, not mt-4: the headline's line box already carries ~14px of
                         leading above its caps, so the margin reads about double its value. */}
                     <h1 className="mt-3 text-4xl font-semibold tracking-tight text-zinc-100 sm:text-5xl lg:text-6xl">
-                        Floe Desktop
+                        Rilldrop Desktop
                     </h1>
                     {/* max-w-lg + text-balance: at max-w-xl this set as a 540px line over a
                         102px orphan ("Windows app."), which under a centred headline is the
@@ -138,8 +136,7 @@ export default function Download() {
                         lines. mt-6 also tiers the rhythm 16/24/32 down to the CTA, so the
                         eyebrow binds to the headline instead of floating between beats. */}
                     <p className="mt-6 max-w-lg text-base leading-relaxed text-balance text-zinc-400">
-                        The same encrypted, peer-to-peer transfer as floe.one, running as a native
-                        Windows app.
+                        The same encrypted, peer-to-peer transfer as the web client, running as a native Windows app.
                     </p>
 
                     <div className="mt-8">
@@ -155,19 +152,14 @@ export default function Download() {
                             href={DESKTOP_RELEASE_NOTES_URL}
                             target="_blank"
                             rel="noreferrer"
-                            className="whitespace-nowrap text-zinc-400 underline decoration-white/20 underline-offset-4 transition hover:text-zinc-200 hover:decoration-white/50 focus-visible:outline-2 focus-visible:outline-ice"
+                            className="whitespace-nowrap text-zinc-400 underline decoration-white/20 underline-offset-4 transition hover:text-zinc-200 hover:decoration-white/50 focus-visible:outline-2 focus-visible:outline-rill"
                         >
                             Release notes
                         </a>
                     </p>
 
                     <div className="mt-4 space-y-1 text-[13px] leading-relaxed text-zinc-400">
-                        {/* Name the channel: the no-warnings/auto-update promise is true of
-                            the Store build only, and this same page tells visitors two
-                            sections later that the GitHub builds trip SmartScreen. The
-                            version floor is what the MSIX manifest actually declares
-                            (MinVersion 10.0.19041), not a generic "Windows 10 or later". */}
-                        <p>From the Microsoft Store it installs with no warnings, and updates arrive automatically.</p>
+                        <p>Distributed through GitHub Releases while Rilldrop is in active development.</p>
                         <p>Requires Windows 10 version 2004 (build 19041) or later, 64-bit, with Microsoft WebView2.</p>
                     </div>
                 </div>
@@ -188,7 +180,7 @@ export default function Download() {
                 {/* The index: whitespace separates, no hairline slab */}
                 <section className="mt-36 pb-14 sm:mt-40">
                     <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
-                        Other ways to run Floe
+                        Other ways to run Rilldrop
                     </h2>
                     <ul className="mt-2 divide-y divide-white/[0.06] border-y border-white/[0.06]">
                         {/* The 12-col rows wait for md: at 640 the side columns are only
@@ -214,7 +206,7 @@ export default function Download() {
                                                 ? { target: '_blank', rel: 'noreferrer' }
                                                 : {})}
                                             {...(action.umami ?? {})}
-                                            className="inline-flex min-h-10 items-center text-sm font-medium text-zinc-300 transition hover:text-ice focus-visible:outline-2 focus-visible:outline-ice md:min-h-0"
+                                            className="inline-flex min-h-10 items-center text-sm font-medium text-zinc-300 transition hover:text-rill focus-visible:outline-2 focus-visible:outline-rill md:min-h-0"
                                         >
                                             {action.name}
                                         </a>

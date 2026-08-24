@@ -9,9 +9,9 @@ import { Footer } from '@/components/layout/Footer';
 // a client-hydrated subtree and forced the metadata below out into a
 // pass-through layout.tsx. As a Server Component it can export metadata itself.
 export const metadata: Metadata = {
-    title: 'How It Works | Floe',
+    title: 'How It Works | Rilldrop',
     description:
-        'Learn how Floe transfers files directly between devices using WebRTC, end-to-end encryption, and TURN relay fallback.',
+        'Learn how Rilldrop transfers files directly between devices using WebRTC, end-to-end encryption, and TURN relay fallback.',
     alternates: {
         canonical: '/how-it-works',
     },
@@ -31,7 +31,7 @@ export default function HowItWorks() {
                         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
                     </Link>
                     <h1 className="text-4xl font-bold tracking-tight text-white">
-                        How Floe Works
+                        How Rilldrop Works
                     </h1>
                     <p className="text-zinc-400">
                         A plain-language overview of what happens behind the scenes when you share a file.
@@ -45,7 +45,7 @@ export default function HowItWorks() {
                         <h2 className="text-lg font-semibold">The Short Version</h2>
                     </div>
                     <p className="text-zinc-300 leading-relaxed">
-                        Floe uses a technology called <strong>WebRTC</strong> to send your files directly from
+                        Rilldrop uses a technology called <strong>WebRTC</strong> to send your files directly from
                         one device to another, whether each side is a browser tab, the desktop app, or
                         the CLI. Think of it like handing a USB drive to someone. It
                         happens over the internet, in real time. In most cases, no one else is in the middle.
@@ -73,7 +73,7 @@ export default function HowItWorks() {
                         </p>
                         <ul className="space-y-1 text-xs text-zinc-500">
                             <li className="flex items-center gap-1.5"><span className="text-green-500">+</span> No file size limit</li>
-                            <li className="flex items-center gap-1.5"><span className="text-green-500">+</span> Zero bandwidth cost to Floe</li>
+                            <li className="flex items-center gap-1.5"><span className="text-green-500">+</span> Zero bandwidth cost to Rilldrop</li>
                             <li className="flex items-center gap-1.5"><span className="text-green-500">+</span> Works on most home and mobile networks</li>
                         </ul>
                     </div>
@@ -90,7 +90,7 @@ export default function HowItWorks() {
                         </div>
                         <p className="text-sm text-zinc-400 leading-relaxed">
                             Used on strict corporate firewalls or carrier-grade NAT networks where a direct
-                            path cannot be found. Floe falls back automatically.
+                            path cannot be found. Rilldrop falls back automatically.
                         </p>
                         <ul className="space-y-1 text-xs text-zinc-500">
                             <li className="flex items-center gap-1.5"><span className="text-amber-500">~</span> Works on restricted networks</li>
@@ -113,11 +113,11 @@ export default function HowItWorks() {
                         <h2 className="text-base font-semibold text-white">Want the full technical detail?</h2>
                     </div>
                     <p className="text-sm text-zinc-400">
-                        The Floe documentation covers signaling, ICE and NAT traversal, DTLS encryption,
+                        The Rilldrop documentation covers signaling, ICE and NAT traversal, DTLS encryption,
                         and the binary transfer protocol in depth.
                     </p>
                     <a
-                        href="https://www.floe.one/docs/how-it-works/signaling"
+                        href="https://github.com/Arnavsharma2/rilldrop/tree/main/docs"
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200"
@@ -127,11 +127,11 @@ export default function HowItWorks() {
                     </a>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
                         {[
-                            { label: 'Signaling', href: 'https://www.floe.one/docs/how-it-works/signaling' },
-                            { label: 'Direct Connection', href: 'https://www.floe.one/docs/how-it-works/direct-connection' },
-                            { label: 'Relay Connection', href: 'https://www.floe.one/docs/how-it-works/relay-connection' },
-                            { label: '2 GB Limit', href: 'https://www.floe.one/docs/how-it-works/2gb-limit' },
-                            { label: 'Encryption', href: 'https://www.floe.one/docs/how-it-works/encryption' },
+                            { label: 'Signaling', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs' },
+                            { label: 'Direct Connection', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs' },
+                            { label: 'Relay Connection', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs' },
+                            { label: '2 GB Limit', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs' },
+                            { label: 'Encryption', href: 'https://github.com/Arnavsharma2/rilldrop/tree/main/docs' },
                         ].map(({ label, href }) => (
                             <a
                                 key={label}

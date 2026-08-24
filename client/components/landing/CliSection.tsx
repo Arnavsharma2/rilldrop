@@ -5,9 +5,9 @@ import { CliTerminal } from './CliTerminal';
 import { InstallTabs } from './InstallTabs';
 
 const COMMANDS = [
-    { cmd: 'floe send <path>', desc: 'Share files or entire folders' },
-    { cmd: 'floe receive <code>', desc: 'A short code is all the other side needs' },
-    { cmd: 'floe update', desc: 'The binary updates itself' },
+    { cmd: 'rilldrop send <path>', desc: 'Share files or entire folders' },
+    { cmd: 'rilldrop receive <code>', desc: 'A short code is all the other side needs' },
+    { cmd: 'rilldrop update', desc: 'The binary updates itself' },
 ];
 
 export function CliSection() {
@@ -16,7 +16,7 @@ export function CliSection() {
             <SectionHeader
                 eyebrow="Command line"
                 headline="The same transfer, without the browser."
-                lede="floe is a single static binary that talks to the same signaling infrastructure as the web app. Browser to terminal works in every direction, and folders arrive with their structure intact."
+                lede="rilldrop is a single static binary that talks to the same signaling infrastructure as the web app. Browser to terminal works in every direction, and folders arrive with their structure intact."
             />
             <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:col-span-5">
@@ -38,13 +38,13 @@ export function CliSection() {
                         Also available via Scoop, a PowerShell one-liner, and{' '}
                         <code className="font-mono text-[12px]">go install</code>.{' '}
                         <a
-                            href="https://www.floe.one/docs/cli/installation"
+                            href="https://github.com/Arnavsharma2/rilldrop/tree/main/docs"
                             target="_blank"
                             rel="noreferrer"
-                            className="group inline-flex items-center gap-1 text-zinc-300 transition hover:text-ice"
+                            className="group inline-flex items-center gap-1 text-zinc-300 transition hover:text-rill"
                         >
                             Installation guide
-                            <ArrowUpRight className="h-3 w-3 text-zinc-500 transition group-hover:text-ice" />
+                            <ArrowUpRight className="h-3 w-3 text-zinc-500 transition group-hover:text-rill" />
                         </a>
                     </p>
                 </div>

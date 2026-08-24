@@ -4,7 +4,7 @@ import { siteUrl } from '@/lib/siteUrl';
 export default function sitemap(): MetadataRoute.Sitemap {
     // A sitemap has to carry absolute URLs; the schema rejects relative <loc>
     // values. The published image cannot know its own domain, so it serves a
-    // valid but empty urlset rather than advertising floe.one's pages as its own.
+    // valid but empty urlset rather than advertising localhost:3000's pages as its own.
     if (!siteUrl) {
         return [];
     }

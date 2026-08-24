@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Privacy Policy | Floe',
+    title: 'Privacy Policy | Rilldrop',
     description:
-        'Floe privacy policy. No data collection, no tracking, no file storage. Your files never touch our servers.',
+        'Rilldrop privacy policy: peer-to-peer transfers, no file storage, and operator-controlled optional telemetry.',
     alternates: {
         canonical: '/privacy',
     },

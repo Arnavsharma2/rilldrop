@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Floe',
+    title: 'Rilldrop',
     description:
         'Send files directly to anyone. No uploads, no accounts, end-to-end encrypted. Works in your browser, as a Windows desktop app, or from the CLI.',
     metadataBase,
@@ -28,10 +28,10 @@ export const metadata: Metadata = {
         canonical: '/',
     },
     openGraph: {
-        title: 'Floe: Encrypted P2P File Transfer. No Uploads.',
+        title: 'Rilldrop: Encrypted P2P File Transfer. No Uploads.',
         description:
             'Send files directly from your device to anyone in the world. No accounts, no file storage, no size limits on direct transfers. Fully end-to-end encrypted with WebRTC.',
-        siteName: 'Floe',
+        siteName: 'Rilldrop',
         // Images are the opposite case to canonical: a relative image with no
         // metadataBase resolves against http://localhost:3000, which renders
         // nothing in a link preview. Omitting beats emitting a broken URL.
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
                       url: '/og.png?v=3',
                       width: 1200,
                       height: 630,
-                      alt: 'Floe: encrypted peer-to-peer file transfer',
+                      alt: 'Rilldrop: encrypted peer-to-peer file transfer',
                   },
               ]
             : undefined,
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     twitter: {
         // Without an image, a large-image card renders as an empty box.
         card: siteUrl ? 'summary_large_image' : 'summary',
-        title: 'Floe: Encrypted P2P File Transfer. No Uploads.',
+        title: 'Rilldrop: Encrypted P2P File Transfer. No Uploads.',
         description:
             'Send files directly from your device to anyone in the world. No accounts, no file storage, fully end-to-end encrypted.',
         images: siteUrl ? ['/og.png?v=3'] : undefined,
@@ -105,7 +105,7 @@ export default function RootLayout({
                         __html: JSON.stringify({
                             '@context': 'https://schema.org',
                             '@type': 'WebApplication',
-                            name: 'Floe',
+                            name: 'Rilldrop',
                             // Omitted entirely when the origin is unknown. This
                             // block is hand-rolled rather than part of the
                             // Metadata API, so nothing else would strip it.

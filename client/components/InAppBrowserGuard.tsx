@@ -127,7 +127,7 @@ export function InAppBrowserGuard({ children }: Props) {
                                     Open in your browser
                                 </h2>
                                 <p className="text-sm leading-relaxed text-zinc-400">
-                                    {appName === 'this app' ? 'This in-app browser' : `${appName}’s browser`} has limited support for file transfers. Open Floe in Chrome or Safari for the best experience.
+                                    {appName === 'this app' ? 'This in-app browser' : `${appName}’s browser`} has limited support for file transfers. Open Rilldrop in Chrome or Safari for the best experience.
                                 </p>
                             </div>
                         </div>

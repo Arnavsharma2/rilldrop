@@ -4,10 +4,8 @@ import { SectionHeader, sectionClass } from './SectionHeader';
 import { AppWindow } from './AppWindow';
 import { DESKTOP_VERSION } from '@/lib/desktopRelease';
 
-// Every feature listed here ships in BOTH desktop channels (Microsoft Store
-// and the GitHub build). The Explorer right-click entry is deliberately not
-// listed: it exists only in the GitHub build (MSIX virtualizes the registry
-// write), so claiming it here would be false for the primary install path.
+// The Explorer right-click entry is deliberately not listed because packaged
+// MSIX builds virtualize the registry write.
 const FEATURES = [
     { name: 'Paste to send', desc: 'Ctrl+V a screenshot or files copied in Explorer' },
     { name: 'Folders', desc: 'Sent as folders, no zipping' },
@@ -26,7 +24,7 @@ export function DesktopSection() {
             <SectionHeader
                 eyebrow="Desktop"
                 headline="Transfers that outlive the tab."
-                lede="Floe Desktop is the same app, running natively on Windows. Drop a folder to send it without zipping, paste a screenshot straight from the clipboard, get a notification when a transfer lands. Same rooms, same end-to-end encryption as browser and CLI peers."
+                lede="Rilldrop Desktop is the same app, running natively on Windows. Drop a folder to send it without zipping, paste a screenshot straight from the clipboard, get a notification when a transfer lands. Same rooms, same end-to-end encryption as browser and CLI peers."
             />
             <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:order-2 lg:col-span-5">
@@ -45,7 +43,7 @@ export function DesktopSection() {
                         <Link
                             href="/download"
                             data-umami-event="desktop-section-cta"
-                            className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-ice"
+                            className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-rill"
                         >
                             Get the desktop app
                         </Link>

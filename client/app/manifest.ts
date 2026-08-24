@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Floe',
-        short_name: 'Floe',
+        name: 'Rilldrop',
+        short_name: 'Rilldrop',
         description:
             'Send files directly to anyone. No uploads, no accounts, end-to-end encrypted.',
         start_url: '/',

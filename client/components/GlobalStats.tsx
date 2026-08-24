@@ -32,11 +32,11 @@ export function GlobalStats() {
                 setTotalBytes((prev) => (prev ?? 0) + bytes);
             }
         };
-        window.addEventListener('floe:bytes-reported', handleBytesReported);
+        window.addEventListener('rilldrop:bytes-reported', handleBytesReported);
 
         return () => {
             clearInterval(interval);
-            window.removeEventListener('floe:bytes-reported', handleBytesReported);
+            window.removeEventListener('rilldrop:bytes-reported', handleBytesReported);
         };
     }, []);
 

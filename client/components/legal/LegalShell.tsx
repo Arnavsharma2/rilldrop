@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 
 /**
  * Shared frame for the legal document pages (/privacy, /terms), following the
- * landing design system: mono ice eyebrow, hairline rules, asymmetric 4/8 grid
+ * landing design system: mono teal eyebrow, hairline rules, asymmetric 4/8 grid
  * with a sticky on-page nav in the left rail. The shared site <Footer /> renders
  * at the bottom, replacing the private bottom bar this shell used to carry.
  */
@@ -31,11 +31,11 @@ export function LegalShell({
                     href="/"
                     className="inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-zinc-100"
                 >
-                    <ArrowLeft className="h-4 w-4" /> Back to Floe
+                    <ArrowLeft className="h-4 w-4" /> Back to Rilldrop
                 </Link>
                 <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-12">
                     <header className="lg:sticky lg:top-12 lg:col-span-4 lg:self-start">
-                        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ice">{eyebrow}</p>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-rill">{eyebrow}</p>
                         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-100 sm:text-4xl">
                             {title}
                         </h1>
@@ -49,9 +49,9 @@ export function LegalShell({
                                     <li key={item.id}>
                                         <a
                                             href={`#${item.id}`}
-                                            className="group flex items-baseline gap-3 text-sm text-zinc-400 transition hover:text-ice"
+                                            className="group flex items-baseline gap-3 text-sm text-zinc-400 transition hover:text-rill"
                                         >
-                                            <span className="font-mono text-xs text-zinc-600 transition group-hover:text-ice/70">
+                                            <span className="font-mono text-xs text-zinc-600 transition group-hover:text-rill/70">
                                                 {String(i + 1).padStart(2, '0')}
                                             </span>
                                             {item.label}
