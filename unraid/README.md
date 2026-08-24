@@ -1,7 +1,7 @@
 # Unraid templates
 
-Floe uses two containers. Install `floe-server.xml` first, followed by
-`floe-client.xml`.
+Rilldrop uses two containers. Install `rilldrop-server.xml` first, followed by
+`rilldrop-client.xml`.
 
 For direct access on a local network:
 
@@ -18,5 +18,5 @@ hostnames, set it to the full public signaling origin.
 
 The templates use multi-architecture images from GitHub Container Registry and do
 not require application-data volumes. See the
-[Unraid deployment guide](https://www.floe.one/docs/self-hosting/unraid) for installation,
+[Unraid deployment guide](../docs/self-hosting/unraid.mdx) for installation,
 reverse proxy, TURN, and troubleshooting details.

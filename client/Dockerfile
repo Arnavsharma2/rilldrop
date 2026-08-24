@@ -1,4 +1,4 @@
-# Floe web client, multi-stage production image.
+# Rilldrop web client, multi-stage production image.
 #
 # The signaling server address is resolved at RUNTIME. Set SOCKET_URL on the
 # running container and the browser picks it up from /api/config on next load, so
@@ -44,12 +44,12 @@ ARG NEXT_PUBLIC_SITE_URL=
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 # Marks this build as an image we hand to strangers. lib/siteUrl.ts reads it and,
 # when no explicit site URL was given, emits NO absolute URL anywhere rather than
-# falling back to floe.one, which every self-hosted instance would otherwise
+# falling back to localhost:3000, which every self-hosted instance would otherwise
 # claim as its canonical, share-preview host, and sitemap host.
 #
 # It is a build flag rather than a plain removal of that fallback so the change is
-# a provable no-op for every other build, including the canonical floe.one deploy.
-ENV FLOE_DISTRIBUTABLE_IMAGE=1
+# a provable no-op for every other build, including the canonical localhost:3000 deploy.
+ENV RILLDROP_DISTRIBUTABLE_IMAGE=1
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 
@@ -61,10 +61,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Repeated from the builder stage on purpose. Every metadata route is statically
 # prerendered today, so the build-time value is already baked into the output and
 # this is redundant. It stops being redundant the moment any of them turns
-# dynamic: FLOE_DISTRIBUTABLE_IMAGE is not a NEXT_PUBLIC_ variable, so Next does
+# dynamic: RILLDROP_DISTRIBUTABLE_IMAGE is not a NEXT_PUBLIC_ variable, so Next does
 # not inline it, and a route rendered at request time would read it from the
-# running container and fall back to floe.one. One line to make that impossible.
-ENV FLOE_DISTRIBUTABLE_IMAGE=1
+# running container and fall back to localhost:3000. One line to make that impossible.
+ENV RILLDROP_DISTRIBUTABLE_IMAGE=1
 # The standalone server reads HOSTNAME/PORT; bind all interfaces for Docker.
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000

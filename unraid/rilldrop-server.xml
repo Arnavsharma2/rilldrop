@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <Container version="2">
-  <Name>Floe-Server</Name>
-  <Repository>ghcr.io/jannskiee/floe-server:latest</Repository>
-  <Registry>https://github.com/jannskiee/floe/pkgs/container/floe-server</Registry>
+  <Name>Rilldrop-Server</Name>
+  <Repository>ghcr.io/Arnavsharma2/rilldrop-server:latest</Repository>
+  <Registry>https://github.com/Arnavsharma2/rilldrop/pkgs/container/rilldrop-server</Registry>
   <Network>bridge</Network>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/jannskiee/floe/issues</Support>
-  <Project>https://github.com/jannskiee/floe</Project>
-  <Overview>Signaling server for the Floe encrypted peer-to-peer file transfer app. Install this template before Floe-Client. File data does not pass through this server.[br][br]Set Client URL to the exact browser origin of Floe-Client, including its scheme and host port.</Overview>
+  <Support>https://github.com/Arnavsharma2/rilldrop/issues</Support>
+  <Project>https://github.com/Arnavsharma2/rilldrop</Project>
+  <Overview>Signaling server for the Rilldrop encrypted peer-to-peer file transfer app. Install this template before Rilldrop-Client. File data does not pass through this server.[br][br]Set Client URL to the exact browser origin of Rilldrop-Client, including its scheme and host port.</Overview>
   <Category>Network:Other Productivity:</Category>
-  <TemplateURL>https://raw.githubusercontent.com/jannskiee/floe/main/unraid/floe-server.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/jannskiee/floe/main/client/public/icon-512.png</Icon>
-  <Config Name="Signaling Port" Target="3001" Default="3001" Mode="tcp" Description="Host port used by Floe-Client to reach the signaling server." Type="Port" Display="always" Required="true" Mask="false">3001</Config>
-  <Config Name="Client URL" Target="CLIENT_URL" Default="" Description="Required. Exact Floe-Client browser origin, for example http://192.168.1.10:3000. This controls the server CORS allow-list." Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <TemplateURL>https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/unraid/rilldrop-server.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/client/public/icon-512.png</Icon>
+  <Config Name="Signaling Port" Target="3001" Default="3001" Mode="tcp" Description="Host port used by Rilldrop-Client to reach the signaling server." Type="Port" Display="always" Required="true" Mask="false">3001</Config>
+  <Config Name="Client URL" Target="CLIENT_URL" Default="" Description="Required. Exact Rilldrop-Client browser origin, for example http://192.168.1.10:3000. This controls the server CORS allow-list." Type="Variable" Display="always" Required="true" Mask="false"></Config>
   <Config Name="Trusted Proxy Count" Target="TRUSTED_PROXY_COUNT" Default="0" Description="Use 0 for direct LAN access. Set the number of reverse-proxy hops when publishing through a proxy." Type="Variable" Display="always" Required="true" Mask="false">0</Config>
   <Config Name="Maximum Connections Per IP" Target="MAX_CONNECTIONS_PER_IP" Default="30" Description="Maximum new signaling connections per IP per 60 seconds." Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
   <Config Name="Cloudflare TURN Key ID" Target="CLOUDFLARE_TURN_KEY_ID" Default="" Description="Optional Cloudflare Realtime TURN Token ID." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>

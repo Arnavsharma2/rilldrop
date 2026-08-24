@@ -11,14 +11,14 @@
 # the single thing a shared image genuinely cannot resolve at runtime.
 #
 # The image: overrides matter as much as the build: blocks. Without them a local
-# build would be tagged ghcr.io/jannskiee/floe-*:main and silently replace the
+# build would be tagged ghcr.io/Arnavsharma2/rilldrop-*:main and silently replace the
 # pulled image under that exact name, so a later `docker compose up` would run
 # your working tree while appearing to run the published release.
 
 services:
   server:
     build: ./server
-    image: floe-server:dev
+    image: rilldrop-server:dev
 
   client:
     build:
@@ -28,4 +28,4 @@ services:
         # share previews and the sitemap. Leave it unset and the client simply
         # omits those rather than claiming someone else's domain.
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
-    image: floe-client:dev
+    image: rilldrop-client:dev

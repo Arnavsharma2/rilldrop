@@ -1,13 +1,13 @@
-# Floe self-hosting stack.
+# Rilldrop self-hosting stack.
 #
 # Quick start, no clone and no toolchain needed:
-#   curl -fsSLO https://raw.githubusercontent.com/jannskiee/floe/main/docker-compose.yml
+#   curl -fsSLO https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/docker-compose.yml
 #   docker compose up -d
 #   open http://localhost:3000
 #
 # A .env file is optional; every value below has a working default. To customise,
 # fetch the annotated example alongside this file:
-#   curl -fsSL https://raw.githubusercontent.com/jannskiee/floe/main/.env.docker.example -o .env
+#   curl -fsSL https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/.env.docker.example -o .env
 #
 # Images are prebuilt and published to ghcr.io. To build from source instead, add
 # the overlay: docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
@@ -19,10 +19,10 @@
 
 services:
   server:
-    # FLOE_IMAGE_TAG pins a version, for example FLOE_IMAGE_TAG=1.10.1. Deliberately
-    # NOT named FLOE_VERSION: that already belongs to the CLI installer and is
+    # RILLDROP_IMAGE_TAG pins a version, for example RILLDROP_IMAGE_TAG=1.10.1. Deliberately
+    # NOT named RILLDROP_VERSION: that already belongs to the CLI installer and is
     # documented as v1.10.1, with a leading v that image tags do not carry.
-    image: ghcr.io/jannskiee/floe-server:${FLOE_IMAGE_TAG:-latest}
+    image: ghcr.io/Arnavsharma2/rilldrop-server:${RILLDROP_IMAGE_TAG:-latest}
     restart: unless-stopped
     ports:
       - "${PORT:-3001}:3001"
@@ -52,7 +52,7 @@ services:
       MAX_REPORT_BYTES: ${MAX_REPORT_BYTES:-}
 
   client:
-    image: ghcr.io/jannskiee/floe-client:${FLOE_IMAGE_TAG:-latest}
+    image: ghcr.io/Arnavsharma2/rilldrop-client:${RILLDROP_IMAGE_TAG:-latest}
     restart: unless-stopped
     ports:
       - "${CLIENT_PORT:-3000}:3000"
@@ -81,7 +81,7 @@ services:
     volumes:
       # This file holds your TURN_SECRET, so it is never shipped. Create it first:
       #   curl -fsSL --create-dirs -o coturn/turnserver.conf \
-      #     https://raw.githubusercontent.com/jannskiee/floe/main/coturn/turnserver.conf.example
+      #     https://raw.githubusercontent.com/Arnavsharma2/rilldrop/main/coturn/turnserver.conf.example
       #
       # Skip that and Docker creates a DIRECTORY at this path. coturn then starts
       # anyway and reports healthy, running on built-in defaults with no auth
