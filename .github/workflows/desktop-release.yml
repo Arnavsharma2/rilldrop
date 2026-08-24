@@ -1,4 +1,4 @@
-# Builds and publishes the Floe desktop app for Windows when a desktop-v* tag
+# Builds and publishes the Rilldrop desktop app for Windows when a desktop-v* tag
 # (e.g. desktop-v0.1.0) is pushed. The desktop has its own tag series on
 # purpose: release.yml fires GoReleaser on any v* tag, so a shared series would
 # republish the CLI on every desktop release.
@@ -8,8 +8,8 @@
 # to test this pipeline without a tag.
 #
 # Publishing rules (load-bearing, do not relax):
-#   - --latest=false ALWAYS. The back-compat CI job, the floe.one install
-#     scripts, and `floe update` all resolve GitHub's "latest" release and must
+#   - --latest=false ALWAYS. The back-compat CI job, the Rilldrop install
+#     scripts, and `rilldrop update` all resolve GitHub's "latest" release and must
 #     keep resolving to CLI releases, forever.
 #   - --prerelease ALWAYS. Prereleases are structurally excluded from
 #     /releases/latest, which is the defense the four "latest" consumers
@@ -148,8 +148,8 @@ jobs:
         shell: pwsh
         # wails build can exit 0 on silent failure; trust nothing it printed.
         run: |
-          $exe = "desktop/build/bin/floe-desktop.exe"
-          $installer = "desktop/build/bin/floe-desktop-amd64-installer.exe"
+          $exe = "desktop/build/bin/rilldrop-desktop.exe"
+          $installer = "desktop/build/bin/rilldrop-desktop-amd64-installer.exe"
           foreach ($f in @($exe, $installer)) {
             if (-not (Test-Path $f)) { Write-Error "missing artifact: $f"; exit 1 }
             $age = (Get-Date) - (Get-Item $f).LastWriteTime
@@ -182,7 +182,7 @@ jobs:
           $got = [VerQ]::Q((Resolve-Path $exe), "ProductVersion")
           $want = "${{ steps.ver.outputs.version }}"
           if ($got -ne $want) { Write-Error "exe ProductVersion is '$got', want '$want'"; exit 1 }
-          "verified: floe-desktop.exe ProductVersion $got"
+          "verified: rilldrop-desktop.exe ProductVersion $got"
 
       - name: Pack MSIX for the Microsoft Store
         shell: pwsh
@@ -193,13 +193,13 @@ jobs:
         # installed by end users, so its sole consumer is the Store upload.
         run: |
           desktop/build/msix/pack.ps1 -Version "${{ steps.ver.outputs.version }}" `
-            -ExePath desktop/build/bin/floe-desktop.exe -OutDir dist-msix
+            -ExePath desktop/build/bin/rilldrop-desktop.exe -OutDir dist-msix
           Remove-Item dist-msix/layout -Recurse -Force
 
       - name: Upload MSIX artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: floe-desktop-msix-${{ steps.ver.outputs.version }}-run${{ github.run_number }}
+          name: rilldrop-desktop-msix-${{ steps.ver.outputs.version }}-run${{ github.run_number }}
           path: dist-msix/
           if-no-files-found: error
 
@@ -210,8 +210,8 @@ jobs:
           $v = "${{ steps.ver.outputs.version }}"
           $stage = "dist-desktop"
           New-Item -ItemType Directory $stage | Out-Null
-          Copy-Item desktop/build/bin/floe-desktop-amd64-installer.exe "$stage/floe-desktop-setup-$v.exe"
-          Compress-Archive -Path desktop/build/bin/floe-desktop.exe, LICENSE -DestinationPath "$stage/floe-desktop-$v-windows-amd64.zip"
+          Copy-Item desktop/build/bin/rilldrop-desktop-amd64-installer.exe "$stage/rilldrop-desktop-setup-$v.exe"
+          Compress-Archive -Path desktop/build/bin/rilldrop-desktop.exe, LICENSE -DestinationPath "$stage/rilldrop-desktop-$v-windows-amd64.zip"
           # sha256sum format so `sha256sum -c SHA256SUMS.txt` works, which is what
           # the release body tells people to run.
           #
@@ -237,21 +237,21 @@ jobs:
           v="${{ steps.ver.outputs.version }}"
           notes_file="$RUNNER_TEMP/notes.md"
           {
-            echo "Floe Desktop $v for Windows."
+            echo "Rilldrop Desktop $v for Windows."
             echo
-            echo "- **floe-desktop-setup-$v.exe** is the installer (per-user, no admin prompt)."
-            echo "- **floe-desktop-$v-windows-amd64.zip** is the portable build."
+            echo "- **rilldrop-desktop-setup-$v.exe** is the installer (per-user, no admin prompt)."
+            echo "- **rilldrop-desktop-$v-windows-amd64.zip** is the portable build."
             echo "- This build is not code-signed yet, so SmartScreen shows an"
             echo "  \"unknown publisher\" warning: choose \"More info\", then \"Run anyway\"."
             echo "- Verify a download with \`sha256sum -c SHA256SUMS.txt\` or"
             echo "  \`Get-FileHash\` against SHA256SUMS.txt."
-            echo "- Found a bug? Report it: https://github.com/jannskiee/floe/issues"
+            echo "- Found a bug? Report it: https://github.com/Arnavsharma2/rilldrop/issues"
             echo
             # This body is the same boilerplate on every tag, so it says nothing
             # about what changed. The docs changelog is hand-written and is the
             # only place that does; /download's "Release notes" link points there
             # too. Do not try to generate an account of the release here.
-            echo "**What changed:** https://www.floe.one/docs/changelog"
+            echo "**What changed:** https://github.com/Arnavsharma2/rilldrop/blob/main/docs/changelog.mdx"
             echo
             echo "Most people should install from the Microsoft Store instead, which is"
             echo "signed by Microsoft and updates itself:"
@@ -259,7 +259,7 @@ jobs:
           } > "$notes_file"
           # --latest=false AND --prerelease are unconditional and permanent:
           # "latest" must keep resolving to CLI releases (back-compat CI,
-          # install scripts, floe update), and prereleases are structurally
+          # install scripts, rilldrop update), and prereleases are structurally
           # excluded from /releases/latest, which is the guarantee those four
           # consumers actually rely on. The Store is the stable channel.
           gh release create "$GITHUB_REF_NAME" \
@@ -267,7 +267,7 @@ jobs:
             --verify-tag \
             --latest=false \
             --prerelease \
-            --title "Floe Desktop $v" \
+            --title "Rilldrop Desktop $v" \
             --notes-file "$notes_file"
 
       - name: Upload dry-run artifact

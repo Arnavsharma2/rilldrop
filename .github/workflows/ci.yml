@@ -186,8 +186,8 @@ jobs:
         run: pnpm build
         working-directory: client
         env:
-          # Use the live signaling server — matches the default in client/.env.example
-          NEXT_PUBLIC_SOCKET_URL: https://api.floe.one
+          # Build against the local-first default; network calls do not run at build time.
+          NEXT_PUBLIC_SOCKET_URL: http://localhost:3001
 
   server:
     name: Server (Node.js)
@@ -249,7 +249,7 @@ jobs:
         working-directory: cli
 
       - name: Build
-        run: go build ./cmd/floe
+        run: go build ./cmd/rilldrop
         working-directory: cli
 
   desktop:
@@ -368,8 +368,8 @@ jobs:
         # the exe's ProductVersion resource, and that P/Invoke check stays
         # release-only rather than being duplicated here.
         run: |
-          $exe = "desktop/build/bin/floe-desktop.exe"
-          $installer = "desktop/build/bin/floe-desktop-amd64-installer.exe"
+          $exe = "desktop/build/bin/rilldrop-desktop.exe"
+          $installer = "desktop/build/bin/rilldrop-desktop-amd64-installer.exe"
           foreach ($f in @($exe, $installer)) {
             if (-not (Test-Path $f)) { Write-Error "missing artifact: $f"; exit 1 }
             $age = (Get-Date) - (Get-Item $f).LastWriteTime
@@ -386,7 +386,7 @@ jobs:
         # package has no consumer on a PR, so nothing is uploaded.
         run: |
           desktop/build/msix/pack.ps1 -Version "${{ steps.ver.outputs.version }}" `
-            -ExePath desktop/build/bin/floe-desktop.exe -OutDir dist-msix
+            -ExePath desktop/build/bin/rilldrop-desktop.exe -OutDir dist-msix
 
   e2e:
     name: E2E (browser + CLI interop, ${{ matrix.os }})
@@ -476,7 +476,7 @@ jobs:
         # NEXT_PUBLIC_* is inlined into the bundle at BUILD time by Next.js,
         # so the socket URL must be set here, not on the test step (next start
         # never reads it). Each leg builds its own client: build-and-lint
-        # bakes the production https://api.floe.one URL, and a .next built on
+        # bakes the local test URL, and a .next built on
         # one OS is not reused on another.
         run: pnpm build
         working-directory: client
@@ -581,7 +581,7 @@ jobs:
         # NEXT_PUBLIC_* is inlined into the bundle at BUILD time by Next.js,
         # so the socket URL must be set here, not on the test step (next start
         # never reads it). Each leg builds its own client: build-and-lint
-        # bakes the production https://api.floe.one URL, and a .next built on
+        # bakes the local test URL, and a .next built on
         # one OS is not reused on another.
         run: pnpm build
         working-directory: client
@@ -598,24 +598,24 @@ jobs:
           # mid-job, "latest" could otherwise change between the two gh calls.
           tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
           echo "Released tag: $tag"
-          dest="$RUNNER_TEMP/floe-released"
+          dest="$RUNNER_TEMP/rilldrop-released"
           mkdir -p "$dest"
           gh release download "$tag" --repo "$GITHUB_REPOSITORY" --dir "$dest" \
-            --pattern 'floe_*_linux_amd64.tar.gz' --pattern 'checksums.txt'
+            --pattern 'rilldrop_*_linux_amd64.tar.gz' --pattern 'checksums.txt'
           cd "$dest" || exit 1
           # checksums.txt covers every asset; verify just the one we fetched.
           sha256sum --check <(grep linux_amd64.tar.gz checksums.txt)
-          tar -xzf floe_*_linux_amd64.tar.gz floe
-          chmod +x floe
-          echo "FLOE_RELEASED_CLI=$dest/floe" >> "$GITHUB_ENV"
-          echo "FLOE_RELEASED_VERSION=$tag" >> "$GITHUB_ENV"
+          tar -xzf rilldrop_*_linux_amd64.tar.gz rilldrop
+          chmod +x rilldrop
+          echo "RILLDROP_RELEASED_CLI=$dest/rilldrop" >> "$GITHUB_ENV"
+          echo "RILLDROP_RELEASED_VERSION=$tag" >> "$GITHUB_ENV"
 
       - name: Run back-compat E2E tests
         working-directory: client
         run: |
           # Fail loud if the export above ever regresses; otherwise the spec
           # would skip itself and this job would go green testing nothing.
-          test -x "$FLOE_RELEASED_CLI"
+          test -x "$RILLDROP_RELEASED_CLI"
           pnpm exec playwright test e2e/back-compat.spec.ts
 
       - name: Upload Playwright evidence
@@ -682,8 +682,8 @@ jobs:
         # 3001 itself, the same ports the compose stack uses. It removes its own
         # containers on exit.
         run: |
-          bash .github/scripts/smoke-image.sh floe-server floe-server:dev
-          bash .github/scripts/smoke-image.sh floe-client floe-client:dev
+          bash .github/scripts/smoke-image.sh rilldrop-server rilldrop-server:dev
+          bash .github/scripts/smoke-image.sh rilldrop-client rilldrop-client:dev
 
       - name: Start the stack
         # No .env file, exactly what a first-time self-hoster gets. The stack

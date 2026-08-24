@@ -1,7 +1,7 @@
 name: Images
 
 # Publishes the two self-hosting images to ghcr.io so nobody has to clone the
-# repo and build to run Floe. PR #206 made the signaling URL runtime-resolved
+# repo and build to run Rilldrop. PR #206 made the signaling URL runtime-resolved
 # precisely so ONE image can serve every deployment; this is what consumes that.
 #
 # Separate from release.yml on purpose: that workflow runs GoReleaser for the CLI
@@ -32,8 +32,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SERVER: ghcr.io/jannskiee/floe-server
-  CLIENT: ghcr.io/jannskiee/floe-client
+  SERVER: ghcr.io/Arnavsharma2/rilldrop-server
+  CLIENT: ghcr.io/Arnavsharma2/rilldrop-client
 
 jobs:
   # Four legs: two images across two architectures. Each pushes BY DIGEST with no
@@ -62,11 +62,11 @@ jobs:
         # Decorates the existing four combinations; adds no legs.
         include:
           - image: server
-            title: Floe signaling server
-            description: WebRTC signaling and TURN credentials for Floe. Never touches file data.
+            title: Rilldrop signaling server
+            description: WebRTC signaling and TURN credentials for Rilldrop. Never touches file data.
           - image: client
-            title: Floe web client
-            description: Browser client for Floe peer-to-peer file transfer.
+            title: Rilldrop web client
+            description: Browser client for Rilldrop peer-to-peer file transfer.
 
     steps:
       - name: Checkout
@@ -108,7 +108,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
-          images: ghcr.io/jannskiee/floe-${{ matrix.image }}
+          images: ghcr.io/Arnavsharma2/rilldrop-${{ matrix.image }}
           labels: |
             org.opencontainers.image.title=${{ matrix.title }}
             org.opencontainers.image.description=${{ matrix.description }}
@@ -128,7 +128,7 @@ jobs:
           context: ./${{ matrix.image }}
           platforms: linux/${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=ghcr.io/jannskiee/floe-${{ matrix.image }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=ghcr.io/Arnavsharma2/rilldrop-${{ matrix.image }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=${{ matrix.image }}-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}-${{ matrix.platform }}
 
@@ -139,8 +139,8 @@ jobs:
       # libvips in an arm64 image and watching the response flip to image/png.
       - name: Smoke test the pushed digest
         env:
-          NAME: floe-${{ matrix.image }}
-          REF: ghcr.io/jannskiee/floe-${{ matrix.image }}@${{ steps.build.outputs.digest }}
+          NAME: rilldrop-${{ matrix.image }}
+          REF: ghcr.io/Arnavsharma2/rilldrop-${{ matrix.image }}@${{ steps.build.outputs.digest }}
         run: bash .github/scripts/smoke-image.sh "$NAME" "$REF"
 
       - name: Record the verified digest

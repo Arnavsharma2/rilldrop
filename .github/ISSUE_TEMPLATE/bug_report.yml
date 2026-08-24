@@ -39,9 +39,9 @@ body:
   - type: dropdown
     id: surface
     attributes:
-      label: Where were you using Floe?
+      label: Where were you using Rilldrop?
       options:
-        - Web app (floe.one)
+        - Web app (self-hosted)
         - Desktop app (Windows)
         - CLI
         - Self-hosted server
@@ -53,7 +53,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: "Desktop app: Settings > About. CLI: `floe --version`. Skip for the web app."
+      description: "Desktop app: Settings > About. CLI: `rilldrop --version`. Skip for the web app."
       placeholder: e.g., desktop-v0.2.7 or v1.10.4
     validations:
       required: false

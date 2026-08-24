@@ -51,15 +51,15 @@ yarn-error.log*
 go.work.sum
 
 # --- CLI build artifacts ---
-# a bare `go build ./cli/cmd/floe` from the repo root drops the binary here
-/floe
-/floe.exe
-cli/floe
-cli/floe.exe
-cli/floe-rpi
-cli/floe-*
-cli/cmd/floe/floe
-cli/cmd/floe/floe.exe
+# a bare `go build ./cli/cmd/rilldrop` from the repo root drops the binary here
+/rilldrop
+/rilldrop.exe
+cli/rilldrop
+cli/rilldrop.exe
+cli/rilldrop-rpi
+cli/rilldrop-*
+cli/cmd/rilldrop/rilldrop
+cli/cmd/rilldrop/rilldrop.exe
 cli/received*/
 cli/output/
 cli/*.txt

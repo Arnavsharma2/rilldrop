@@ -2,10 +2,6 @@ name: Release
 
 # Publishes cross-platform CLI binaries to GitHub Releases when a version tag
 # (e.g. v1.0.0) is pushed. Build/archive/checksum config lives in .goreleaser.yml.
-# Package manager manifests (Homebrew Cask, Scoop, Winget) are also published
-# automatically on each tag using TAP_GITHUB_TOKEN (a PAT with write access to
-# the shared jannskiee/homebrew-tap, jannskiee/scoop-bucket, and the
-# jannskiee/winget-pkgs fork). These repos are reused across all projects.
 on:
   push:
     tags:
@@ -47,7 +43,7 @@ jobs:
         with:
           # Exact version, not a '~> v2' range, for two reasons. A range downloads
           # whatever 2.x exists when a tag is pushed, and that binary runs in the
-          # step carrying TAP_GITHUB_TOKEN, so a concrete version is the only thing
+          # release step, so a concrete version is the only thing
           # keeping an unreviewed release out of here. A range also resolves the tag
           # through goreleaser.com/releases.json, a non-GitHub host whose answer is
           # concatenated straight into the download URL; an exact semver skips that
@@ -61,8 +57,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # PAT with Contents write on the shared homebrew-tap, scoop-bucket, and the
-          # winget-pkgs fork. Create at Settings > Developer settings > Personal access
-          # tokens and add as repo secret TAP_GITHUB_TOKEN. The same PAT/secret pattern is
-          # reused by every project that publishes into these shared repos.
-          TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}

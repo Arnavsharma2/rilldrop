@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
-# Smoke-tests a built Floe image before any user-facing tag points at it.
+# Smoke-tests a built Rilldrop image before any user-facing tag points at it.
 #
 # Lives in a script rather than inline YAML so the identical checks can be run
 # locally against a local build before anything is pushed:
 #
-#   docker build -t floe-client:smoke ./client
-#   .github/scripts/smoke-image.sh floe-client floe-client:smoke
+#   docker build -t rilldrop-client:smoke ./client
+#   .github/scripts/smoke-image.sh rilldrop-client rilldrop-client:smoke
 #
-# Usage: smoke-image.sh <floe-server|floe-client> <image-ref>
+# Usage: smoke-image.sh <rilldrop-server|rilldrop-client> <image-ref>
 set -euo pipefail
 
-NAME="${1:?usage: smoke-image.sh <floe-server|floe-client> <image-ref>}"
-REF="${2:?usage: smoke-image.sh <floe-server|floe-client> <image-ref>}"
+NAME="${1:?usage: smoke-image.sh <rilldrop-server|rilldrop-client> <image-ref>}"
+REF="${2:?usage: smoke-image.sh <rilldrop-server|rilldrop-client> <image-ref>}"
 
 CONTAINERS=()
 cleanup() {
@@ -46,7 +46,7 @@ fail() {
 }
 
 case "$NAME" in
-floe-server)
+rilldrop-server)
     run smoke-server 3001
     wait_for http://localhost:3001/health || fail "/health never came up"
 
@@ -56,7 +56,7 @@ floe-server)
     echo "OK  /health -> healthy"
     ;;
 
-floe-client)
+rilldrop-client)
     # The client's /api/config just echoes SOCKET_URL, so this leg needs no
     # signaling server. Two runs with DIFFERENT values is the real proof that the
     # address is resolved at runtime and not baked, which is the whole premise of
