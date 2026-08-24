@@ -1,5 +1,5 @@
 {
-  "name": "floe",
+  "name": "rilldrop",
   "private": true,
   "description": "Repo-wide tooling (Prettier). Each component has its own manifest: client/, server/, cli/.",
   "scripts": {
