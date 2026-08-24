@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { memo, type RefObject } from 'react';
 import { CheckCircle2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatBytes } from '@/lib/utils';
@@ -15,7 +15,7 @@ interface ReceivedFilesListProps {
  * download link. Purely presentational; the received-files state and the scroll
  * ref live in P2PTransfer.
  */
-export function ReceivedFilesList({
+function ReceivedFilesListComponent({
     receivedFiles,
     listRef,
 }: ReceivedFilesListProps) {
@@ -85,3 +85,6 @@ export function ReceivedFilesList({
         </div>
     );
 }
+
+export const ReceivedFilesList = memo(ReceivedFilesListComponent);
+ReceivedFilesList.displayName = 'ReceivedFilesList';
