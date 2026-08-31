@@ -29,8 +29,6 @@ Rilldrop streams files directly between devices over WebRTC. A small signaling s
 
 The project includes a Next.js web client, a Windows desktop client, a Go command-line client, and a Node.js signaling server. They share one transfer protocol, so a sender and receiver can use different clients.
 
-Rilldrop is currently a self-host-first development project. It does not claim an official hosted service, app-store listing, or package-manager release yet; configure your own public client and signaling URLs when deploying it.
-
 ## Quick start
 
 Build and run the full stack locally:
@@ -70,13 +68,6 @@ go build -o rilldrop ./cli/cmd/rilldrop
 
 Set `RILLDROP_SERVER` and, for split deployments, `RILLDROP_WEB` to avoid repeating those flags.
 
-## What changed
-
-- New Rilldrop product identity, logo, executable names, package coordinates, configuration keys, and distribution metadata.
-- Local and self-hosted endpoints replace assumptions about an upstream hosted service.
-- Transfer lists, progress, and icon-only controls expose clearer semantics to assistive technology.
-- The original Git history is intentionally not included; this repository starts with a credited source-import commit and continues with Rilldrop-specific work.
-
 ## Documentation
 
 - [Introduction](docs/introduction.mdx)
@@ -85,10 +76,6 @@ Set `RILLDROP_SERVER` and, for split deployments, `RILLDROP_WEB` to avoid repeat
 - [Security and privacy](docs/security-privacy.mdx)
 - [Self-hosting](SELF_HOSTING.md)
 - [Contributing](CONTRIBUTING.md)
-
-## Upstream credit
-
-Rilldrop is derived from [Floe](https://github.com/jannskiee/floe).
 
 ## License
 
