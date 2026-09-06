@@ -8,7 +8,7 @@
 <h1 align="center">Rilldrop</h1>
 
 <p align="center">
-  <strong>Private peer-to-peer file transfer, wherever you work.</strong>
+  <strong>Self-hosted file transfer across web, desktop, and CLI.</strong>
 </p>
 
 <p align="center">
@@ -25,9 +25,17 @@
 
 ## About
 
-Rilldrop streams files directly between devices over WebRTC. A small signaling server introduces peers but never stores, inspects, or decrypts file contents. If a direct route is unavailable, an optional TURN relay forwards the same end-to-end encrypted traffic.
+Rilldrop transfers files between devices over WebRTC. A small signaling server connects peers; file payloads travel directly between them when possible, with an optional TURN relay for networks that require it.
 
 The project includes a Next.js web client, a Windows desktop client, a Go command-line client, and a Node.js signaling server. They share one transfer protocol, so a sender and receiver can use different clients.
+
+Rilldrop is derived from [Floe](https://github.com/jannskiee/floe). This repository develops the self-hosting setup, accessibility, and focused client/server optimizations. See [upstream credit](#upstream-credit).
+
+## My contributions
+
+- **Accessible transfer state:** labeled file queues and icon-only controls, exposed progress values to assistive technology, and added a rendering regression test. [Change](https://github.com/Arnavsharma2/rilldrop/commit/bcf163fef0730c29786c2a2667af8e9c26aff6ef)
+- **Lower allocation overhead:** reused sliding-window rate-limit buffers across signaling endpoints, with tests for in-place pruning. [Change](https://github.com/Arnavsharma2/rilldrop/commit/cf4844153e17eaddeaf670120e53ab680b12a451)
+- **Independent deployment:** updated client and CLI configuration, branding, and self-hosting documentation for Rilldrop.
 
 ## Quick start
 
@@ -40,7 +48,9 @@ cp .env.docker.example .env
 docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
 ```
 
-Then open `http://localhost:3000` on both devices. For use across networks, follow [SELF_HOSTING.md](SELF_HOSTING.md) and configure HTTPS plus a public signaling address.
+Open `http://localhost:3000` in two browser tabs for a local send/receive demo. To connect another device or use different networks, follow [SELF_HOSTING.md](SELF_HOSTING.md) and configure reachable client/signaling addresses and HTTPS.
+
+The instructions below run your own deployment; they do not depend on a hosted Rilldrop service.
 
 ### Web development
 
@@ -76,6 +86,10 @@ Set `RILLDROP_SERVER` and, for split deployments, `RILLDROP_WEB` to avoid repeat
 - [Security and privacy](docs/security-privacy.mdx)
 - [Self-hosting](SELF_HOSTING.md)
 - [Contributing](CONTRIBUTING.md)
+
+## Upstream credit
+
+The transfer protocol and initial web, desktop, CLI, and signaling implementation come from [Floe](https://github.com/jannskiee/floe), created by Jan Carlo Paredes and its contributors. Rilldrop-specific work continues in this repository's [commit history](https://github.com/Arnavsharma2/rilldrop/commits/main/).
 
 ## License
 
